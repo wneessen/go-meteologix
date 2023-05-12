@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 Winni Neessen <winni@neessen.dev>
+#
+# SPDX-License-Identifier: CC0-1.0
+
 name: Codecov workflow
 on:
   push:
@@ -32,11 +36,9 @@ jobs:
       uses: actions/setup-go@v3
       with:
         go-version: ${{ matrix.go }}
-    - name: Install sendmail
-      if: matrix.go == '1.20' && matrix.os == 'ubuntu-latest'
     - name: Run Tests
       run: |
-        go test -v -race --coverprofile=coverage.coverprofile --covermode=atomic ./...
+        go test -v -shuffle=on -race --coverprofile=coverage.coverprofile --covermode=atomic ./...
     - name: Upload coverage to Codecov
       if: success() && matrix.go == '1.20' && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v3
