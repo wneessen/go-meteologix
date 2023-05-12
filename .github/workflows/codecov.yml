@@ -34,7 +34,7 @@ jobs:
         go test -v -race --coverprofile=coverage.coverprofile --covermode=atomic ./...
     
     - name: Upload coverage to Codecov
-      if: success() && matrix.go == "1.20" && matrix.os == 'ubuntu-latest'
+      if: success() && matrix.go == 1.20 && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v3
       with:
         token: ${{ secrets.CODECOV_TOKEN }} # not required for public repos
