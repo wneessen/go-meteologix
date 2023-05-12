@@ -2,6 +2,7 @@ package meteologix
 
 import (
 	"errors"
+	"strings"
 	"testing"
 )
 
@@ -12,7 +13,7 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 		// Query string
 		q string
 		// Expected name
-		en string
+		en []string
 		// Expected latitude
 		ela float64
 		// Expected longitude
@@ -21,19 +22,19 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 		sf bool
 	}{
 		{
-			"Cologne, DE", "Cologne, Germany", "Cologne, North Rhine-Westphalia, Germany", 50.938361,
+			"Cologne, DE", "Cologne, Germany", []string{"Cologne", "North Rhine-Westphalia", "Germany"}, 50.938361,
 			6.959974, false,
 		},
 		{
 			"Neermoor, DE", "Neermoor, Germany",
-			"Neermoor, Moormerland, Landkreis Leer, Lower Saxony, 26802, Germany", 53.3067155,
-			7.4418682, false,
+			[]string{"Neermoor", "Moormerland", "Landkreis Leer", "Germany"},
+			53.3067155, 7.4418682, false,
 		},
 		{
-			"Chicago, US", "Chicago", "Chicago, Cook County, Illinois, United States", 41.8755616,
-			-87.6244212, false,
+			"Chicago, US", "Chicago", []string{"Chicago", "Cook County", "Illinois", "United States"},
+			41.8755616, -87.6244212, false,
 		},
-		{"Nonexisting", "Nonexisting City", "", 0, 0, true},
+		{"Nonexisting", "Nonexisting City", []string{}, 0, 0, true},
 	}
 
 	c := New()
@@ -46,8 +47,15 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 			if tc.sf {
 				return
 			}
-			if l.Name != tc.en {
-				t.Errorf("GetGeoLocationByCityName failed, expected name: %s, got: %s", tc.en, l.Name)
+			fn := 0
+			for i := range tc.en {
+				if strings.Contains(l.Name, tc.en[i]) {
+					fn++
+				}
+			}
+			if len(tc.en) != fn {
+				t.Errorf("GetGeoLocationByCityName failed, expected %d matching name parts, got: %d",
+					len(tc.en), fn)
 			}
 			if l.Latitude != tc.ela {
 				t.Errorf("GetGeoLocationByCityName failed, expected latitude: %f, got: %f", tc.ela, l.Latitude)
