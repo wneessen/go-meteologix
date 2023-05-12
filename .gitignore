@@ -1,6 +1,7 @@
-# If you prefer the allow list template instead of the deny list, see community template:
-# https://github.com/github/gitignore/blob/main/community/Golang/Go.AllowList.gitignore
+# SPDX-FileCopyrightText: 2023 Winni Neessen <winni@neessen.dev>
 #
+# SPDX-License-Identifier: CC0-1.0
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
@@ -19,3 +20,12 @@
 
 # Go workspace file
 go.work
+
+# IdeaJ
+.idea
+
+# Example code
+examples
+
+# Environment files
+.env
