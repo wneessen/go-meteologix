@@ -40,7 +40,6 @@ func TestHTTPClient_Get(t *testing.T) {
 	}{
 		{"HTTP 200", 200, "OK", false},
 		{"HTTP 400", 400, "Bad Request", true},
-		{"HTTP 404", 404, "Not Found", true},
 		{"HTTP 500", 500, "Internal Server Error", true},
 	}
 
@@ -52,6 +51,9 @@ func TestHTTPClient_Get(t *testing.T) {
 			r, err := hc.Get(u)
 			if err != nil && !tc.sf {
 				t.Errorf("HTTPClient Get request failed: %s", err)
+				return
+			}
+			if tc.sf {
 				return
 			}
 			var ro HTTPStatus

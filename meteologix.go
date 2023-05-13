@@ -4,8 +4,9 @@
 
 package meteologix
 
-// APIBaseURL represents the base URL for the Meteologix API
-// We currently support v02 of the API
+// APIBaseURL represents the base URL for the Meteologix API.
+//
+// We currently support v02 of the API.
 const APIBaseURL = "https://api.kachelmannwetter.com/v02"
 
 const (

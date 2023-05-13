@@ -83,6 +83,10 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 	if !strings.HasPrefix(sr.Header.Get("Content-Type"), MIMETypeJSON) {
 		return nil, ErrNonJSONResponse
 	}
+	if sr.StatusCode >= 400 {
+		return nil, fmt.Errorf("HTTP response is non positive: %w",
+			errors.New(sr.Status))
+	}
 	buf := &bytes.Buffer{}
 	bw := bufio.NewWriter(buf)
 	_, err = io.Copy(bw, sr.Body)

@@ -46,26 +46,29 @@ type Station struct {
 	// Name is the name or location of the station
 	Name string `json:"name"`
 	// Precision is the precision string returned by the API
-	Precision StationPrecision `json:"precision"`
+	Precision *Precision `json:"precision,omitempty"`
 	// RecentlyActive represents if the station was recently active
 	RecentlyActive bool `json:"recentlyActive"`
 	// Type is the type of weather station
-	Type string `json:"type"`
+	Type *string `json:"type,omitempty"`
 }
 
 // Precision is a type wrapper for an int type
 type Precision int
 
+/*
 // StationPrecision is a type wrapper for an int type
 type StationPrecision struct {
 	Precision
 }
 
-// StationSearch returns a list of available weather stations based on the
-// given Latitude, Longitude
+*/
+
+// StationSearchByCoordinates returns a list of available weather stations
+// based on the given latitude, longitude coordinates within the default
+// radius
 //
-// Results will be sorted by distance to the requested coordinates
-// given Latitude, Longitude
+// Results will be sorted by distance to the requested coordinates.
 //
 // Depending on your subscription you may have access to one, two or
 // unlimited locations for station observations.
@@ -73,14 +76,14 @@ type StationPrecision struct {
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearch(la, lo float64) ([]Station, error) {
-	return c.StationSearchWithRadius(la, lo, DefaultRadius)
+func (c *Client) StationSearchByCoordinates(la, lo float64) ([]Station, error) {
+	return c.StationSearchByCoordinatesWithinRadius(la, lo, DefaultRadius)
 }
 
-// StationSearchByCity returns a list of available weather stations based
-// on the given City name
+// StationSearchByLocation returns a list of available weather stations
+// based on the given location string within the default radius
 //
-// # Results will be sorted by distance to the requested coordinates given City
+// # Results will be sorted by distance to the requested location
 //
 // Depending on your subscription you may have access to one, two or
 // unlimited locations for station observations.
@@ -88,18 +91,33 @@ func (c *Client) StationSearch(la, lo float64) ([]Station, error) {
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearchByCity(ci string) ([]Station, error) {
-	l, err := c.GetGeoLocationByCityName(ci)
+func (c *Client) StationSearchByLocation(lo string) ([]Station, error) {
+	return c.StationSearchByLocationWithinRadius(lo, DefaultRadius)
+}
+
+// StationSearchByLocationWithinRadius returns a list of available weather
+// stations based on the given location string and radius.
+//
+// Results will be sorted by distance to the requested location.
+//
+// Depending on your subscription you may have access to one, two or
+// unlimited locations for station observations.
+// Finding a station with his endpoint does not automatically mean
+// that you are allowed to get all data from this station.
+//
+// See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
+func (c *Client) StationSearchByLocationWithinRadius(lo string, ra int) ([]Station, error) {
+	l, err := c.GetGeoLocationByCityName(lo)
 	if err != nil {
-		return nil, fmt.Errorf("failed too look up city details: %w", err)
+		return nil, fmt.Errorf("failed too look up location details: %w", err)
 	}
-	return c.StationSearchWithRadius(l.Latitude, l.Longitude, DefaultRadius)
+	return c.StationSearchByCoordinatesWithinRadius(l.Latitude, l.Longitude, ra)
 }
 
-// StationSearchWithRadius returns a list of available weather stations based on the
-// given Latitude, Longitude and Radius values
+// StationSearchByCoordinatesWithinRadius returns a list of available weather stations
+// based on the given latitude, longitude coordinates and radius.
 //
-// # Results will be sorted by distance to the requested coordinates
+// Results will be sorted by distance to the requested coordinates.
 //
 // Depending on your subscription you may have access to one, two or
 // unlimited locations for station observations.
@@ -107,7 +125,7 @@ func (c *Client) StationSearchByCity(ci string) ([]Station, error) {
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearchWithRadius(la, lo float64, ra int) ([]Station, error) {
+func (c *Client) StationSearchByCoordinatesWithinRadius(la, lo float64, ra int) ([]Station, error) {
 	if ra < 1 {
 		return nil, ErrRadiusTooSmall
 	}
@@ -139,25 +157,29 @@ func (c *Client) StationSearchWithRadius(la, lo float64, ra int) ([]Station, err
 
 // UnmarshalJSON method for converting API precision responses into
 // StationPrecision types
-func (p *StationPrecision) UnmarshalJSON(s []byte) error {
+func (p *Precision) UnmarshalJSON(s []byte) error {
 	v := string(s)
 	v = strings.ReplaceAll(v, `"`, ``)
+	if v == "null" {
+		return nil
+	}
+
 	switch strings.ToLower(v) {
 	case "high":
-		p.Precision = PrecisionHigh
+		*p = PrecisionHigh
 	case "medium":
-		p.Precision = PrecisionMedium
+		*p = PrecisionMedium
 	case "low":
-		p.Precision = PrecisionLow
+		*p = PrecisionLow
 	default:
-		p.Precision = PrecisionUnknown
+		*p = PrecisionUnknown
 	}
 	return nil
 }
 
 // String satisfies the fmt.Stringer interface for the Precision type
-func (p Precision) String() string {
-	switch p {
+func (p *Precision) String() string {
+	switch *p {
 	case PrecisionHigh:
 		return "HIGH"
 	case PrecisionMedium:
