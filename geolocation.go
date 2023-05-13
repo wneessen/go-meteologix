@@ -66,7 +66,7 @@ func (c *Client) GetGeoLocationsByCityName(ci string) ([]GeoLocation, error) {
 	uq.Add("q", ci)
 	u.RawQuery = uq.Encode()
 
-	r, err := c.hc.Get(u.String())
+	r, err := c.httpClient.Get(u.String())
 	if err != nil {
 		return ga, fmt.Errorf("OSM Nominatim API request failed: %w", err)
 	}

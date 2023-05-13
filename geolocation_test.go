@@ -26,18 +26,18 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 		sf bool
 	}{
 		{
-			"Cologne, DE", "Cologne, Germany",
+			"Cologne DE", "Cologne, Germany",
 			[]string{"Cologne", "North Rhine-Westphalia", "Germany"},
 			50.938361,
 			6.959974, false,
 		},
 		{
-			"Neermoor, DE", "Neermoor, Germany",
+			"Neermoor DE", "Neermoor, Germany",
 			[]string{"Neermoor", "Moormerland", "Landkreis Leer", "Germany"},
 			53.3067155, 7.4418682, false,
 		},
 		{
-			"Chicago, US", "Chicago",
+			"Chicago US", "Chicago",
 			[]string{"Chicago", "Cook County", "Illinois", "United States"},
 			41.8755616, -87.6244212, false,
 		},

@@ -60,10 +60,10 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 	if err != nil {
 		return nil, err
 	}
-	hr.Header.Set("User-Agent", hc.ua)
+	hr.Header.Set("User-Agent", hc.userAgent)
 	hr.Header.Set("Content-Type", MIMETypeJSON)
 	hr.Header.Set("Accept", MIMETypeJSON)
-	hr.Header.Set("Accept-Language", hc.al)
+	hr.Header.Set("Accept-Language", hc.acceptLang)
 
 	// User authentication (only required for Meteologix API calls)
 	if strings.HasPrefix(u, APIBaseURL) {
@@ -93,14 +93,14 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 }
 
 // setAuthHeader sets the corresponding user authentication header. If an API Key is set, this
-// will be preferred, alternatively a username/password combination for HTTP Basic auth can
+// will be preferred, alternatively a username/authPass combination for HTTP Basic auth can
 // be used
 func (hc *HTTPClient) setAuthHeader(hr *http.Request) {
-	if hc.ak != "" {
-		hr.Header.Set("X-API-Key", hc.Config.ak)
+	if hc.apiKey != "" {
+		hr.Header.Set("X-API-Key", hc.Config.apiKey)
 		return
 	}
-	if hc.un != "" && hc.pw != "" {
-		hr.SetBasicAuth(hc.un, hc.pw)
+	if hc.authUser != "" && hc.authPass != "" {
+		hr.SetBasicAuth(hc.authUser, hc.authPass)
 	}
 }

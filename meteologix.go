@@ -17,24 +17,24 @@ const (
 
 // Client represents the Meteologix API Client
 type Client struct {
-	// co represents the Config for the Client
-	co *Config
-	// hc references the HTTPClient of the Server
-	hc *HTTPClient
+	// config represents the Config for the Client
+	config *Config
+	// httpClient references the HTTPClient of the Server
+	httpClient *HTTPClient
 }
 
 // Config represents the Client configuration settings
 type Config struct {
-	// ak holds the (optional) API key for the API user authentication
-	ak string
-	// al hold the (optional) accept-language tag
-	al string
-	// pw holds the (optional) passowrd for the API user authentication
-	pw string
-	// ua represents an alternative User-Agent HTTP header string
-	ua string
-	// un holds the (optional) username for the API user authentication
-	un string
+	// apiKey holds the (optional) API key for the API user authentication
+	apiKey string
+	// acceptLang hold the (optional) accept-language tag
+	acceptLang string
+	// authPass holds the (optional) passowrd for the API user authentication
+	authPass string
+	// authUser holds the (optional) username for the API user authentication
+	authUser string
+	// userAgent represents an alternative User-Agent HTTP header string
+	userAgent string
 }
 
 // Option represents a function that is used for setting/overriding Config options
@@ -43,8 +43,8 @@ type Option func(*Config)
 // New returns a new Meteologix API Client
 func New(o ...Option) *Client {
 	co := &Config{}
-	co.al = DefaultAcceptLang
-	co.ua = DefaultUserAgent
+	co.acceptLang = DefaultAcceptLang
+	co.userAgent = DefaultUserAgent
 
 	// Set/override Config options
 	for _, opt := range o {
@@ -55,8 +55,8 @@ func New(o ...Option) *Client {
 	}
 
 	return &Client{
-		co: co,
-		hc: NewHTTPClient(co),
+		config:     co,
+		httpClient: NewHTTPClient(co),
 	}
 }
 
@@ -69,7 +69,7 @@ func WithAcceptLanguage(l string) Option {
 		return nil
 	}
 	return func(co *Config) {
-		co.al = l
+		co.acceptLang = l
 	}
 }
 
@@ -79,17 +79,17 @@ func WithAPIKey(k string) Option {
 		return nil
 	}
 	return func(co *Config) {
-		co.ak = k
+		co.apiKey = k
 	}
 }
 
-// WithPassword sets the HTTP Basic auth password for the HTTP client
+// WithPassword sets the HTTP Basic auth authPass for the HTTP client
 func WithPassword(p string) Option {
 	if p == "" {
 		return nil
 	}
 	return func(co *Config) {
-		co.pw = p
+		co.authPass = p
 	}
 }
 
@@ -99,7 +99,7 @@ func WithUserAgent(a string) Option {
 		return nil
 	}
 	return func(co *Config) {
-		co.ua = a
+		co.userAgent = a
 	}
 }
 
@@ -109,6 +109,6 @@ func WithUsername(u string) Option {
 		return nil
 	}
 	return func(co *Config) {
-		co.un = u
+		co.authUser = u
 	}
 }
