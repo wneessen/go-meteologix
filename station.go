@@ -18,9 +18,13 @@ import (
 const DefaultRadius int = 10
 
 const (
+	// PrecisionHigh is a high precision weather station
 	PrecisionHigh Precision = iota
+	// PrecisionMedium is a medium precision weather station
 	PrecisionMedium
+	// PrecisionLow is a low precision weather station
 	PrecisionLow
+	// PrecisionUnknown is weather station of unknown precision
 	PrecisionUnknown
 )
 
@@ -55,14 +59,6 @@ type Station struct {
 
 // Precision is a type wrapper for an int type
 type Precision int
-
-/*
-// StationPrecision is a type wrapper for an int type
-type StationPrecision struct {
-	Precision
-}
-
-*/
 
 // StationSearchByCoordinates returns a list of available weather stations
 // based on the given latitude, longitude coordinates within the default
@@ -160,10 +156,6 @@ func (c *Client) StationSearchByCoordinatesWithinRadius(la, lo float64, ra int) 
 func (p *Precision) UnmarshalJSON(s []byte) error {
 	v := string(s)
 	v = strings.ReplaceAll(v, `"`, ``)
-	if v == "null" {
-		return nil
-	}
-
 	switch strings.ToLower(v) {
 	case "high":
 		*p = PrecisionHigh
