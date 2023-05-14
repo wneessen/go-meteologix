@@ -9,6 +9,7 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -33,6 +34,15 @@ var ErrNonJSONResponse = errors.New("HTTP response is of non-JSON content type")
 type HTTPClient struct {
 	*Config
 	*http.Client
+}
+
+// APIError wraps the error interface for the API
+type APIError struct {
+	Code    int    `json:"status"`
+	Details string `json:"detail"`
+	Message string `json:"message"`
+	Title   string `json:"title"`
+	Type    string `json:"type"`
 }
 
 // NewHTTPClient returns a new HTTP client
@@ -75,7 +85,7 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 		return nil, err
 	}
 	defer func() {
-		if err := sr.Body.Close(); err != nil {
+		if err = sr.Body.Close(); err != nil {
 			_, _ = fmt.Fprintln(os.Stderr, "failed to close HTTP request body", err)
 		}
 	}()
@@ -83,15 +93,24 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 	if !strings.HasPrefix(sr.Header.Get("Content-Type"), MIMETypeJSON) {
 		return nil, ErrNonJSONResponse
 	}
-	if sr.StatusCode >= 400 {
-		return nil, fmt.Errorf("HTTP response is non positive: %w",
-			errors.New(sr.Status))
-	}
 	buf := &bytes.Buffer{}
 	bw := bufio.NewWriter(buf)
 	_, err = io.Copy(bw, sr.Body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to copy HTTP response body to buffer: %w", err)
+	}
+	if sr.StatusCode >= 400 {
+		var ae APIError
+		if err = json.Unmarshal(buf.Bytes(), &ae); err != nil {
+			return nil, fmt.Errorf("failed to unmarshal error JSON: %w", err)
+		}
+		if ae.Code < 1 {
+			ae.Code = sr.StatusCode
+		}
+		if ae.Details == "" {
+			ae.Details = sr.Status
+		}
+		return nil, ae
 	}
 	return buf.Bytes(), nil
 }
@@ -107,4 +126,20 @@ func (hc *HTTPClient) setAuthHeader(hr *http.Request) {
 	if hc.authUser != "" && hc.authPass != "" {
 		hr.SetBasicAuth(hc.authUser, hc.authPass)
 	}
+}
+
+// Error satisfies the error interface for the APIError type
+func (e APIError) Error() string {
+	var em strings.Builder
+	em.WriteString("API request failed with status HTTP ")
+	em.WriteString(fmt.Sprintf("%d: ", e.Code))
+	if e.Details != "" {
+		em.WriteString(e.Details)
+	}
+	if e.Message != "" {
+		em.WriteString(" (Optional message: ")
+		em.WriteString(e.Message)
+		em.WriteString(")")
+	}
+	return em.String()
 }
