@@ -103,7 +103,7 @@ func (c *Client) StationSearchByLocation(lo string) ([]Station, error) {
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
 func (c *Client) StationSearchByLocationWithinRadius(lo string, ra int) ([]Station, error) {
-	l, err := c.GetGeoLocationByCityName(lo)
+	l, err := c.GetGeoLocationByName(lo)
 	if err != nil {
 		return nil, fmt.Errorf("failed too look up location details: %w", err)
 	}

@@ -37,24 +37,24 @@ type GeoLocation struct {
 	PlaceID int64 `json:"place_id"`
 }
 
-// GetGeoLocationByCityName returns the GeoLocation with the highest importance based on
+// GetGeoLocationByName returns the GeoLocation with the highest importance based on
 // the given City name
 //
 // This method makes use of the OSM Nominatim API
-func (c *Client) GetGeoLocationByCityName(ci string) (GeoLocation, error) {
-	ga, err := c.GetGeoLocationsByCityName(ci)
+func (c *Client) GetGeoLocationByName(ci string) (GeoLocation, error) {
+	ga, err := c.GetGeoLocationsByName(ci)
 	if len(ga) < 1 {
 		return GeoLocation{}, err
 	}
 	return ga[0], nil
 }
 
-// GetGeoLocationsByCityName returns a slice of GeoLocation based on the requested City name
+// GetGeoLocationsByName returns a slice of GeoLocation based on the requested City name
 // The returned slice will be sorted by Importance of the results with the highest
 // importance as first entry
 //
 // This method makes use of the OSM Nominatim API
-func (c *Client) GetGeoLocationsByCityName(ci string) ([]GeoLocation, error) {
+func (c *Client) GetGeoLocationsByName(ci string) ([]GeoLocation, error) {
 	ga := make([]GeoLocation, 0)
 
 	u, err := url.Parse(OSMNominatimURL)

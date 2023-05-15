@@ -51,7 +51,7 @@ import (
 
 func main() {
 	c := meteologix.New()
-	gl, err := c.GetGeoLocationByCityName("Berlin, Germany")
+	gl, err := c.GetGeoLocationByName("Berlin, Germany")
 	if err != nil {
 		fmt.Println("GeoLocation lookup failed", err)
 		os.Exit(1)

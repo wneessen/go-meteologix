@@ -47,9 +47,9 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 	c := New()
 	for _, tc := range tt {
 		t.Run(tc.n, func(t *testing.T) {
-			l, err := c.GetGeoLocationByCityName(tc.q)
+			l, err := c.GetGeoLocationByName(tc.q)
 			if err != nil && !tc.sf {
-				t.Errorf("GetGeoLocationByCityName failed: %s", err)
+				t.Errorf("GetGeoLocationByName failed: %s", err)
 			}
 			if tc.sf {
 				return
@@ -61,14 +61,14 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 				}
 			}
 			if len(tc.en) != fn {
-				t.Errorf("GetGeoLocationByCityName failed, expected %d matching name parts, got: %d",
+				t.Errorf("GetGeoLocationByName failed, expected %d matching name parts, got: %d",
 					len(tc.en), fn)
 			}
 			if l.Latitude != tc.ela {
-				t.Errorf("GetGeoLocationByCityName failed, expected latitude: %f, got: %f", tc.ela, l.Latitude)
+				t.Errorf("GetGeoLocationByName failed, expected latitude: %f, got: %f", tc.ela, l.Latitude)
 			}
 			if l.Longitude != tc.elo {
-				t.Errorf("GetGeoLocationByCityName failed, expected longitude: %f, got: %f", tc.elo, l.Longitude)
+				t.Errorf("GetGeoLocationByName failed, expected longitude: %f, got: %f", tc.elo, l.Longitude)
 			}
 		})
 	}
@@ -76,12 +76,12 @@ func TestClient_GetGeoLocationByCityName(t *testing.T) {
 
 func TestClient_GetGeoLocationByCityName_CityNotFoundErr(t *testing.T) {
 	c := New()
-	_, err := c.GetGeoLocationByCityName("Nonexisting City")
+	_, err := c.GetGeoLocationByName("Nonexisting City")
 	if err == nil {
-		t.Errorf("GetGeoLocationByCityName with nonexisting city name was expected to fail, but didn't")
+		t.Errorf("GetGeoLocationByName with nonexisting city name was expected to fail, but didn't")
 		return
 	}
 	if !errors.Is(err, ErrCityNotFound) {
-		t.Errorf("GetGeoLocationByCityName was supposed to fail with ErrCityNotFound error, but didn't")
+		t.Errorf("GetGeoLocationByName was supposed to fail with ErrCityNotFound error, but didn't")
 	}
 }
