@@ -4,20 +4,26 @@
 
 package meteologix
 
-// APIBaseURL represents the base URL for the Meteologix API.
-//
-// We currently support v02 of the API.
-const APIBaseURL = "https://api.kachelmannwetter.com/v02"
-
-// APIMockURL represents the mocked API URL for testing purposes
-const APIMockURL = "https://go-meteologix-mock.neessen.dev/v02"
+import (
+	"fmt"
+	"runtime"
+)
 
 const (
+	// APIBaseURL represents the base URL for the Meteologix API.
+	//
+	// We currently support v02 of the API.
+	APIBaseURL = "https://api.kachelmannwetter.com/v02"
+	// APIMockURL represents the mocked API URL for testing purposes
+	APIMockURL = "https://go-meteologix-mock.neessen.dev/v02"
 	// DefaultAcceptLang is the default language set for API requests
 	DefaultAcceptLang = "en"
-	// DefaultUserAgent is the default User-Agent presented by the HTTPClient
-	DefaultUserAgent = "go-meteologix v" + VERSION
 )
+
+// DefaultUserAgent is the default User-Agent presented by the HTTPClient
+var DefaultUserAgent = fmt.Sprintf("go-meteologix/%s (%s; %s; "+
+	"+https://github.com/wneessen/go-meteologix)", VERSION, runtime.GOOS,
+	runtime.Version())
 
 // Client represents the Meteologix API Client
 type Client struct {
