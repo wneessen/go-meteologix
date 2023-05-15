@@ -127,7 +127,7 @@ func (c *Client) StationSearchByCoordinatesWithinRadius(la, lo float64, ra int) 
 	}
 
 	u, err := url.Parse(fmt.Sprintf("%s/station/search/%f/%f",
-		APIBaseURL, la, lo))
+		c.config.apiURL, la, lo))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse station search URL: %w", err)
 	}

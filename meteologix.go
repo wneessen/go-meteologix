@@ -9,6 +9,9 @@ package meteologix
 // We currently support v02 of the API.
 const APIBaseURL = "https://api.kachelmannwetter.com/v02"
 
+// APIMockURL represents the mocked API URL for testing purposes
+const APIMockURL = "https://go-meteologix-mock.neessen.dev/v02"
+
 const (
 	// DefaultAcceptLang is the default language set for API requests
 	DefaultAcceptLang = "en"
@@ -28,6 +31,9 @@ type Client struct {
 type Config struct {
 	// apiKey holds the (optional) API key for the API user authentication
 	apiKey string
+	// apiURL holds the base URL for the API. This is configurable so we
+	// can test against our mock API.
+	apiURL string
 	// acceptLang hold the (optional) accept-language tag
 	acceptLang string
 	// authPass holds the (optional) passowrd for the API user authentication
@@ -44,6 +50,7 @@ type Option func(*Config)
 // New returns a new Meteologix API Client
 func New(o ...Option) *Client {
 	co := &Config{}
+	co.apiURL = APIBaseURL
 	co.acceptLang = DefaultAcceptLang
 	co.userAgent = DefaultUserAgent
 
@@ -111,5 +118,12 @@ func WithUsername(u string) Option {
 	}
 	return func(co *Config) {
 		co.authUser = u
+	}
+}
+
+// withMockAPI sets the API URL to our mock API for testing
+func withMockAPI() Option {
+	return func(co *Config) {
+		co.apiURL = APIMockURL
 	}
 }

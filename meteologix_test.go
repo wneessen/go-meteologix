@@ -130,6 +130,18 @@ func TestNew_WithUserAgent(t *testing.T) {
 	}
 }
 
+func TestNew_withMockAPI(t *testing.T) {
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("New_withMockAPI failed, expected Client, got nil")
+		return
+	}
+	if c.config.apiURL != APIMockURL {
+		t.Errorf("New_withMockAPI failed, expected URL value: %s, got: %s",
+			APIMockURL, c.config.apiURL)
+	}
+}
+
 func TestNew_WithNil(t *testing.T) {
 	c := New(nil)
 	if c == nil {

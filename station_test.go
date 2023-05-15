@@ -59,26 +59,23 @@ func TestClient_StationSearchByLocation_Failed(t *testing.T) {
 	}
 }
 
-func TestClient_StationSearchByCoordinates(t *testing.T) {
-	// RecentlyActive:true, Type:(*string)(nil)
-	// Expected stationd data
+func TestClient_StationSearchByCoordinates_Mock(t *testing.T) {
+	// Expected station data from mock API
 	p := PrecisionHigh
+	ty := "STATDEU6"
 	es := Station{
-		Altitude:       44,
-		Distance:       0,
-		ID:             "199942",
-		Latitude:       50.963,
-		Longitude:      6.9698,
-		Name:           "Köln-Botanischer Garten",
+		Altitude:       822,
+		Distance:       12.6,
+		ID:             "106350",
+		Latitude:       50.221,
+		Longitude:      8.4469,
+		Name:           "Feldberg/Taunus",
 		Precision:      &p,
 		RecentlyActive: true,
+		Type:           &ty,
 	}
 
-	ak := getAPIKeyFromEnv(t)
-	if ak == "" {
-		t.Skip("no API_KEY found in environment")
-	}
-	c := New(WithAPIKey(ak))
+	c := New(withMockAPI())
 	if c == nil {
 		t.Errorf("failed to create new Client, got nil")
 		return
@@ -123,6 +120,10 @@ func TestClient_StationSearchByCoordinates(t *testing.T) {
 	if rs.RecentlyActive != es.RecentlyActive {
 		t.Errorf("StationSearchByCoordinates failed, expected recently active: %t, got: %t",
 			es.RecentlyActive, rs.RecentlyActive)
+	}
+	if *rs.Type != *es.Type {
+		t.Errorf("StationSearchByCoordinates failed, expected type: %s, got: %s",
+			*es.Type, *rs.Type)
 	}
 }
 
