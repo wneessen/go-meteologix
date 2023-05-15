@@ -127,6 +127,21 @@ func TestClient_StationSearchByCoordinates_Mock(t *testing.T) {
 	}
 }
 
+func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
+	si := "H744"
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	sl, err := c.ObservationLatestByStationID(si)
+	if err != nil {
+		t.Errorf("ObservationLatestByStationID failed: %s", err)
+		return
+	}
+	t.Log(sl)
+}
+
 func TestPrecision_UnmarshalJSON(t *testing.T) {
 	type tj struct {
 		Precision Precision `json:"precision"`

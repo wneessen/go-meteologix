@@ -71,6 +71,15 @@ type ObservationData struct {
 	HumidityRelative ObservationHumidity `json:"humidityRelative"`
 	// Temperature represents the temperature in °C
 	Temperature ObservationTemperature `json:"temp"`
+	// TemperatureMax represents the maximum temperature in °C
+	TemperatureMax ObservationTemperature `json:"tempMax"`
+	// TemperatureMin represents the minimum temperature in °C
+	TemperatureMin ObservationTemperature `json:"tempMin"`
+	// Temperature5cm represents the temperature 5cm above ground in °C
+	Temperature5cm ObservationTemperature `json:"temp5cm"`
+	// Temperature5cm represents the minimum temperature 5cm above
+	// ground in °C
+	Temperature5cmMin ObservationTemperature `json:"temp5cmMin"`
 }
 
 // ObservationTemperature is a type wrapper for a temperature value
@@ -235,6 +244,11 @@ func (p *Precision) String() string {
 // String satisfies the fmt.Stringer interface for the ObservationTemperature type
 func (t ObservationTemperature) String() string {
 	return fmt.Sprintf("%.1f°C", t.Value)
+}
+
+// Celsius returns the ObservationTemperature value in Celsius
+func (t ObservationTemperature) Celsius() float64 {
+	return t.Value
 }
 
 // CelsiusString returns the ObservationTemperature value as Celsius
