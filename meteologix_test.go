@@ -4,7 +4,10 @@
 
 package meteologix
 
-import "testing"
+import (
+	"os"
+	"testing"
+)
 
 func TestNew(t *testing.T) {
 	c := New()
@@ -141,4 +144,9 @@ func TestNew_WithNil(t *testing.T) {
 		t.Errorf("NewWithNil failed, expected userAgent value: %s, got: %s", DefaultUserAgent,
 			c.config.userAgent)
 	}
+}
+
+func getAPIKeyFromEnv(t *testing.T) string {
+	t.Helper()
+	return os.Getenv("API_KEY")
 }

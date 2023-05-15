@@ -6,7 +6,7 @@ package meteologix
 
 import (
 	"encoding/json"
-	"os"
+	"errors"
 	"testing"
 )
 
@@ -32,6 +32,30 @@ func TestClient_StationSearchByLocation(t *testing.T) {
 	if sl[0].ID != esid {
 		t.Errorf("StationSearchByLocation failed, expected ID: %s, got: %s",
 			esid, sl[0].ID)
+	}
+}
+
+func TestClient_StationSearchByLocation_Failed(t *testing.T) {
+	c := New(WithUsername("invalid"), WithPassword("invalid"))
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	_, err := c.StationSearchByLocation("Cologne, Germany")
+	if err == nil {
+		t.Errorf("StationSearchByLocation was supposed to fail but didn't")
+	}
+	if err != nil && !errors.As(err, &APIError{}) {
+		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't")
+	}
+	c = New(WithAPIKey("invalid"))
+	_, err = c.StationSearchByLocation("Cologne, Germany")
+	if err == nil {
+		t.Errorf("StationSearchByLocation was supposed to fail but didn't")
+		return
+	}
+	if err != nil && !errors.As(err, &APIError{}) {
+		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't")
 	}
 }
 
@@ -174,9 +198,4 @@ func TestPrecision_String(t *testing.T) {
 			}
 		})
 	}
-}
-
-func getAPIKeyFromEnv(t *testing.T) string {
-	t.Helper()
-	return os.Getenv("API_KEY")
 }

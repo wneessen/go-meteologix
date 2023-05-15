@@ -14,6 +14,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"time"
@@ -124,7 +125,7 @@ func (hc *HTTPClient) setAuthHeader(hr *http.Request) {
 		return
 	}
 	if hc.authUser != "" && hc.authPass != "" {
-		hr.SetBasicAuth(hc.authUser, hc.authPass)
+		hr.SetBasicAuth(url.QueryEscape(hc.authUser), url.QueryEscape(hc.authPass))
 	}
 }
 
