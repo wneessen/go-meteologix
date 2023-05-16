@@ -47,6 +47,10 @@ type ObservationData struct {
 	Precipitation1h *ObservationPrecipitation `json:"prec1h"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
 	Precipitation24h *ObservationPrecipitation `json:"prec24h"`
+	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
+	PressureMSL *ObservationPressure `json:"pressureMsl"`
+	// PressureMSL represents the pressure at station level (QFE) in hPa
+	PressureQFE *ObservationPressure `json:"pressure"`
 	// Temperature represents the temperature in °C
 	Temperature *ObservationTemperature `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
@@ -71,6 +75,10 @@ type ObservationHumidity ObservationValueFloat
 // ObservationPrecipitation is a type wrapper for a precipitation value
 // in an Observation
 type ObservationPrecipitation ObservationValueFloat
+
+// ObservationPressure is a type wrapper for a pressure value
+// in an Observation
+type ObservationPressure ObservationValueFloat
 
 // ObservationValueFloat represents a observation value returning a
 // Float type
@@ -116,8 +124,8 @@ func (o Observation) Temperature() string {
 	return o.Data.Temperature.String()
 }
 
-// TemperatureAtGround returns the temperature at 5cm above ground data point as
-// formatted string.
+// TemperatureAtGround returns the temperature at ground level (5cm)
+// data point as formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
 func (o Observation) TemperatureAtGround() string {
@@ -125,6 +133,39 @@ func (o Observation) TemperatureAtGround() string {
 		return DataNotAvailable
 	}
 	return o.Data.Temperature5cm.String()
+}
+
+// TemperatureMin returns the minimum temperature so far data point as
+// formatted string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) TemperatureMin() string {
+	if o.Data.TemperatureMin == nil {
+		return DataNotAvailable
+	}
+	return o.Data.TemperatureMin.String()
+}
+
+// TemperatureMax returns the maximum temperature so far data point as
+// formatted string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) TemperatureMax() string {
+	if o.Data.TemperatureMax == nil {
+		return DataNotAvailable
+	}
+	return o.Data.TemperatureMax.String()
+}
+
+// TemperatureAtGroundMin returns the minimum temperature so far
+// at ground level (5cm) data point as formatted string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) TemperatureAtGroundMin() string {
+	if o.Data.Temperature5cmMin == nil {
+		return DataNotAvailable
+	}
+	return o.Data.Temperature5cmMin.String()
 }
 
 // String satisfies the fmt.Stringer interface for the ObservationTemperature type
@@ -168,4 +209,9 @@ func (t ObservationHumidity) String() string {
 // String satisfies the fmt.Stringer interface for the ObservationPrecipitation type
 func (t ObservationPrecipitation) String() string {
 	return fmt.Sprintf("%.1fmm", t.Value)
+}
+
+// String satisfies the fmt.Stringer interface for the ObservationPressure type
+func (t ObservationPressure) String() string {
+	return fmt.Sprintf("%.1fhPa", t.Value)
 }
