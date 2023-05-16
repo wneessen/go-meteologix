@@ -21,7 +21,7 @@ const (
 )
 
 // DefaultUserAgent is the default User-Agent presented by the HTTPClient
-var DefaultUserAgent = fmt.Sprintf("go-meteologix/%s (%s; %s; "+
+var DefaultUserAgent = fmt.Sprintf("go-meteologix/v%s (%s; %s; "+
 	"+https://github.com/wneessen/go-meteologix)", VERSION, runtime.GOOS,
 	runtime.Version())
 

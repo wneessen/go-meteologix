@@ -11,7 +11,6 @@ import (
 	"net/url"
 	"sort"
 	"strings"
-	"time"
 )
 
 // DefaultRadius is the default radius value that is used in the
@@ -56,45 +55,6 @@ type Station struct {
 	RecentlyActive bool `json:"recentlyActive"`
 	// Type is the type of weather station
 	Type *string `json:"type,omitempty"`
-}
-
-// Observation represents the observation API response for a Station
-type Observation struct {
-	Data ObservationData `json:"data"`
-}
-
-// ObservationData represents the data points of the Observation API response
-type ObservationData struct {
-	// DewPoint represents the dewpoint in °C
-	DewPoint ObservationTemperature `json:"dewpoint"`
-	// HumidityRelative represents the relative humidity in percent
-	HumidityRelative ObservationHumidity `json:"humidityRelative"`
-	// Temperature represents the temperature in °C
-	Temperature ObservationTemperature `json:"temp"`
-	// TemperatureMax represents the maximum temperature in °C
-	TemperatureMax ObservationTemperature `json:"tempMax"`
-	// TemperatureMin represents the minimum temperature in °C
-	TemperatureMin ObservationTemperature `json:"tempMin"`
-	// Temperature5cm represents the temperature 5cm above ground in °C
-	Temperature5cm ObservationTemperature `json:"temp5cm"`
-	// Temperature5cm represents the minimum temperature 5cm above
-	// ground in °C
-	Temperature5cmMin ObservationTemperature `json:"temp5cmMin"`
-}
-
-// ObservationTemperature is a type wrapper for a temperature value
-// in an Observation
-type ObservationTemperature ObservationValueFloat
-
-// ObservationHumidity is a type wrapper for a humidity value
-// in an Observation
-type ObservationHumidity ObservationValueFloat
-
-// ObservationValueFloat represents a observation value returning a
-// Float type
-type ObservationValueFloat struct {
-	DateTime time.Time `json:"dateTime"`
-	Value    float64   `json:"value"`
 }
 
 // Precision is a type wrapper for an int type
@@ -191,22 +151,6 @@ func (c *Client) StationSearchByCoordinatesWithinRadius(la, lo float64, ra int) 
 	return sl, nil
 }
 
-// ObservationLatestByStationID returns the latest Observation values from the
-// given Station
-func (c *Client) ObservationLatestByStationID(si string) (*Observation, error) {
-	u := fmt.Sprintf("%s/station/%s/observations/latest", c.config.apiURL, si)
-	r, err := c.httpClient.Get(u)
-	if err != nil {
-		return nil, fmt.Errorf("API request failed: %w", err)
-	}
-	var o Observation
-	if err := json.Unmarshal(r, &o); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
-	}
-
-	return &o, nil
-}
-
 // UnmarshalJSON method for converting API precision responses into
 // StationPrecision types
 func (p *Precision) UnmarshalJSON(s []byte) error {
@@ -239,38 +183,4 @@ func (p *Precision) String() string {
 	default:
 		return "UNKNOWN"
 	}
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationTemperature type
-func (t ObservationTemperature) String() string {
-	return fmt.Sprintf("%.1f°C", t.Value)
-}
-
-// Celsius returns the ObservationTemperature value in Celsius
-func (t ObservationTemperature) Celsius() float64 {
-	return t.Value
-}
-
-// CelsiusString returns the ObservationTemperature value as Celsius
-// formated string.
-//
-// This is an alias for the fmt.Stringer interface
-func (t ObservationTemperature) CelsiusString() string {
-	return t.String()
-}
-
-// Fahrenheit returns the ObservationTemperature value in Fahrenheit
-func (t ObservationTemperature) Fahrenheit() float64 {
-	return (t.Value * 9 / 5) + 32
-}
-
-// FahrenheitString returns the ObservationTemperature value as Fahrenheit
-// formated string.
-func (t ObservationTemperature) FahrenheitString() string {
-	return fmt.Sprintf("%.1f°F", t.Fahrenheit())
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationHumidity type
-func (t ObservationHumidity) String() string {
-	return fmt.Sprintf("%.1f%%", t.Value)
 }
