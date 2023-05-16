@@ -39,6 +39,14 @@ type ObservationData struct {
 	DewPoint *ObservationTemperature `json:"dewpoint,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *ObservationHumidity `json:"humidityRelative,omitempty"`
+	// Precipitation represents the current amount of precipitation
+	Precipitation *ObservationPrecipitation `json:"prec"`
+	// Precipitation10m represents the amount of precipitation over the last 10 minutes
+	Precipitation10m *ObservationPrecipitation `json:"prec10m"`
+	// Precipitation1h represents the amount of precipitation over the last hour
+	Precipitation1h *ObservationPrecipitation `json:"prec1h"`
+	// Precipitation24h represents the amount of precipitation over the last 24 hours
+	Precipitation24h *ObservationPrecipitation `json:"prec24h"`
 	// Temperature represents the temperature in °C
 	Temperature *ObservationTemperature `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
@@ -59,6 +67,10 @@ type ObservationTemperature ObservationValueFloat
 // ObservationHumidity is a type wrapper for a humidity value
 // in an Observation
 type ObservationHumidity ObservationValueFloat
+
+// ObservationPrecipitation is a type wrapper for a precipitation value
+// in an Observation
+type ObservationPrecipitation ObservationValueFloat
 
 // ObservationValueFloat represents a observation value returning a
 // Float type
@@ -120,6 +132,10 @@ func (t ObservationTemperature) String() string {
 	return fmt.Sprintf("%.1f°C", t.Value)
 }
 
+func (t ObservationTemperature) Timestamp() time.Time {
+	return t.DateTime
+}
+
 // Celsius returns the ObservationTemperature value in Celsius
 func (t ObservationTemperature) Celsius() float64 {
 	return t.Value
@@ -147,4 +163,9 @@ func (t ObservationTemperature) FahrenheitString() string {
 // String satisfies the fmt.Stringer interface for the ObservationHumidity type
 func (t ObservationHumidity) String() string {
 	return fmt.Sprintf("%.1f%%", t.Value)
+}
+
+// String satisfies the fmt.Stringer interface for the ObservationPrecipitation type
+func (t ObservationPrecipitation) String() string {
+	return fmt.Sprintf("%.1fmm", t.Value)
 }
