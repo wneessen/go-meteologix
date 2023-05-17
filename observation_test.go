@@ -21,13 +21,36 @@ func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
 		lat float64
 		// Longitude
 		lon float64
-		// DewPoint
-		dp float64
-		// DewPoint string
-		dps string
+		// Observation data points
+		dp *ObservationData
 	}{
-		{"Koeln-Botanischer Garten", "199942", 44, 50.9667, 6.9667, 10.1, "10.1°C"},
-		{"Koeln-Stammheim", "H744", 43, 50.9833, 6.9833, 9.7, "9.7°C"},
+		{"Koeln-Botanischer Garten", "199942", 44, 50.9667, 6.9667, &ObservationData{
+			DewPoint:         &ObservationTemperature{Value: 10.1},
+			HumidityRelative: &ObservationHumidity{Value: 80},
+			Precipitation:    &ObservationPrecipitation{Value: 0},
+			Precipitation10m: &ObservationPrecipitation{Value: 0},
+			Precipitation1h:  &ObservationPrecipitation{Value: 0},
+			Precipitation24h: &ObservationPrecipitation{Value: 0},
+			Temperature:      &ObservationTemperature{Value: 13.4},
+		}},
+		{"Koeln-Stammheim", "H744", 43, 50.9833, 6.9833, &ObservationData{
+			DewPoint:         &ObservationTemperature{Value: 9.7},
+			HumidityRelative: &ObservationHumidity{Value: 73},
+			Precipitation:    &ObservationPrecipitation{Value: 0},
+			Precipitation10m: &ObservationPrecipitation{Value: 0},
+			Precipitation1h:  &ObservationPrecipitation{Value: 0},
+			Precipitation24h: &ObservationPrecipitation{Value: 0},
+			Temperature:      &ObservationTemperature{Value: 14.4},
+		}},
+		{"All data fields", "all", 123, 1.234, -1.234, &ObservationData{
+			DewPoint:         &ObservationTemperature{Value: 6.5},
+			HumidityRelative: &ObservationHumidity{Value: 72},
+			Precipitation:    &ObservationPrecipitation{Value: 0.1},
+			Precipitation10m: &ObservationPrecipitation{Value: 0.5},
+			Precipitation1h:  &ObservationPrecipitation{Value: 10.3},
+			Precipitation24h: &ObservationPrecipitation{Value: 32.12},
+			Temperature:      &ObservationTemperature{Value: 10.8},
+		}},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -56,9 +79,80 @@ func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected altitude: %d, got: %d",
 					tc.alt, *o.Altitude)
 			}
-			if o.Dewpoint() != tc.dps {
+			if tc.dp == nil {
+				t.Skip("No data points received, this might be intentionally. Skipping data point validation.")
+			}
+			if tc.dp.DewPoint != nil && tc.dp.DewPoint.String() != o.Dewpoint() {
 				t.Errorf("ObservationLatestByStationID failed, expected dewpoint string: %s, got: %s",
-					tc.dps, o.Dewpoint())
+					tc.dp.DewPoint.String(), o.Dewpoint())
+			}
+			if tc.dp.DewPoint == nil {
+				if o.Dewpoint() != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected dewpoint to have "+
+						"no data, but got: %s", o.Dewpoint())
+				}
+			}
+			if tc.dp.HumidityRelative != nil && tc.dp.HumidityRelative.String() != o.HumidityRelative() {
+				t.Errorf("ObservationLatestByStationID failed, expected humidity string: %s, got: %s",
+					tc.dp.HumidityRelative.String(), o.HumidityRelative())
+			}
+			if tc.dp.HumidityRelative == nil {
+				if o.HumidityRelative() != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected relative humidity to have "+
+						"no data, but got: %s", o.HumidityRelative())
+				}
+			}
+			if tc.dp.Precipitation != nil && tc.dp.Precipitation.String() != o.Precipitation(PrecipitationCurrent) {
+				t.Errorf("ObservationLatestByStationID failed, expected precipitation string: %s, got: %s",
+					tc.dp.Precipitation.String(), o.Precipitation(PrecipitationCurrent))
+			}
+			if tc.dp.Precipitation == nil {
+				if o.Precipitation(PrecipitationCurrent) != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation (current) to have "+
+						"no data, but got: %s", o.Precipitation(PrecipitationCurrent))
+				}
+			}
+			if tc.dp.Precipitation10m != nil && tc.dp.Precipitation10m.String() != o.Precipitation(Precipitation10Min) {
+				t.Errorf("ObservationLatestByStationID failed, expected precipitation (10m) string: %s, got: %s",
+					tc.dp.Precipitation10m.String(), o.Precipitation(Precipitation10Min))
+			}
+			if tc.dp.Precipitation10m == nil {
+				if o.Precipitation(Precipitation10Min) != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation (10m) to have "+
+						"no data, but got: %s", o.Precipitation(Precipitation10Min))
+				}
+			}
+			if tc.dp.Precipitation1h != nil && tc.dp.Precipitation1h.String() != o.Precipitation(Precipitation1Hour) {
+				t.Errorf("ObservationLatestByStationID failed, expected precipitation (1h) string: %s, got: %s",
+					tc.dp.Precipitation1h.String(), o.Precipitation(Precipitation1Hour))
+			}
+			if tc.dp.Precipitation1h == nil {
+				if o.Precipitation(Precipitation1Hour) != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation (1h) to have "+
+						"no data, but got: %s", o.Precipitation(Precipitation1Hour))
+				}
+			}
+			if tc.dp.Precipitation24h != nil && tc.dp.Precipitation24h.String() != o.Precipitation(Precipitation24Hours) {
+				t.Errorf("ObservationLatestByStationID failed, expected precipitation (24h) string: %s, got: %s",
+					tc.dp.Precipitation24h.String(), o.Precipitation(Precipitation24Hours))
+			}
+			if tc.dp.Precipitation24h == nil {
+				if o.Precipitation(Precipitation24Hours) != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation (24h) to have "+
+						"no data, but got: %s", o.Precipitation(Precipitation24Hours))
+				}
+			}
+			if tc.dp.Temperature != nil && tc.dp.Temperature.String() != o.Temperature() {
+				t.Errorf("ObservationLatestByStationID failed, expected temperature string: %s, got: %s",
+					tc.dp.Temperature.String(), o.Temperature())
+			}
+			if tc.dp.Temperature != nil && tc.dp.Temperature.Celsius() != o.Data.Temperature.Celsius() {
+				t.Errorf("ObservationLatestByStationID failed, expected temperature float: %f, got: %f",
+					tc.dp.Temperature.Celsius(), o.Data.Temperature.Celsius())
+			}
+			if tc.dp.Temperature != nil && tc.dp.Temperature.Fahrenheit() != o.Data.Temperature.Fahrenheit() {
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (F) float: %f, got: %f",
+					tc.dp.Temperature.Fahrenheit(), o.Data.Temperature.Fahrenheit())
 			}
 		})
 	}

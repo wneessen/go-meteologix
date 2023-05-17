@@ -10,8 +10,24 @@ import (
 	"time"
 )
 
-// DataNotAvailable is returned if a requested data point returned no data
-const DataNotAvailable = "data not available"
+const (
+	// DataNotAvailable is returned if a requested data point returned no data
+	DataNotAvailable = "data not available"
+	// ErrTimespanUnsupported is returned if a requrested timespan is not supported
+	// by the method
+	ErrTimespanUnsupported = "requested timespan is not supported"
+)
+
+const (
+	// PrecipitationCurrent is the current amount of precipitation
+	PrecipitationCurrent PrecipitationTimespan = iota
+	// Precipitation10Min is the amount of precipitation over the last 10 minutes
+	Precipitation10Min
+	// Precipitation1Hour is the amount of precipitation over the last hour
+	Precipitation1Hour
+	// Precipitation24Hours is the amount of precipitation over the last 24 hours
+	Precipitation24Hours
+)
 
 // Observation represents the observation API response for a Station
 type Observation struct {
@@ -86,6 +102,9 @@ type ObservationValueFloat struct {
 	DateTime time.Time `json:"dateTime"`
 	Value    float64   `json:"value"`
 }
+
+// PrecipitationTimespan is a type wrapper for an int type
+type PrecipitationTimespan int
 
 // ObservationLatestByStationID returns the latest Observation values from the
 // given Station
@@ -166,6 +185,41 @@ func (o Observation) TemperatureAtGroundMin() string {
 		return DataNotAvailable
 	}
 	return o.Data.Temperature5cmMin.String()
+}
+
+// HumidityRelative returns the relative humidity data point as formatted
+// in percent string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) HumidityRelative() string {
+	if o.Data.HumidityRelative == nil {
+		return DataNotAvailable
+	}
+	return o.Data.HumidityRelative.String()
+}
+
+// Precipitation returns the current amount of precipitation (mm) as formatted string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) Precipitation(ts PrecipitationTimespan) string {
+	var df *ObservationPrecipitation
+	switch ts {
+	case PrecipitationCurrent:
+		df = o.Data.Precipitation
+	case Precipitation10Min:
+		df = o.Data.Precipitation10m
+	case Precipitation1Hour:
+		df = o.Data.Precipitation1h
+	case Precipitation24Hours:
+		df = o.Data.Precipitation24h
+	default:
+		return ErrTimespanUnsupported
+	}
+
+	if df == nil {
+		return DataNotAvailable
+	}
+	return df.String()
 }
 
 // String satisfies the fmt.Stringer interface for the ObservationTemperature type
