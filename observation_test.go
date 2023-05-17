@@ -6,6 +6,7 @@ package meteologix
 
 import (
 	"fmt"
+	"math"
 	"testing"
 )
 
@@ -142,9 +143,23 @@ func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
 						"no data, but got: %s", o.Precipitation(Precipitation24Hours))
 				}
 			}
-			if tc.dp.Temperature != nil && tc.dp.Temperature.String() != o.Temperature() {
+			if tc.dp.Temperature != nil && tc.dp.Temperature.String() != o.TemperatureString() {
 				t.Errorf("ObservationLatestByStationID failed, expected temperature string: %s, got: %s",
-					tc.dp.Temperature.String(), o.Temperature())
+					tc.dp.Temperature.String(), o.TemperatureString())
+			}
+			if tc.dp.Temperature != nil && tc.dp.Temperature.Value != o.Temperature() {
+				t.Errorf("ObservationLatestByStationID failed, expected temperature value: %f, got: %f",
+					tc.dp.Temperature.Value, o.Temperature())
+			}
+			if tc.dp.Temperature == nil {
+				if o.TemperatureString() != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature to have "+
+						"no data, but got: %s", o.TemperatureString())
+				}
+				if !math.IsNaN(o.Temperature()) {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature to be NaN, "+
+						"but got: %f", o.Temperature())
+				}
 			}
 			if tc.dp.Temperature != nil && tc.dp.Temperature.Celsius() != o.Data.Temperature.Celsius() {
 				t.Errorf("ObservationLatestByStationID failed, expected temperature float: %f, got: %f",

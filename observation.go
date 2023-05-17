@@ -7,6 +7,7 @@ package meteologix
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"time"
 )
 
@@ -133,14 +134,24 @@ func (o Observation) Dewpoint() string {
 	return o.Data.DewPoint.String()
 }
 
-// Temperature returns the temperature data point as formatted string.
+// TemperatureString returns the temperature data point as formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) Temperature() string {
+func (o Observation) TemperatureString() string {
 	if o.Data.Temperature == nil {
 		return DataNotAvailable
 	}
 	return o.Data.Temperature.String()
+}
+
+// Temperature returns the temperature data point as float64 type
+// If the data point is not available in the Observation it will
+// return math.NaN
+func (o Observation) Temperature() float64 {
+	if o.Data.Temperature == nil {
+		return math.NaN()
+	}
+	return o.Data.Temperature.Value
 }
 
 // TemperatureAtGround returns the temperature at ground level (5cm)
