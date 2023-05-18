@@ -124,24 +124,24 @@ func (c *Client) ObservationLatestByStationID(si string) (Observation, error) {
 	return o, nil
 }
 
-// Dewpoint returns the dewpoint data point as formatted string.
+// Dewpoint returns the dewpoint data point as float64.
+// If the data point is not available in the Observation it will
+// return math.NaN
+func (o Observation) Dewpoint() float64 {
+	if o.Data.DewPoint == nil {
+		return math.NaN()
+	}
+	return o.Data.DewPoint.Value
+}
+
+// DewpointString returns the dewpoint data point as formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) Dewpoint() string {
+func (o Observation) DewpointString() string {
 	if o.Data.DewPoint == nil {
 		return DataNotAvailable
 	}
 	return o.Data.DewPoint.String()
-}
-
-// TemperatureString returns the temperature data point as formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) TemperatureString() string {
-	if o.Data.Temperature == nil {
-		return DataNotAvailable
-	}
-	return o.Data.Temperature.String()
 }
 
 // Temperature returns the temperature data point as float64 type
@@ -152,6 +152,16 @@ func (o Observation) Temperature() float64 {
 		return math.NaN()
 	}
 	return o.Data.Temperature.Value
+}
+
+// TemperatureString returns the temperature data point as formatted string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) TemperatureString() string {
+	if o.Data.Temperature == nil {
+		return DataNotAvailable
+	}
+	return o.Data.Temperature.String()
 }
 
 // TemperatureAtGround returns the temperature at ground level (5cm)
@@ -198,21 +208,55 @@ func (o Observation) TemperatureAtGroundMin() string {
 	return o.Data.Temperature5cmMin.String()
 }
 
-// HumidityRelative returns the relative humidity data point as formatted
+// HumidityRelative returns the relative humidity data point as float64.
+// If the data point is not available or the timespan is not supported in
+// the Observation it will return math.NaN
+func (o Observation) HumidityRelative() float64 {
+	if o.Data.HumidityRelative == nil {
+		return math.NaN()
+	}
+	return o.Data.HumidityRelative.Value
+}
+
+// HumidityRelativeString returns the relative humidity data point as formatted
 // in percent string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) HumidityRelative() string {
+func (o Observation) HumidityRelativeString() string {
 	if o.Data.HumidityRelative == nil {
 		return DataNotAvailable
 	}
 	return o.Data.HumidityRelative.String()
 }
 
-// Precipitation returns the current amount of precipitation (mm) as formatted string.
+// Precipitation returns the current amount of precipitation (mm) as float64.
+// If the data point is not available or the timespan is not supported in
+// the Observation it will return math.NaN
+func (o Observation) Precipitation(ts PrecipitationTimespan) float64 {
+	var df *ObservationPrecipitation
+	switch ts {
+	case PrecipitationCurrent:
+		df = o.Data.Precipitation
+	case Precipitation10Min:
+		df = o.Data.Precipitation10m
+	case Precipitation1Hour:
+		df = o.Data.Precipitation1h
+	case Precipitation24Hours:
+		df = o.Data.Precipitation24h
+	default:
+		return math.NaN()
+	}
+
+	if df == nil {
+		return math.NaN()
+	}
+	return df.Value
+}
+
+// PrecipitationString returns the current amount of precipitation (mm) as formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) Precipitation(ts PrecipitationTimespan) string {
+func (o Observation) PrecipitationString(ts PrecipitationTimespan) string {
 	var df *ObservationPrecipitation
 	switch ts {
 	case PrecipitationCurrent:
