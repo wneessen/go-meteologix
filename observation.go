@@ -165,32 +165,63 @@ func (o Observation) TemperatureString() string {
 }
 
 // TemperatureAtGround returns the temperature at ground level (5cm)
+// data point as float64.
+// If the data point is not available in the Observation it will
+// return math.NaN
+func (o Observation) TemperatureAtGround() float64 {
+	if o.Data.Temperature5cm == nil {
+		return math.NaN()
+	}
+	return o.Data.Temperature5cm.Value
+}
+
+// TemperatureAtGroundString returns the temperature at ground level (5cm)
 // data point as formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) TemperatureAtGround() string {
+func (o Observation) TemperatureAtGroundString() string {
 	if o.Data.Temperature5cm == nil {
 		return DataNotAvailable
 	}
 	return o.Data.Temperature5cm.String()
 }
 
-// TemperatureMin returns the minimum temperature so far data point as
+// TemperatureMin returns the minimum temperature so far data point as float64.
+// If the data point is not available in the Observation it will
+// return math.NaN
+func (o Observation) TemperatureMin() float64 {
+	if o.Data.TemperatureMin == nil {
+		return math.NaN()
+	}
+	return o.Data.TemperatureMin.Value
+}
+
+// TemperatureMinString returns the minimum temperature so far data point as
 // formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) TemperatureMin() string {
+func (o Observation) TemperatureMinString() string {
 	if o.Data.TemperatureMin == nil {
 		return DataNotAvailable
 	}
 	return o.Data.TemperatureMin.String()
 }
 
-// TemperatureMax returns the maximum temperature so far data point as
+// TemperatureMax returns the maximum temperature so far data point as float64.
+// If the data point is not available in the Observation it will
+// return math.NaN
+func (o Observation) TemperatureMax() float64 {
+	if o.Data.TemperatureMax == nil {
+		return math.NaN()
+	}
+	return o.Data.TemperatureMax.Value
+}
+
+// TemperatureMaxString returns the maximum temperature so far data point as
 // formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) TemperatureMax() string {
+func (o Observation) TemperatureMaxString() string {
 	if o.Data.TemperatureMax == nil {
 		return DataNotAvailable
 	}
@@ -198,10 +229,21 @@ func (o Observation) TemperatureMax() string {
 }
 
 // TemperatureAtGroundMin returns the minimum temperature so far
+// at ground level (5cm) data point as float64
+// If the data point is not available in the Observation it will
+// return math.NaN
+func (o Observation) TemperatureAtGroundMin() float64 {
+	if o.Data.Temperature5cmMin == nil {
+		return math.NaN()
+	}
+	return o.Data.Temperature5cmMin.Value
+}
+
+// TemperatureAtGroundMinString returns the minimum temperature so far
 // at ground level (5cm) data point as formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
-func (o Observation) TemperatureAtGroundMin() string {
+func (o Observation) TemperatureAtGroundMinString() string {
 	if o.Data.Temperature5cmMin == nil {
 		return DataNotAvailable
 	}
@@ -209,8 +251,8 @@ func (o Observation) TemperatureAtGroundMin() string {
 }
 
 // HumidityRelative returns the relative humidity data point as float64.
-// If the data point is not available or the timespan is not supported in
-// the Observation it will return math.NaN
+// If the data point is not available in the Observation it will
+// return math.NaN
 func (o Observation) HumidityRelative() float64 {
 	if o.Data.HumidityRelative == nil {
 		return math.NaN()
@@ -231,8 +273,8 @@ func (o Observation) HumidityRelativeString() string {
 
 // PressureMSL returns the relative pressure at mean seal level data point
 // as float64.
-// If the data point is not available or the timespan is not supported in
-// the Observation it will return math.NaN
+// If the data point is not available in the Observation it will
+// return math.NaN
 func (o Observation) PressureMSL() float64 {
 	if o.Data.PressureMSL == nil {
 		return math.NaN()
@@ -275,7 +317,8 @@ func (o Observation) Precipitation(ts PrecipitationTimespan) float64 {
 	return df.Value
 }
 
-// PrecipitationString returns the current amount of precipitation (mm) as formatted string.
+// PrecipitationString returns the current amount of precipitation (mm) as
+// formatted string.
 // If the data point is not available in the Observation it will return a
 // corresponding DataNotAvailable string
 func (o Observation) PrecipitationString(ts PrecipitationTimespan) string {
