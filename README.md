@@ -60,3 +60,61 @@ func main() {
 		gl.Longitude)
 }
 ```
+
+### Lookup stations at a specific geolocation
+
+This program makes use of the GeoLocation support in the package. It looks up the GeoLocation
+of the location in question and queries the Kachelmann API for the station nearest to that
+location. The returned list of stations is sorted by distance to the provided GeoLocation. In
+our example we will return the first station in that list.
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/wneessen/go-meteologix"
+)
+
+func main() {
+	c := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
+	sl, err := c.StationSearchByLocation("Berlin, Germany")
+	if err != nil {
+		fmt.Printf("station lookup failed: %s", err)
+		os.Exit(1)
+	}
+	if len(sl) > 0 {
+		fmt.Printf("Station no. 1: %+v", sl[0])
+	}
+}
+```
+
+### Get latest station observation by station ID
+
+This program takes a station ID and looks up the latest station observation data and returns
+the Observation type. This type then has lots of methods to access the observation data. In
+our example we will print out the formatted values for the current temperature and the dewpoint.
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/wneessen/go-meteologix"
+)
+
+func main() {
+	c := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
+	o, err := c.ObservationLatestByStationID("H744")
+	if err != nil {
+		fmt.Printf("station lookup failed: %s", err)
+		os.Exit(1)
+	}
+	fmt.Printf("Temperature at station: %s\n", o.TemperatureString())
+	if o.Data.DewPoint != nil {
+		fmt.Printf("Dewpoint in Fahrenheit: %s\n", o.Data.DewPoint.FahrenheitString())
+	}
+}
+```
