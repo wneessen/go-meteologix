@@ -26,6 +26,7 @@ func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
 		{"Koeln-Botanischer Garten", "199942", 44, 50.9667, 6.9667},
 		{"Koeln-Stammheim", "H744", 43, 50.9833, 6.9833},
 		{"All data fields", "all", 123, 1.234, -1.234},
+		{"No data fields", "none", 123, 1.234, -1.234},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -70,6 +71,7 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 		{"K-Botanischer Garten", "199942", &ObservationTemperature{Value: 10.1}},
 		{"K-Stammheim", "H744", &ObservationTemperature{Value: 9.7}},
 		{"All data fields", "all", &ObservationTemperature{Value: 6.5}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -117,6 +119,7 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 		{"K-Botanischer Garten", "199942", &ObservationHumidity{Value: 80}},
 		{"K-Stammheim", "H744", &ObservationHumidity{Value: 73}},
 		{"All data fields", "all", &ObservationHumidity{Value: 72}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -164,6 +167,7 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
 		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
 		{"All data fields", "all", &ObservationPrecipitation{Value: 0.1}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -212,6 +216,7 @@ func TestClient_ObservationLatestByStationID_Precipitation10m(t *testing.T) {
 		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
 		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
 		{"All data fields", "all", &ObservationPrecipitation{Value: 0.5}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -260,6 +265,7 @@ func TestClient_ObservationLatestByStationID_Precipitation1h(t *testing.T) {
 		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
 		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
 		{"All data fields", "all", &ObservationPrecipitation{Value: 10.3}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -308,6 +314,7 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
 		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
 		{"All data fields", "all", &ObservationPrecipitation{Value: 32.12}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -344,6 +351,28 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 	}
 }
 
+func TestClient_ObservationLatestByStationID_PrecipitationUnknown(t *testing.T) {
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	o, err := c.ObservationLatestByStationID("all")
+	if err != nil {
+		t.Errorf("ObservationLatestByStationID with station %s "+
+			"failed: %s", "all", err)
+		return
+	}
+	if o.PrecipitationString(999) != ErrTimespanUnsupported {
+		t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+			"to have no data, but got: %s", o.PrecipitationString(999))
+	}
+	if !math.IsNaN(o.Precipitation(999)) {
+		t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+			"to return NaN, but got: %f", o.Precipitation(999))
+	}
+}
+
 func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 	tt := []struct {
 		// Test name
@@ -356,6 +385,7 @@ func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 		{"K-Botanischer Garten", "199942", &ObservationTemperature{Value: 13.4}},
 		{"K-Stammheim", "H744", &ObservationTemperature{Value: 14.4}},
 		{"All data fields", "all", &ObservationTemperature{Value: 10.8}},
+		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -385,6 +415,54 @@ func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 				if !math.IsNaN(o.Temperature()) {
 					t.Errorf("ObservationLatestByStationID failed, expected temperature "+
 						"to return NaN, but got: %f", o.Temperature())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation dewpoint
+		p *ObservationPressure
+	}{
+		{"K-Botanischer Garten", "199942", &ObservationPressure{Value: 1015.5}},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationPressure{Value: 1026.3}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s failed: %s", tc.sid, err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.PresureMSLString() {
+				t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
+					"string: %s, got: %s", tc.p.String(), o.PresureMSLString())
+			}
+			if tc.p != nil && tc.p.Value != o.PressureMSL() {
+				t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
+					"float: %f, got: %f", tc.p.Value, o.PressureMSL())
+			}
+			if tc.p == nil {
+				if o.PresureMSLString() != DataNotAvailable {
+					t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
+						"to have no data, but got: %s", o.PresureMSLString())
+				}
+				if !math.IsNaN(o.PressureMSL()) {
+					t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
+						"to return NaN, but got: %f", o.PressureMSL())
 				}
 			}
 		})

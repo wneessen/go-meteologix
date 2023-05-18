@@ -229,6 +229,28 @@ func (o Observation) HumidityRelativeString() string {
 	return o.Data.HumidityRelative.String()
 }
 
+// PressureMSL returns the relative pressure at mean seal level data point
+// as float64.
+// If the data point is not available or the timespan is not supported in
+// the Observation it will return math.NaN
+func (o Observation) PressureMSL() float64 {
+	if o.Data.PressureMSL == nil {
+		return math.NaN()
+	}
+	return o.Data.PressureMSL.Value
+}
+
+// PresureMSLString returns the relative pressure at mean seal level data point
+// as formatted in percent string.
+// If the data point is not available in the Observation it will return a
+// corresponding DataNotAvailable string
+func (o Observation) PresureMSLString() string {
+	if o.Data.PressureMSL == nil {
+		return DataNotAvailable
+	}
+	return o.Data.PressureMSL.String()
+}
+
 // Precipitation returns the current amount of precipitation (mm) as float64.
 // If the data point is not available or the timespan is not supported in
 // the Observation it will return math.NaN
