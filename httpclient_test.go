@@ -5,7 +5,9 @@
 package meteologix
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"testing"
 )
@@ -50,6 +52,9 @@ func TestHTTPClient_Get(t *testing.T) {
 			u := fmt.Sprintf("%s/%d", BaseURL, tc.s)
 			r, err := hc.Get(u)
 			if err != nil && !tc.sf {
+				if errors.Is(err, context.DeadlineExceeded) {
+					t.Skipf("HTTP timed out, website probably not reachable")
+				}
 				t.Errorf("HTTPClient Get request failed: %s", err)
 				return
 			}

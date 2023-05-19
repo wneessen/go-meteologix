@@ -7,7 +7,6 @@ package meteologix
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 	"time"
 )
 
@@ -17,6 +16,27 @@ const (
 	// ErrTimespanUnsupported is returned if a requrested timespan is not supported
 	// by the method
 	ErrTimespanUnsupported = "requested timespan is not supported"
+)
+
+const (
+	// FieldDewpoint represents the Dewpoint data point
+	FieldDewpoint ObservationFieldName = iota
+	// FieldTemperature represents the Temperature data point
+	FieldTemperature
+	// FieldTemperatureAtGround represents the TemperatureAtGround data point
+	FieldTemperatureAtGround
+	// FieldTemperatureMax represents the TemperatureMax data point
+	FieldTemperatureMax
+	// FieldTemperatureMin represents the TemperatureMin data point
+	FieldTemperatureMin
+	// FieldTemperatureAtGroundMin represents the TemperatureAtGroundMin data point
+	FieldTemperatureAtGroundMin
+	// FieldHumidityRelative represents the HumidityRelative data point
+	FieldHumidityRelative
+	// FieldPressureMSL represents the PressureMSL data point
+	FieldPressureMSL
+	// FieldPressureQFE represents the PressureQFE data point
+	FieldPressureQFE
 )
 
 const (
@@ -53,9 +73,9 @@ type Observation struct {
 // is not returned for the requested Station.
 type ObservationData struct {
 	// DewPoint represents the dewpoint in °C
-	DewPoint *ObservationTemperature `json:"dewpoint,omitempty"`
+	DewPoint *ObservationValue `json:"dewpoint,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
-	HumidityRelative *ObservationHumidity `json:"humidityRelative,omitempty"`
+	HumidityRelative *ObservationValue `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
 	Precipitation *ObservationPrecipitation `json:"prec"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
@@ -65,44 +85,57 @@ type ObservationData struct {
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
 	Precipitation24h *ObservationPrecipitation `json:"prec24h"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
-	PressureMSL *ObservationPressure `json:"pressureMsl"`
+	PressureMSL *ObservationValue `json:"pressureMsl"`
 	// PressureMSL represents the pressure at station level (QFE) in hPa
-	PressureQFE *ObservationPressure `json:"pressure"`
+	PressureQFE *ObservationValue `json:"pressure"`
 	// Temperature represents the temperature in °C
-	Temperature *ObservationTemperature `json:"temp,omitempty"`
+	Temperature *ObservationValue `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
-	TemperatureMax *ObservationTemperature `json:"tempMax,omitempty"`
+	TemperatureMax *ObservationValue `json:"tempMax,omitempty"`
 	// TemperatureMin represents the minimum temperature in °C
-	TemperatureMin *ObservationTemperature `json:"tempMin,omitempty"`
+	TemperatureMin *ObservationValue `json:"tempMin,omitempty"`
 	// Temperature5cm represents the temperature 5cm above ground in °C
-	Temperature5cm *ObservationTemperature `json:"temp5cm,omitempty"`
+	Temperature5cm *ObservationValue `json:"temp5cm,omitempty"`
 	// Temperature5cm represents the minimum temperature 5cm above
 	// ground in °C
-	Temperature5cmMin *ObservationTemperature `json:"temp5cmMin,omitempty"`
+	Temperature5cmMin *ObservationValue `json:"temp5cmMin,omitempty"`
 }
 
-// ObservationTemperature is a type wrapper for a temperature value
-// in an Observation
-type ObservationTemperature ObservationValueFloat
-
-// ObservationHumidity is a type wrapper for a humidity value
-// in an Observation
-type ObservationHumidity ObservationValueFloat
-
-// ObservationPrecipitation is a type wrapper for a precipitation value
-// in an Observation
-type ObservationPrecipitation ObservationValueFloat
-
-// ObservationPressure is a type wrapper for a pressure value
-// in an Observation
-type ObservationPressure ObservationValueFloat
-
-// ObservationValueFloat represents a observation value returning a
-// Float type
-type ObservationValueFloat struct {
+// ObservationValue is the JSON structure of the Observation data that is
+// returned by the API endpoints
+type ObservationValue struct {
 	DateTime time.Time `json:"dateTime"`
 	Value    float64   `json:"value"`
 }
+
+// ObservationField is a type that holds Observation data and can be wrapped
+// into other types to provide type specific receiver methods
+type ObservationField struct {
+	dt time.Time
+	n  ObservationFieldName
+	na bool
+	v  float64
+}
+
+// ObservationFieldName is a type wrapper for an int for field names
+// of an Observation
+type ObservationFieldName int
+
+// ObservationTemperature is a type wrapper of an ObservationField for
+// holding temperature values
+type ObservationTemperature ObservationField
+
+// ObservationHumidity is a type wrapper of an ObservationField for
+// holding humidity values
+type ObservationHumidity ObservationField
+
+// ObservationPrecipitation is a type wrapper for a precipitation value
+// in an Observation
+type ObservationPrecipitation ObservationValue
+
+// ObservationPressure is a type wrapper for a pressure value
+// in an Observation
+type ObservationPressure ObservationField
 
 // PrecipitationTimespan is a type wrapper for an int type
 type PrecipitationTimespan int
@@ -124,174 +157,148 @@ func (c *Client) ObservationLatestByStationID(si string) (Observation, error) {
 	return o, nil
 }
 
-// Dewpoint returns the dewpoint data point as float64.
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) Dewpoint() float64 {
+// Dewpoint returns the dewpoint data point as ObservationTemperature
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) Dewpoint() ObservationTemperature {
 	if o.Data.DewPoint == nil {
-		return math.NaN()
+		return ObservationTemperature{na: true}
 	}
-	return o.Data.DewPoint.Value
+	return ObservationTemperature{
+		dt: o.Data.DewPoint.DateTime,
+		n:  FieldDewpoint,
+		v:  o.Data.DewPoint.Value,
+	}
 }
 
-// DewpointString returns the dewpoint data point as formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) DewpointString() string {
-	if o.Data.DewPoint == nil {
-		return DataNotAvailable
-	}
-	return o.Data.DewPoint.String()
-}
-
-// Temperature returns the temperature data point as float64 type
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) Temperature() float64 {
+// Temperature returns the temperature data point as ObservationTemperature.
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) Temperature() ObservationTemperature {
 	if o.Data.Temperature == nil {
-		return math.NaN()
+		return ObservationTemperature{na: true}
 	}
-	return o.Data.Temperature.Value
-}
-
-// TemperatureString returns the temperature data point as formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) TemperatureString() string {
-	if o.Data.Temperature == nil {
-		return DataNotAvailable
+	return ObservationTemperature{
+		dt: o.Data.Temperature.DateTime,
+		n:  FieldTemperature,
+		v:  o.Data.Temperature.Value,
 	}
-	return o.Data.Temperature.String()
 }
 
 // TemperatureAtGround returns the temperature at ground level (5cm)
-// data point as float64.
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) TemperatureAtGround() float64 {
+// data point as ObservationTemperature.
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) TemperatureAtGround() ObservationTemperature {
 	if o.Data.Temperature5cm == nil {
-		return math.NaN()
+		return ObservationTemperature{na: true}
 	}
-	return o.Data.Temperature5cm.Value
+	return ObservationTemperature{
+		dt: o.Data.Temperature5cm.DateTime,
+		n:  FieldTemperatureAtGround,
+		v:  o.Data.Temperature5cm.Value,
+	}
 }
 
-// TemperatureAtGroundString returns the temperature at ground level (5cm)
-// data point as formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) TemperatureAtGroundString() string {
-	if o.Data.Temperature5cm == nil {
-		return DataNotAvailable
-	}
-	return o.Data.Temperature5cm.String()
-}
-
-// TemperatureMin returns the minimum temperature so far data point as float64.
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) TemperatureMin() float64 {
-	if o.Data.TemperatureMin == nil {
-		return math.NaN()
-	}
-	return o.Data.TemperatureMin.Value
-}
-
-// TemperatureMinString returns the minimum temperature so far data point as
-// formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) TemperatureMinString() string {
-	if o.Data.TemperatureMin == nil {
-		return DataNotAvailable
-	}
-	return o.Data.TemperatureMin.String()
-}
-
-// TemperatureMax returns the maximum temperature so far data point as float64.
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) TemperatureMax() float64 {
+// TemperatureMax returns the maximum temperature so far data point as
+// ObservationTemperature.
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) TemperatureMax() ObservationTemperature {
 	if o.Data.TemperatureMax == nil {
-		return math.NaN()
+		return ObservationTemperature{na: true}
 	}
-	return o.Data.TemperatureMax.Value
+	return ObservationTemperature{
+		dt: o.Data.TemperatureMax.DateTime,
+		n:  FieldTemperatureMax,
+		v:  o.Data.TemperatureMax.Value,
+	}
 }
 
-// TemperatureMaxString returns the maximum temperature so far data point as
-// formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) TemperatureMaxString() string {
-	if o.Data.TemperatureMax == nil {
-		return DataNotAvailable
+// TemperatureMin returns the minimum temperature so far data point as
+// ObservationTemperature.
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) TemperatureMin() ObservationTemperature {
+	if o.Data.TemperatureMin == nil {
+		return ObservationTemperature{na: true}
 	}
-	return o.Data.TemperatureMax.String()
+	return ObservationTemperature{
+		dt: o.Data.TemperatureMin.DateTime,
+		n:  FieldTemperatureMin,
+		v:  o.Data.TemperatureMin.Value,
+	}
 }
 
 // TemperatureAtGroundMin returns the minimum temperature so far
-// at ground level (5cm) data point as float64
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) TemperatureAtGroundMin() float64 {
+// at ground level (5cm) data point as ObservationTemperature
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) TemperatureAtGroundMin() ObservationTemperature {
 	if o.Data.Temperature5cmMin == nil {
-		return math.NaN()
+		return ObservationTemperature{na: true}
 	}
-	return o.Data.Temperature5cmMin.Value
-}
-
-// TemperatureAtGroundMinString returns the minimum temperature so far
-// at ground level (5cm) data point as formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) TemperatureAtGroundMinString() string {
-	if o.Data.Temperature5cmMin == nil {
-		return DataNotAvailable
+	return ObservationTemperature{
+		dt: o.Data.Temperature5cmMin.DateTime,
+		n:  FieldTemperatureAtGroundMin,
+		v:  o.Data.Temperature5cmMin.Value,
 	}
-	return o.Data.Temperature5cmMin.String()
 }
 
 // HumidityRelative returns the relative humidity data point as float64.
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) HumidityRelative() float64 {
+// If the data point is not available in the Observation it will return
+// ObservationHumidity in which the "not available" field will be
+// true.
+func (o Observation) HumidityRelative() ObservationHumidity {
 	if o.Data.HumidityRelative == nil {
-		return math.NaN()
+		return ObservationHumidity{na: true}
 	}
-	return o.Data.HumidityRelative.Value
-}
-
-// HumidityRelativeString returns the relative humidity data point as formatted
-// in percent string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) HumidityRelativeString() string {
-	if o.Data.HumidityRelative == nil {
-		return DataNotAvailable
+	return ObservationHumidity{
+		dt: o.Data.HumidityRelative.DateTime,
+		n:  FieldHumidityRelative,
+		v:  o.Data.HumidityRelative.Value,
 	}
-	return o.Data.HumidityRelative.String()
 }
 
 // PressureMSL returns the relative pressure at mean seal level data point
-// as float64.
-// If the data point is not available in the Observation it will
-// return math.NaN
-func (o Observation) PressureMSL() float64 {
+// as ObservationPressure.
+// If the data point is not available in the Observation it will return
+// ObservationPressure in which the "not available" field will be
+// true.
+func (o Observation) PressureMSL() ObservationPressure {
 	if o.Data.PressureMSL == nil {
-		return math.NaN()
+		return ObservationPressure{na: true}
 	}
-	return o.Data.PressureMSL.Value
+	return ObservationPressure{
+		dt: o.Data.PressureMSL.DateTime,
+		n:  FieldPressureMSL,
+		v:  o.Data.PressureMSL.Value,
+	}
 }
 
-// PresureMSLString returns the relative pressure at mean seal level data point
-// as formatted in percent string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) PresureMSLString() string {
-	if o.Data.PressureMSL == nil {
-		return DataNotAvailable
+// PressureQFE returns the relative pressure at mean seal level data point
+// as ObservationPressure.
+// If the data point is not available in the Observation it will return
+// ObservationPressure in which the "not available" field will be
+// true.
+func (o Observation) PressureQFE() ObservationPressure {
+	if o.Data.PressureQFE == nil {
+		return ObservationPressure{na: true}
 	}
-	return o.Data.PressureMSL.String()
+	return ObservationPressure{
+		dt: o.Data.PressureQFE.DateTime,
+		n:  FieldPressureQFE,
+		v:  o.Data.PressureQFE.Value,
+	}
 }
+
+/*
 
 // Precipitation returns the current amount of precipitation (mm) as float64.
 // If the data point is not available or the timespan is not supported in
@@ -342,18 +349,33 @@ func (o Observation) PrecipitationString(ts PrecipitationTimespan) string {
 	return df.String()
 }
 
-// String satisfies the fmt.Stringer interface for the ObservationTemperature type
-func (t ObservationTemperature) String() string {
-	return fmt.Sprintf("%.1f°C", t.Value)
+*/
+
+// IsAvailable returns true if an ObservationTemperature value was
+// available at time of query
+func (t ObservationTemperature) IsAvailable() bool {
+	return !t.na
 }
 
-func (t ObservationTemperature) Timestamp() time.Time {
-	return t.DateTime
+// Datetime returns true if an ObservationTemperature value was
+// available at time of query
+func (t ObservationTemperature) Datetime() time.Time {
+	return t.dt
+}
+
+// Value returns the float64 value of an ObservationTemperature
+func (t ObservationTemperature) Value() float64 {
+	return t.v
+}
+
+// String satisfies the fmt.Stringer interface for the ObservationTemperature type
+func (t ObservationTemperature) String() string {
+	return fmt.Sprintf("%.1f°C", t.v)
 }
 
 // Celsius returns the ObservationTemperature value in Celsius
 func (t ObservationTemperature) Celsius() float64 {
-	return t.Value
+	return t.v
 }
 
 // CelsiusString returns the ObservationTemperature value as Celsius
@@ -366,7 +388,7 @@ func (t ObservationTemperature) CelsiusString() string {
 
 // Fahrenheit returns the ObservationTemperature value in Fahrenheit
 func (t ObservationTemperature) Fahrenheit() float64 {
-	return t.Value*9/5 + 32
+	return t.v*9/5 + 32
 }
 
 // FahrenheitString returns the ObservationTemperature value as Fahrenheit
@@ -375,9 +397,26 @@ func (t ObservationTemperature) FahrenheitString() string {
 	return fmt.Sprintf("%.1f°F", t.Fahrenheit())
 }
 
+// IsAvailable returns true if an ObservationHumidity value was
+// available at time of query
+func (t ObservationHumidity) IsAvailable() bool {
+	return !t.na
+}
+
+// Datetime returns true if an ObservationHumidity value was
+// available at time of query
+func (t ObservationHumidity) Datetime() time.Time {
+	return t.dt
+}
+
 // String satisfies the fmt.Stringer interface for the ObservationHumidity type
 func (t ObservationHumidity) String() string {
-	return fmt.Sprintf("%.1f%%", t.Value)
+	return fmt.Sprintf("%.1f%%", t.v)
+}
+
+// Value returns the float64 value of an ObservationHumidity
+func (t ObservationHumidity) Value() float64 {
+	return t.v
 }
 
 // String satisfies the fmt.Stringer interface for the ObservationPrecipitation type
@@ -385,7 +424,24 @@ func (t ObservationPrecipitation) String() string {
 	return fmt.Sprintf("%.1fmm", t.Value)
 }
 
+// IsAvailable returns true if an ObservationPressure value was
+// available at time of query
+func (t ObservationPressure) IsAvailable() bool {
+	return !t.na
+}
+
+// Datetime returns true if an ObservationPressure value was
+// available at time of query
+func (t ObservationPressure) Datetime() time.Time {
+	return t.dt
+}
+
 // String satisfies the fmt.Stringer interface for the ObservationPressure type
 func (t ObservationPressure) String() string {
-	return fmt.Sprintf("%.1fhPa", t.Value)
+	return fmt.Sprintf("%.1fhPa", t.v)
+}
+
+// Value returns the float64 value of an ObservationPressure
+func (t ObservationPressure) Value() float64 {
+	return t.v
 }
