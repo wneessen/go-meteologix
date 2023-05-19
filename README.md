@@ -7,8 +7,6 @@ SPDX-License-Identifier: CC0-1.0
 # go-meteologix
 Go bindings to the Meteologix/Kachelmann-Wetter weather API
 
-https://discord.gg/CTpX8j4Z
-
 [![GoDoc](https://godoc.org/github.com/wneessen/go-mail?status.svg)](https://pkg.go.dev/github.com/wneessen/go-meteologix)
 [![codecov](https://codecov.io/gh/wneessen/go-meteologix/branch/main/graph/badge.svg?token=W4QI1RMR4L)](https://codecov.io/gh/wneessen/go-meteologix)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wneessen/go-meteologix)](https://goreportcard.com/report/github.com/wneessen/go-meteologix)
