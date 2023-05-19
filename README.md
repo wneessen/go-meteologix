@@ -7,9 +7,12 @@ SPDX-License-Identifier: CC0-1.0
 # go-meteologix
 Go bindings to the Meteologix/Kachelmann-Wetter weather API
 
+https://discord.gg/CTpX8j4Z
+
 [![GoDoc](https://godoc.org/github.com/wneessen/go-mail?status.svg)](https://pkg.go.dev/github.com/wneessen/go-meteologix)
 [![codecov](https://codecov.io/gh/wneessen/go-meteologix/branch/main/graph/badge.svg?token=W4QI1RMR4L)](https://codecov.io/gh/wneessen/go-meteologix)
 [![Go Report Card](https://goreportcard.com/badge/github.com/wneessen/go-meteologix)](https://goreportcard.com/report/github.com/wneessen/go-meteologix)
+[![#go-meteologix on Discord](https://img.shields.io/badge/Discord-%23go–meteologix-blue.svg)](https://discord.gg/CTpX8j4Z)
 [![REUSE status](https://api.reuse.software/badge/github.com/wneessen/go-meteologix)](https://api.reuse.software/info/github.com/wneessen/go-meteologix)
 <a href="https://ko-fi.com/D1D24V9IX"><img src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbed8a4ae2b88347c06c923_BuyMeACoffee_blue.png" height="20" alt="buy ma a coffee"></a>
 
