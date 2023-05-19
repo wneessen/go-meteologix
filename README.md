@@ -115,9 +115,9 @@ func main() {
 		fmt.Printf("station lookup failed: %s", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Temperature at station: %s\n", o.TemperatureString())
-	if o.Data.DewPoint != nil {
-		fmt.Printf("Dewpoint in Fahrenheit: %s\n", o.Data.DewPoint.FahrenheitString())
+	fmt.Printf("Temperature at station: %s\n", o.Temperature())
+	if o.Dewpoint().IsAvailable() {
+		fmt.Printf("Dewpoint in Fahrenheit: %s\n", o.Dewpoint().FahrenheitString())
 	}
 }
 ```

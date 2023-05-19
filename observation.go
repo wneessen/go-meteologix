@@ -11,14 +11,6 @@ import (
 )
 
 const (
-	// DataNotAvailable is returned if a requested data point returned no data
-	DataNotAvailable = "data not available"
-	// ErrTimespanUnsupported is returned if a requrested timespan is not supported
-	// by the method
-	ErrTimespanUnsupported = "requested timespan is not supported"
-)
-
-const (
 	// FieldDewpoint represents the Dewpoint data point
 	FieldDewpoint ObservationFieldName = iota
 	// FieldTemperature represents the Temperature data point
@@ -37,6 +29,14 @@ const (
 	FieldPressureMSL
 	// FieldPressureQFE represents the PressureQFE data point
 	FieldPressureQFE
+	// FieldPrecipitation represents the Precipitation data point
+	FieldPrecipitation
+	// FieldPrecipitation10m represents the Precipitation10m data point
+	FieldPrecipitation10m
+	// FieldPrecipitation1h represents the Precipitation1h data point
+	FieldPrecipitation1h
+	// FieldPrecipitation24h represents the Precipitation24h data point
+	FieldPrecipitation24h
 )
 
 const (
@@ -77,13 +77,13 @@ type ObservationData struct {
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *ObservationValue `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
-	Precipitation *ObservationPrecipitation `json:"prec"`
+	Precipitation *ObservationValue `json:"prec"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
-	Precipitation10m *ObservationPrecipitation `json:"prec10m"`
+	Precipitation10m *ObservationValue `json:"prec10m"`
 	// Precipitation1h represents the amount of precipitation over the last hour
-	Precipitation1h *ObservationPrecipitation `json:"prec1h"`
+	Precipitation1h *ObservationValue `json:"prec1h"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
-	Precipitation24h *ObservationPrecipitation `json:"prec24h"`
+	Precipitation24h *ObservationValue `json:"prec24h"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
 	PressureMSL *ObservationValue `json:"pressureMsl"`
 	// PressureMSL represents the pressure at station level (QFE) in hPa
@@ -131,7 +131,7 @@ type ObservationHumidity ObservationField
 
 // ObservationPrecipitation is a type wrapper for a precipitation value
 // in an Observation
-type ObservationPrecipitation ObservationValue
+type ObservationPrecipitation ObservationField
 
 // ObservationPressure is a type wrapper for a pressure value
 // in an Observation
@@ -298,58 +298,40 @@ func (o Observation) PressureQFE() ObservationPressure {
 	}
 }
 
-/*
-
-// Precipitation returns the current amount of precipitation (mm) as float64.
-// If the data point is not available or the timespan is not supported in
-// the Observation it will return math.NaN
-func (o Observation) Precipitation(ts PrecipitationTimespan) float64 {
-	var df *ObservationPrecipitation
+// Precipitation returns the current amount of precipitation (mm) as
+// ObservationPrecipitation
+// If the data point is not available in the Observation it will return
+// ObservationPrecipitation in which the "not available" field will be
+// true.
+func (o Observation) Precipitation(ts PrecipitationTimespan) ObservationPrecipitation {
+	var df *ObservationValue
+	var fn ObservationFieldName
 	switch ts {
 	case PrecipitationCurrent:
 		df = o.Data.Precipitation
+		fn = FieldPrecipitation
 	case Precipitation10Min:
 		df = o.Data.Precipitation10m
+		fn = FieldPrecipitation10m
 	case Precipitation1Hour:
 		df = o.Data.Precipitation1h
+		fn = FieldPrecipitation1h
 	case Precipitation24Hours:
 		df = o.Data.Precipitation24h
+		fn = FieldPrecipitation24h
 	default:
-		return math.NaN()
+		return ObservationPrecipitation{na: true}
 	}
 
 	if df == nil {
-		return math.NaN()
+		return ObservationPrecipitation{na: true}
 	}
-	return df.Value
+	return ObservationPrecipitation{
+		dt: df.DateTime,
+		n:  fn,
+		v:  df.Value,
+	}
 }
-
-// PrecipitationString returns the current amount of precipitation (mm) as
-// formatted string.
-// If the data point is not available in the Observation it will return a
-// corresponding DataNotAvailable string
-func (o Observation) PrecipitationString(ts PrecipitationTimespan) string {
-	var df *ObservationPrecipitation
-	switch ts {
-	case PrecipitationCurrent:
-		df = o.Data.Precipitation
-	case Precipitation10Min:
-		df = o.Data.Precipitation10m
-	case Precipitation1Hour:
-		df = o.Data.Precipitation1h
-	case Precipitation24Hours:
-		df = o.Data.Precipitation24h
-	default:
-		return ErrTimespanUnsupported
-	}
-
-	if df == nil {
-		return DataNotAvailable
-	}
-	return df.String()
-}
-
-*/
 
 // IsAvailable returns true if an ObservationTemperature value was
 // available at time of query
@@ -419,9 +401,26 @@ func (t ObservationHumidity) Value() float64 {
 	return t.v
 }
 
+// IsAvailable returns true if an ObservationPrecipitation value was
+// available at time of query
+func (t ObservationPrecipitation) IsAvailable() bool {
+	return !t.na
+}
+
+// Datetime returns true if an ObservationPrecipitation value was
+// available at time of query
+func (t ObservationPrecipitation) Datetime() time.Time {
+	return t.dt
+}
+
 // String satisfies the fmt.Stringer interface for the ObservationPrecipitation type
 func (t ObservationPrecipitation) String() string {
-	return fmt.Sprintf("%.1fmm", t.Value)
+	return fmt.Sprintf("%.1fmm", t.v)
+}
+
+// Value returns the float64 value of an ObservationPrecipitation
+func (t ObservationPrecipitation) Value() float64 {
+	return t.v
 }
 
 // IsAvailable returns true if an ObservationPressure value was

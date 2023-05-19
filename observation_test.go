@@ -7,6 +7,7 @@ package meteologix
 import (
 	"fmt"
 	"testing"
+	"time"
 )
 
 func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
@@ -67,11 +68,21 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 		// Observation dewpoint
 		dp *ObservationTemperature
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationTemperature{v: 10.1}},
-		{"K-Stammheim", "H744", &ObservationTemperature{v: 9.7}},
-		{"All data fields", "all", &ObservationTemperature{v: 6.5}},
+		{"K-Botanischer Garten", "199942", &ObservationTemperature{
+			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			v:  10.1,
+		}},
+		{"K-Stammheim", "H744", &ObservationTemperature{
+			dt: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
+			v:  9.7,
+		}},
+		{"All data fields", "all", &ObservationTemperature{
+			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			v:  6.5,
+		}},
 		{"No data fields", "none", nil},
 	}
+
 	c := New(withMockAPI())
 	if c == nil {
 		t.Errorf("failed to create new Client, got nil")
@@ -92,6 +103,10 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected dewpoint "+
 					"float: %f, got: %f", tc.dp.Value(), o.Dewpoint().Value())
 			}
+			if tc.dp != nil && tc.dp.dt.Unix() != o.Dewpoint().Datetime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.dp.dt.Format(time.RFC3339), o.Dewpoint().Datetime().Format(time.RFC3339))
+			}
 			if tc.dp == nil {
 				if o.Dewpoint().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected dewpoint "+
@@ -111,9 +126,18 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 		// Observation dewpoint
 		h *ObservationHumidity
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationHumidity{v: 80}},
-		{"K-Stammheim", "H744", &ObservationHumidity{v: 73}},
-		{"All data fields", "all", &ObservationHumidity{v: 72}},
+		{"K-Botanischer Garten", "199942", &ObservationHumidity{
+			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			v:  80,
+		}},
+		{"K-Stammheim", "H744", &ObservationHumidity{
+			dt: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
+			v:  73,
+		}},
+		{"All data fields", "all", &ObservationHumidity{
+			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			v:  72,
+		}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -136,6 +160,10 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected humidity "+
 					"float: %f, got: %f", tc.h.Value(), o.HumidityRelative().Value())
 			}
+			if tc.h != nil && tc.h.dt.Unix() != o.HumidityRelative().Datetime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.h.dt.Format(time.RFC3339), o.HumidityRelative().Datetime().Format(time.RFC3339))
+			}
 			if tc.h == nil {
 				if o.HumidityRelative().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected humidity "+
@@ -146,7 +174,6 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 	}
 }
 
-/*
 func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) {
 	tt := []struct {
 		// Test name
@@ -156,9 +183,18 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 		// Observation precipitation
 		p *ObservationPrecipitation
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
-		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
-		{"All data fields", "all", &ObservationPrecipitation{Value: 0.1}},
+		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{
+			dt: time.Date(2023, 0o5, 15, 18, 0, 0, 0, time.UTC),
+			v:  0,
+		}},
+		{"K-Stammheim", "H744", &ObservationPrecipitation{
+			dt: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
+			v:  0,
+		}},
+		{"All data fields", "all", &ObservationPrecipitation{
+			dt: time.Date(2023, 0o5, 17, 7, 30, 0, 0, time.UTC),
+			v:  0.1,
+		}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -174,22 +210,23 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.PrecipitationString(PrecipitationCurrent) {
+			if tc.p != nil && tc.p.String() != o.Precipitation(PrecipitationCurrent).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.PrecipitationString(PrecipitationCurrent))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(PrecipitationCurrent))
 			}
-			if tc.p != nil && tc.p.Value != o.Precipitation(PrecipitationCurrent) {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(PrecipitationCurrent).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value, o.Precipitation(PrecipitationCurrent))
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(PrecipitationCurrent).Value())
+			}
+			if tc.p != nil && tc.p.dt.Unix() != o.Precipitation(PrecipitationCurrent).Datetime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.p.dt.Format(time.RFC3339),
+					o.Precipitation(PrecipitationCurrent).Datetime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
-				if o.PrecipitationString(PrecipitationCurrent) != DataNotAvailable {
+				if o.Precipitation(PrecipitationCurrent).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.PrecipitationString(PrecipitationCurrent))
-				}
-				if !math.IsNaN(o.Precipitation(PrecipitationCurrent)) {
-					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %f", o.Precipitation(PrecipitationCurrent))
+						"to have no data, but got: %s", o.Precipitation(PrecipitationCurrent))
 				}
 			}
 		})
@@ -205,9 +242,9 @@ func TestClient_ObservationLatestByStationID_Precipitation10m(t *testing.T) {
 		// Observation precipitation
 		p *ObservationPrecipitation
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
-		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
-		{"All data fields", "all", &ObservationPrecipitation{Value: 0.5}},
+		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{v: 0}},
+		{"K-Stammheim", "H744", &ObservationPrecipitation{v: 0}},
+		{"All data fields", "all", &ObservationPrecipitation{v: 0.5}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -223,22 +260,18 @@ func TestClient_ObservationLatestByStationID_Precipitation10m(t *testing.T) {
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.PrecipitationString(Precipitation10Min) {
+			if tc.p != nil && tc.p.String() != o.Precipitation(Precipitation10Min).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.PrecipitationString(Precipitation10Min))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Precipitation10Min))
 			}
-			if tc.p != nil && tc.p.Value != o.Precipitation(Precipitation10Min) {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Precipitation10Min).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value, o.Precipitation(Precipitation10Min))
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Precipitation10Min).Value())
 			}
 			if tc.p == nil {
-				if o.PrecipitationString(Precipitation10Min) != DataNotAvailable {
+				if o.Precipitation(Precipitation10Min).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.PrecipitationString(Precipitation10Min))
-				}
-				if !math.IsNaN(o.Precipitation(Precipitation10Min)) {
-					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %f", o.Precipitation(Precipitation10Min))
+						"to have no data, but got: %s", o.Precipitation(Precipitation10Min))
 				}
 			}
 		})
@@ -254,9 +287,9 @@ func TestClient_ObservationLatestByStationID_Precipitation1h(t *testing.T) {
 		// Observation precipitation
 		p *ObservationPrecipitation
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
-		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
-		{"All data fields", "all", &ObservationPrecipitation{Value: 10.3}},
+		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{v: 0}},
+		{"K-Stammheim", "H744", &ObservationPrecipitation{v: 0}},
+		{"All data fields", "all", &ObservationPrecipitation{v: 10.3}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -272,22 +305,18 @@ func TestClient_ObservationLatestByStationID_Precipitation1h(t *testing.T) {
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.PrecipitationString(Precipitation1Hour) {
+			if tc.p != nil && tc.p.String() != o.Precipitation(Precipitation1Hour).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.PrecipitationString(Precipitation1Hour))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Precipitation1Hour))
 			}
-			if tc.p != nil && tc.p.Value != o.Precipitation(Precipitation1Hour) {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Precipitation1Hour).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value, o.Precipitation(Precipitation1Hour))
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Precipitation1Hour).Value())
 			}
 			if tc.p == nil {
-				if o.PrecipitationString(Precipitation1Hour) != DataNotAvailable {
+				if o.Precipitation(Precipitation1Hour).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.PrecipitationString(Precipitation1Hour))
-				}
-				if !math.IsNaN(o.Precipitation(Precipitation1Hour)) {
-					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %f", o.Precipitation(Precipitation1Hour))
+						"to have no data, but got: %s", o.Precipitation(Precipitation1Hour))
 				}
 			}
 		})
@@ -303,9 +332,9 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 		// Observation precipitation
 		p *ObservationPrecipitation
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{Value: 0}},
-		{"K-Stammheim", "H744", &ObservationPrecipitation{Value: 0}},
-		{"All data fields", "all", &ObservationPrecipitation{Value: 32.12}},
+		{"K-Botanischer Garten", "199942", &ObservationPrecipitation{v: 0}},
+		{"K-Stammheim", "H744", &ObservationPrecipitation{v: 0}},
+		{"All data fields", "all", &ObservationPrecipitation{v: 32.12}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -321,22 +350,18 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.PrecipitationString(Precipitation24Hours) {
+			if tc.p != nil && tc.p.String() != o.Precipitation(Precipitation24Hours).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.PrecipitationString(Precipitation24Hours))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Precipitation24Hours))
 			}
-			if tc.p != nil && tc.p.Value != o.Precipitation(Precipitation24Hours) {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Precipitation24Hours).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value, o.Precipitation(Precipitation24Hours))
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Precipitation24Hours).Value())
 			}
 			if tc.p == nil {
-				if o.PrecipitationString(Precipitation24Hours) != DataNotAvailable {
+				if o.Precipitation(Precipitation24Hours).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.PrecipitationString(Precipitation24Hours))
-				}
-				if !math.IsNaN(o.Precipitation(Precipitation24Hours)) {
-					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %f", o.Precipitation(Precipitation24Hours))
+						"to have no data, but got: %s", o.Precipitation(Precipitation24Hours))
 				}
 			}
 		})
@@ -355,17 +380,11 @@ func TestClient_ObservationLatestByStationID_PrecipitationUnknown(t *testing.T) 
 			"failed: %s", "all", err)
 		return
 	}
-	if o.PrecipitationString(999) != ErrTimespanUnsupported {
+	if o.Precipitation(999).IsAvailable() {
 		t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-			"to have no data, but got: %s", o.PrecipitationString(999))
-	}
-	if !math.IsNaN(o.Precipitation(999)) {
-		t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-			"to return NaN, but got: %f", o.Precipitation(999))
+			"to have no data, but got: %s", o.Precipitation(999))
 	}
 }
-
-*/
 
 func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 	tt := []struct {
@@ -596,9 +615,15 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 		// Observation dewpoint
 		p *ObservationPressure
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationPressure{v: 1015.5}},
+		{"K-Botanischer Garten", "199942", &ObservationPressure{
+			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			v:  1015.5,
+		}},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &ObservationPressure{v: 1026.3}},
+		{"All data fields", "all", &ObservationPressure{
+			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			v:  1026.3,
+		}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -620,6 +645,10 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 			if tc.p != nil && tc.p.Value() != o.PressureMSL().Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
 					"float: %f, got: %f", tc.p.Value(), o.PressureMSL().Value())
+			}
+			if tc.p != nil && tc.p.dt.Unix() != o.PressureMSL().Datetime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.p.dt.Format(time.RFC3339), o.PressureMSL().Datetime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
 				if o.PressureMSL().IsAvailable() {
