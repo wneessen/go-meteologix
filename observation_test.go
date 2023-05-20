@@ -964,7 +964,7 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation24h(t *testing.T) {
 		// Observation radiation
 		p *ObservationRadiation
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationRadiation{v: 0}},
+		{"K-Botanischer Garten", "199942", &ObservationRadiation{v: 774}},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &ObservationRadiation{v: 756}},
 		{"No data fields", "none", nil},
