@@ -7,6 +7,7 @@ package meteologix
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"time"
 )
 
@@ -346,7 +347,12 @@ func (t ObservationTemperature) Datetime() time.Time {
 }
 
 // Value returns the float64 value of an ObservationTemperature
+// If the ObservationTemperature is not available in the Observation
+// Vaule will return math.NaN instead.
 func (t ObservationTemperature) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
 	return t.v
 }
 
@@ -397,7 +403,12 @@ func (t ObservationHumidity) String() string {
 }
 
 // Value returns the float64 value of an ObservationHumidity
+// If the ObservationHumidity is not available in the Observation
+// Vaule will return math.NaN instead.
 func (t ObservationHumidity) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
 	return t.v
 }
 
@@ -419,7 +430,12 @@ func (t ObservationPrecipitation) String() string {
 }
 
 // Value returns the float64 value of an ObservationPrecipitation
+// If the ObservationPrecipitation is not available in the Observation
+// Vaule will return math.NaN instead.
 func (t ObservationPrecipitation) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
 	return t.v
 }
 
@@ -441,6 +457,11 @@ func (t ObservationPressure) String() string {
 }
 
 // Value returns the float64 value of an ObservationPressure
+// If the ObservationPressure is not available in the Observation
+// Vaule will return math.NaN instead.
 func (t ObservationPressure) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
 	return t.v
 }

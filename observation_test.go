@@ -6,6 +6,7 @@ package meteologix
 
 import (
 	"fmt"
+	"math"
 	"testing"
 	"time"
 )
@@ -112,6 +113,10 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 					t.Errorf("ObservationLatestByStationID failed, expected dewpoint "+
 						"to have no data, but got: %s", o.Dewpoint().String())
 				}
+				if !math.IsNaN(o.Dewpoint().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected dewpoint "+
+						"to return NaN, but got: %s", o.Dewpoint().String())
+				}
 			}
 		})
 	}
@@ -168,6 +173,10 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 				if o.HumidityRelative().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected humidity "+
 						"to have no data, but got: %s", o.HumidityRelative())
+				}
+				if !math.IsNaN(o.HumidityRelative().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected humidity "+
+						"to return NaN, but got: %s", o.HumidityRelative().String())
 				}
 			}
 		})
@@ -228,6 +237,10 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 						"to have no data, but got: %s", o.Precipitation(PrecipitationCurrent))
 				}
+				if !math.IsNaN(o.Precipitation(PrecipitationCurrent).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(PrecipitationCurrent).String())
+				}
 			}
 		})
 	}
@@ -272,6 +285,10 @@ func TestClient_ObservationLatestByStationID_Precipitation10m(t *testing.T) {
 				if o.Precipitation(Precipitation10Min).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 						"to have no data, but got: %s", o.Precipitation(Precipitation10Min))
+				}
+				if !math.IsNaN(o.Precipitation(Precipitation10Min).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(Precipitation10Min).String())
 				}
 			}
 		})
@@ -318,6 +335,10 @@ func TestClient_ObservationLatestByStationID_Precipitation1h(t *testing.T) {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 						"to have no data, but got: %s", o.Precipitation(Precipitation1Hour))
 				}
+				if !math.IsNaN(o.Precipitation(Precipitation1Hour).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(Precipitation1Hour).String())
+				}
 			}
 		})
 	}
@@ -363,6 +384,10 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 						"to have no data, but got: %s", o.Precipitation(Precipitation24Hours))
 				}
+				if !math.IsNaN(o.Precipitation(Precipitation24Hours).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(Precipitation24Hours).String())
+				}
 			}
 		})
 	}
@@ -383,6 +408,10 @@ func TestClient_ObservationLatestByStationID_PrecipitationUnknown(t *testing.T) 
 	if o.Precipitation(999).IsAvailable() {
 		t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 			"to have no data, but got: %s", o.Precipitation(999))
+	}
+	if !math.IsNaN(o.Precipitation(999).Value()) {
+		t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
+			"to return NaN, but got: %s", o.Precipitation(999).String())
 	}
 }
 
@@ -424,6 +453,10 @@ func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 				if o.Temperature().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected temperature "+
 						"to have no data, but got: %s", o.Temperature())
+				}
+				if !math.IsNaN(o.Temperature().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature "+
+						"to return NaN, but got: %s", o.Temperature().String())
 				}
 			}
 		})
@@ -469,6 +502,10 @@ func TestClient_ObservationLatestByStationID_TemperatureAtGround(t *testing.T) {
 					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
 						"to have no data, but got: %s", o.TemperatureAtGround())
 				}
+				if !math.IsNaN(o.TemperatureAtGround().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+						"to return NaN, but got: %s", o.TemperatureAtGround().String())
+				}
 			}
 		})
 	}
@@ -501,17 +538,21 @@ func TestClient_ObservationLatestByStationID_TemperatureMin(t *testing.T) {
 				return
 			}
 			if tc.t != nil && tc.t.String() != o.TemperatureMin().String() {
-				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (min) "+
 					"string: %s, got: %s", tc.t.String(), o.TemperatureMin())
 			}
 			if tc.t != nil && tc.t.Value() != o.TemperatureMin().Value() {
-				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (min) "+
 					"float: %f, got: %f", tc.t.Value(), o.TemperatureMin().Value())
 			}
 			if tc.t == nil {
 				if o.TemperatureMin().IsAvailable() {
-					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (min) "+
 						"to have no data, but got: %s", o.TemperatureMin())
+				}
+				if !math.IsNaN(o.TemperatureMin().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (min) "+
+						"to return NaN, but got: %s", o.TemperatureMin().String())
 				}
 			}
 		})
@@ -545,17 +586,21 @@ func TestClient_ObservationLatestByStationID_TemperatureMax(t *testing.T) {
 				return
 			}
 			if tc.t != nil && tc.t.String() != o.TemperatureMax().String() {
-				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (max) "+
 					"string: %s, got: %s", tc.t.String(), o.TemperatureMax())
 			}
 			if tc.t != nil && tc.t.Value() != o.TemperatureMax().Value() {
-				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (max) "+
 					"float: %f, got: %f", tc.t.Value(), o.TemperatureMax().Value())
 			}
 			if tc.t == nil {
 				if o.TemperatureMax().IsAvailable() {
-					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (max) "+
 						"to have no data, but got: %s", o.TemperatureMax())
+				}
+				if !math.IsNaN(o.TemperatureMax().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (max) "+
+						"to return NaN, but got: %s", o.TemperatureMax().String())
 				}
 			}
 		})
@@ -589,17 +634,21 @@ func TestClient_ObservationLatestByStationID_TemperatureAtGroundMin(t *testing.T
 				return
 			}
 			if tc.t != nil && tc.t.String() != o.TemperatureAtGroundMin().String() {
-				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm-min) "+
 					"string: %s, got: %s", tc.t.String(), o.TemperatureAtGroundMin())
 			}
 			if tc.t != nil && tc.t.Value() != o.TemperatureAtGroundMin().Value() {
-				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+				t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm-min) "+
 					"float: %f, got: %f", tc.t.Value(), o.TemperatureAtGroundMin().Value())
 			}
 			if tc.t == nil {
 				if o.TemperatureAtGroundMin().IsAvailable() {
-					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm) "+
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm-min) "+
 						"to have no data, but got: %s", o.TemperatureAtGroundMin())
+				}
+				if !math.IsNaN(o.TemperatureAtGroundMin().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected temperature (5cm-min) "+
+						"to return NaN, but got: %s", o.TemperatureAtGroundMin().String())
 				}
 			}
 		})
@@ -655,6 +704,10 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 					t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
 						"to have no data, but got: %s", o.PressureMSL())
 				}
+				if !math.IsNaN(o.PressureMSL().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
+						"to return NaN, but got: %s", o.PressureMSL().String())
+				}
 			}
 		})
 	}
@@ -698,6 +751,10 @@ func TestClient_ObservationLatestByStationID_PressureQFE(t *testing.T) {
 				if o.PressureQFE().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected pressure QFE "+
 						"to have no data, but got: %s", o.PressureMSL())
+				}
+				if !math.IsNaN(o.PressureQFE().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected pressure QFE "+
+						"to return NaN, but got: %s", o.PressureQFE().String())
 				}
 			}
 		})

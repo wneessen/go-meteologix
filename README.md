@@ -96,11 +96,13 @@ func main() {
 This program takes a station ID and looks up the latest station observation data and returns
 the Observation type. This type then has lots of methods to access the observation data. In
 our example we will print out the formatted values for the current temperature and the dewpoint.
+
 ```go
 package main
 
 import (
 	"fmt"
+	"math"
 	"os"
 
 	"github.com/wneessen/go-meteologix"
@@ -114,6 +116,9 @@ func main() {
 		os.Exit(1)
 	}
 	fmt.Printf("Temperature at station: %s\n", o.Temperature())
+	if !math.IsNaN(o.Temperature().Value()) {
+		fmt.Printf("Temperature at station in F: %s\n", o.Temperature().FahrenheitString())
+    }
 	if o.Dewpoint().IsAvailable() {
 		fmt.Printf("Dewpoint in Fahrenheit: %s\n", o.Dewpoint().FahrenheitString())
 	}
