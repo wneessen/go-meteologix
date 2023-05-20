@@ -267,27 +267,27 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.Precipitation(PrecipitationCurrent).String() {
+			if tc.p != nil && tc.p.String() != o.Precipitation(TimespanCurrent).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.Precipitation(PrecipitationCurrent))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(TimespanCurrent))
 			}
-			if tc.p != nil && tc.p.Value() != o.Precipitation(PrecipitationCurrent).Value() {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(TimespanCurrent).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value(), o.Precipitation(PrecipitationCurrent).Value())
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(TimespanCurrent).Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.Precipitation(PrecipitationCurrent).DateTime().Unix() {
+			if tc.p != nil && tc.p.dt.Unix() != o.Precipitation(TimespanCurrent).DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339),
-					o.Precipitation(PrecipitationCurrent).DateTime().Format(time.RFC3339))
+					o.Precipitation(TimespanCurrent).DateTime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
-				if o.Precipitation(PrecipitationCurrent).IsAvailable() {
+				if o.Precipitation(TimespanCurrent).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.Precipitation(PrecipitationCurrent))
+						"to have no data, but got: %s", o.Precipitation(TimespanCurrent))
 				}
-				if !math.IsNaN(o.Precipitation(PrecipitationCurrent).Value()) {
+				if !math.IsNaN(o.Precipitation(TimespanCurrent).Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %s", o.Precipitation(PrecipitationCurrent).String())
+						"to return NaN, but got: %s", o.Precipitation(TimespanCurrent).String())
 				}
 			}
 		})
@@ -321,22 +321,22 @@ func TestClient_ObservationLatestByStationID_Precipitation10m(t *testing.T) {
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.Precipitation(Precipitation10Min).String() {
+			if tc.p != nil && tc.p.String() != o.Precipitation(Timespan10Min).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.Precipitation(Precipitation10Min))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Timespan10Min))
 			}
-			if tc.p != nil && tc.p.Value() != o.Precipitation(Precipitation10Min).Value() {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Timespan10Min).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Precipitation10Min).Value())
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Timespan10Min).Value())
 			}
 			if tc.p == nil {
-				if o.Precipitation(Precipitation10Min).IsAvailable() {
+				if o.Precipitation(Timespan10Min).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.Precipitation(Precipitation10Min))
+						"to have no data, but got: %s", o.Precipitation(Timespan10Min))
 				}
-				if !math.IsNaN(o.Precipitation(Precipitation10Min).Value()) {
+				if !math.IsNaN(o.Precipitation(Timespan10Min).Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %s", o.Precipitation(Precipitation10Min).String())
+						"to return NaN, but got: %s", o.Precipitation(Timespan10Min).String())
 				}
 			}
 		})
@@ -370,22 +370,22 @@ func TestClient_ObservationLatestByStationID_Precipitation1h(t *testing.T) {
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.Precipitation(Precipitation1Hour).String() {
+			if tc.p != nil && tc.p.String() != o.Precipitation(Timespan1Hour).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.Precipitation(Precipitation1Hour))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Timespan1Hour))
 			}
-			if tc.p != nil && tc.p.Value() != o.Precipitation(Precipitation1Hour).Value() {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Timespan1Hour).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Precipitation1Hour).Value())
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Timespan1Hour).Value())
 			}
 			if tc.p == nil {
-				if o.Precipitation(Precipitation1Hour).IsAvailable() {
+				if o.Precipitation(Timespan1Hour).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.Precipitation(Precipitation1Hour))
+						"to have no data, but got: %s", o.Precipitation(Timespan1Hour))
 				}
-				if !math.IsNaN(o.Precipitation(Precipitation1Hour).Value()) {
+				if !math.IsNaN(o.Precipitation(Timespan1Hour).Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %s", o.Precipitation(Precipitation1Hour).String())
+						"to return NaN, but got: %s", o.Precipitation(Timespan1Hour).String())
 				}
 			}
 		})
@@ -419,22 +419,22 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 					"failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.Precipitation(Precipitation24Hours).String() {
+			if tc.p != nil && tc.p.String() != o.Precipitation(Timespan24Hours).String() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"string: %s, got: %s", tc.p.String(), o.Precipitation(Precipitation24Hours))
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Timespan24Hours))
 			}
-			if tc.p != nil && tc.p.Value() != o.Precipitation(Precipitation24Hours).Value() {
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Timespan24Hours).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Precipitation24Hours).Value())
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Timespan24Hours).Value())
 			}
 			if tc.p == nil {
-				if o.Precipitation(Precipitation24Hours).IsAvailable() {
+				if o.Precipitation(Timespan24Hours).IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to have no data, but got: %s", o.Precipitation(Precipitation24Hours))
+						"to have no data, but got: %s", o.Precipitation(Timespan24Hours))
 				}
-				if !math.IsNaN(o.Precipitation(Precipitation24Hours).Value()) {
+				if !math.IsNaN(o.Precipitation(Timespan24Hours).Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
-						"to return NaN, but got: %s", o.Precipitation(Precipitation24Hours).String())
+						"to return NaN, but got: %s", o.Precipitation(Timespan24Hours).String())
 				}
 			}
 		})
@@ -851,6 +851,153 @@ func TestClient_ObservationLatestByStationID_PressureQFE(t *testing.T) {
 				if !math.IsNaN(o.PressureQFE().Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected pressure QFE "+
 						"to return NaN, but got: %s", o.PressureQFE().String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation radiation
+		p *ObservationRadiation
+	}{
+		{"K-Botanischer Garten", "199942", &ObservationRadiation{v: 0}},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationRadiation{v: 62}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s "+
+					"failed: %s", tc.sid, err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.GlobalRadiation(Timespan10Min).String() {
+				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+					"string: %s, got: %s", tc.p.String(), o.GlobalRadiation(Timespan10Min))
+			}
+			if tc.p != nil && tc.p.Value() != o.GlobalRadiation(Timespan10Min).Value() {
+				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+					"float: %f, got: %f", tc.p.Value(), o.GlobalRadiation(Timespan10Min).Value())
+			}
+			if tc.p == nil {
+				if o.GlobalRadiation(Timespan10Min).IsAvailable() {
+					t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+						"to have no data, but got: %s", o.GlobalRadiation(Timespan10Min))
+				}
+				if !math.IsNaN(o.GlobalRadiation(Timespan10Min).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+						"to return NaN, but got: %s", o.GlobalRadiation(Timespan10Min).String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_ObservationLatestByStationID_GlobalRadiation1h(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation radiation
+		p *ObservationRadiation
+	}{
+		{"K-Botanischer Garten", "199942", &ObservationRadiation{v: 0}},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationRadiation{v: 200}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s "+
+					"failed: %s", tc.sid, err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.GlobalRadiation(Timespan1Hour).String() {
+				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+					"string: %s, got: %s", tc.p.String(), o.GlobalRadiation(Timespan1Hour))
+			}
+			if tc.p != nil && tc.p.Value() != o.GlobalRadiation(Timespan1Hour).Value() {
+				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+					"float: %f, got: %f", tc.p.Value(), o.GlobalRadiation(Timespan1Hour).Value())
+			}
+			if tc.p == nil {
+				if o.GlobalRadiation(Timespan1Hour).IsAvailable() {
+					t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+						"to have no data, but got: %s", o.GlobalRadiation(Timespan1Hour))
+				}
+				if !math.IsNaN(o.GlobalRadiation(Timespan1Hour).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+						"to return NaN, but got: %s", o.GlobalRadiation(Timespan1Hour).String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_ObservationLatestByStationID_GlobalRadiation24h(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation radiation
+		p *ObservationRadiation
+	}{
+		{"K-Botanischer Garten", "199942", &ObservationRadiation{v: 0}},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationRadiation{v: 756}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s "+
+					"failed: %s", tc.sid, err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.GlobalRadiation(Timespan24Hours).String() {
+				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+					"string: %s, got: %s", tc.p.String(), o.GlobalRadiation(Timespan24Hours))
+			}
+			if tc.p != nil && tc.p.Value() != o.GlobalRadiation(Timespan24Hours).Value() {
+				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+					"float: %f, got: %f", tc.p.Value(), o.GlobalRadiation(Timespan24Hours).Value())
+			}
+			if tc.p == nil {
+				if o.GlobalRadiation(Timespan24Hours).IsAvailable() {
+					t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+						"to have no data, but got: %s", o.GlobalRadiation(Timespan24Hours))
+				}
+				if !math.IsNaN(o.GlobalRadiation(Timespan24Hours).Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+						"to return NaN, but got: %s", o.GlobalRadiation(Timespan24Hours).String())
 				}
 			}
 		})

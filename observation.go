@@ -42,17 +42,23 @@ const (
 	FieldTemperatureMean
 	// FieldDewpointMean represents the TemperatureMean data point
 	FieldDewpointMean
+	// FieldGlobalRadiation10m represents the GlobalRadiation10m data point
+	FieldGlobalRadiation10m
+	// FieldGlobalRadiation1h represents the GlobalRadiation1h data point
+	FieldGlobalRadiation1h
+	// FieldGlobalRadiation24h represents the GlobalRadiation24h data point
+	FieldGlobalRadiation24h
 )
 
 const (
-	// PrecipitationCurrent is the current amount of precipitation
-	PrecipitationCurrent PrecipitationTimespan = iota
-	// Precipitation10Min is the amount of precipitation over the last 10 minutes
-	Precipitation10Min
-	// Precipitation1Hour is the amount of precipitation over the last hour
-	Precipitation1Hour
-	// Precipitation24Hours is the amount of precipitation over the last 24 hours
-	Precipitation24Hours
+	// TimespanCurrent represents the moment of the last observation
+	TimespanCurrent Timespan = iota
+	// Timespan10Min represents the last 10 minutes
+	Timespan10Min
+	// Timespan1Hour represents the last hour
+	Timespan1Hour
+	// Timespan24Hours represents the last 24 hours
+	Timespan24Hours
 )
 
 // Observation represents the observation API response for a Station
@@ -81,6 +87,15 @@ type ObservationData struct {
 	Dewpoint *ObservationValue `json:"dewpoint,omitempty"`
 	// DewPointMean represents the mean dewpoint in °C
 	DewpointMean *ObservationValue `json:"dewpointMean,omitempty"`
+	// GlobalRadiation10m represents the sum of global radiation over the last
+	// 10 minutes in kJ/m²
+	GlobalRadiation10m *ObservationValue `json:"globalRadiation10m,omitempty"`
+	// GlobalRadiation1h represents the sum of global radiation over the last
+	// 1 hour in kJ/m²
+	GlobalRadiation1h *ObservationValue `json:"globalRadiation1h,omitempty"`
+	// GlobalRadiation24h represents the sum of global radiation over the last
+	// 24 hour in kJ/m²
+	GlobalRadiation24h *ObservationValue `json:"globalRadiation24h,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *ObservationValue `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
@@ -130,10 +145,6 @@ type ObservationField struct {
 // of an Observation
 type ObservationFieldName int
 
-// ObservationTemperature is a type wrapper of an ObservationField for
-// holding temperature values
-type ObservationTemperature ObservationField
-
 // ObservationHumidity is a type wrapper of an ObservationField for
 // holding humidity values
 type ObservationHumidity ObservationField
@@ -146,8 +157,16 @@ type ObservationPrecipitation ObservationField
 // in an Observation
 type ObservationPressure ObservationField
 
-// PrecipitationTimespan is a type wrapper for an int type
-type PrecipitationTimespan int
+// ObservationRadiation is a type wrapper of an ObservationField for
+// holding radiation values
+type ObservationRadiation ObservationField
+
+// ObservationTemperature is a type wrapper of an ObservationField for
+// holding temperature values
+type ObservationTemperature ObservationField
+
+// Timespan is a type wrapper for an int type
+type Timespan int
 
 // ObservationLatestByStationID returns the latest Observation values from the
 // given Station
@@ -342,20 +361,20 @@ func (o Observation) PressureQFE() ObservationPressure {
 // If the data point is not available in the Observation it will return
 // ObservationPrecipitation in which the "not available" field will be
 // true.
-func (o Observation) Precipitation(ts PrecipitationTimespan) ObservationPrecipitation {
+func (o Observation) Precipitation(ts Timespan) ObservationPrecipitation {
 	var df *ObservationValue
 	var fn ObservationFieldName
 	switch ts {
-	case PrecipitationCurrent:
+	case TimespanCurrent:
 		df = o.Data.Precipitation
 		fn = FieldPrecipitation
-	case Precipitation10Min:
+	case Timespan10Min:
 		df = o.Data.Precipitation10m
 		fn = FieldPrecipitation10m
-	case Precipitation1Hour:
+	case Timespan1Hour:
 		df = o.Data.Precipitation1h
 		fn = FieldPrecipitation1h
-	case Precipitation24Hours:
+	case Timespan24Hours:
 		df = o.Data.Precipitation24h
 		fn = FieldPrecipitation24h
 	default:
@@ -366,6 +385,38 @@ func (o Observation) Precipitation(ts PrecipitationTimespan) ObservationPrecipit
 		return ObservationPrecipitation{na: true}
 	}
 	return ObservationPrecipitation{
+		dt: df.DateTime,
+		n:  fn,
+		v:  df.Value,
+	}
+}
+
+// GlobalRadiation returns the current amount of global radiation as
+// ObservationRadiation
+// If the data point is not available in the Observation it will return
+// ObservationRadiation in which the "not available" field will be
+// true.
+func (o Observation) GlobalRadiation(ts Timespan) ObservationRadiation {
+	var df *ObservationValue
+	var fn ObservationFieldName
+	switch ts {
+	case Timespan10Min:
+		df = o.Data.GlobalRadiation10m
+		fn = FieldGlobalRadiation10m
+	case Timespan1Hour:
+		df = o.Data.GlobalRadiation1h
+		fn = FieldGlobalRadiation1h
+	case Timespan24Hours:
+		df = o.Data.GlobalRadiation24h
+		fn = FieldGlobalRadiation24h
+	default:
+		return ObservationRadiation{na: true}
+	}
+
+	if df == nil {
+		return ObservationRadiation{na: true}
+	}
+	return ObservationRadiation{
 		dt: df.DateTime,
 		n:  fn,
 		v:  df.Value,
@@ -502,4 +553,31 @@ func (t ObservationPressure) Value() float64 {
 		return math.NaN()
 	}
 	return t.v
+}
+
+// IsAvailable returns true if an ObservationRadiation value was
+// available at time of query
+func (t ObservationRadiation) IsAvailable() bool {
+	return !t.na
+}
+
+// DateTime returns true if an ObservationRadiation value was
+// available at time of query
+func (t ObservationRadiation) DateTime() time.Time {
+	return t.dt
+}
+
+// Value returns the float64 value of an ObservationRadiation
+// If the ObservationRadiation is not available in the Observation
+// Vaule will return math.NaN instead.
+func (t ObservationRadiation) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
+	return t.v
+}
+
+// String satisfies the fmt.Stringer interface for the ObservationRadiation type
+func (t ObservationRadiation) String() string {
+	return fmt.Sprintf("%.0fkJ/m²", t.v)
 }
