@@ -340,9 +340,9 @@ func (t ObservationTemperature) IsAvailable() bool {
 	return !t.na
 }
 
-// Datetime returns true if an ObservationTemperature value was
+// DateTime returns true if an ObservationTemperature value was
 // available at time of query
-func (t ObservationTemperature) Datetime() time.Time {
+func (t ObservationTemperature) DateTime() time.Time {
 	return t.dt
 }
 
@@ -391,9 +391,9 @@ func (t ObservationHumidity) IsAvailable() bool {
 	return !t.na
 }
 
-// Datetime returns true if an ObservationHumidity value was
+// DateTime returns true if an ObservationHumidity value was
 // available at time of query
-func (t ObservationHumidity) Datetime() time.Time {
+func (t ObservationHumidity) DateTime() time.Time {
 	return t.dt
 }
 
@@ -418,9 +418,9 @@ func (t ObservationPrecipitation) IsAvailable() bool {
 	return !t.na
 }
 
-// Datetime returns true if an ObservationPrecipitation value was
+// DateTime returns true if an ObservationPrecipitation value was
 // available at time of query
-func (t ObservationPrecipitation) Datetime() time.Time {
+func (t ObservationPrecipitation) DateTime() time.Time {
 	return t.dt
 }
 
@@ -445,9 +445,9 @@ func (t ObservationPressure) IsAvailable() bool {
 	return !t.na
 }
 
-// Datetime returns true if an ObservationPressure value was
+// DateTime returns true if an ObservationPressure value was
 // available at time of query
-func (t ObservationPressure) Datetime() time.Time {
+func (t ObservationPressure) DateTime() time.Time {
 	return t.dt
 }
 

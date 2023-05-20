@@ -104,9 +104,9 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected dewpoint "+
 					"float: %f, got: %f", tc.dp.Value(), o.Dewpoint().Value())
 			}
-			if tc.dp != nil && tc.dp.dt.Unix() != o.Dewpoint().Datetime().Unix() {
+			if tc.dp != nil && tc.dp.dt.Unix() != o.Dewpoint().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.dp.dt.Format(time.RFC3339), o.Dewpoint().Datetime().Format(time.RFC3339))
+					tc.dp.dt.Format(time.RFC3339), o.Dewpoint().DateTime().Format(time.RFC3339))
 			}
 			if tc.dp == nil {
 				if o.Dewpoint().IsAvailable() {
@@ -165,9 +165,9 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected humidity "+
 					"float: %f, got: %f", tc.h.Value(), o.HumidityRelative().Value())
 			}
-			if tc.h != nil && tc.h.dt.Unix() != o.HumidityRelative().Datetime().Unix() {
+			if tc.h != nil && tc.h.dt.Unix() != o.HumidityRelative().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.h.dt.Format(time.RFC3339), o.HumidityRelative().Datetime().Format(time.RFC3339))
+					tc.h.dt.Format(time.RFC3339), o.HumidityRelative().DateTime().Format(time.RFC3339))
 			}
 			if tc.h == nil {
 				if o.HumidityRelative().IsAvailable() {
@@ -227,10 +227,10 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 					"float: %f, got: %f", tc.p.Value(), o.Precipitation(PrecipitationCurrent).Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.Precipitation(PrecipitationCurrent).Datetime().Unix() {
+			if tc.p != nil && tc.p.dt.Unix() != o.Precipitation(PrecipitationCurrent).DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339),
-					o.Precipitation(PrecipitationCurrent).Datetime().Format(time.RFC3339))
+					o.Precipitation(PrecipitationCurrent).DateTime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
 				if o.Precipitation(PrecipitationCurrent).IsAvailable() {
@@ -695,9 +695,9 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
 					"float: %f, got: %f", tc.p.Value(), o.PressureMSL().Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.PressureMSL().Datetime().Unix() {
+			if tc.p != nil && tc.p.dt.Unix() != o.PressureMSL().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.PressureMSL().Datetime().Format(time.RFC3339))
+					tc.p.dt.Format(time.RFC3339), o.PressureMSL().DateTime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
 				if o.PressureMSL().IsAvailable() {
