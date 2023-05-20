@@ -40,6 +40,8 @@ const (
 	FieldPrecipitation24h
 	// FieldTemperatureMean represents the TemperatureMean data point
 	FieldTemperatureMean
+	// FieldDewpointMean represents the TemperatureMean data point
+	FieldDewpointMean
 )
 
 const (
@@ -75,8 +77,10 @@ type Observation struct {
 // all values are represented as pointer type returning nil if the data point in question
 // is not returned for the requested Station.
 type ObservationData struct {
-	// DewPoint represents the dewpoint in °C
-	DewPoint *ObservationValue `json:"dewpoint,omitempty"`
+	// Dewpoint represents the dewpoint in °C
+	Dewpoint *ObservationValue `json:"dewpoint,omitempty"`
+	// DewPointMean represents the mean dewpoint in °C
+	DewpointMean *ObservationValue `json:"dewpointMean,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *ObservationValue `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
@@ -167,13 +171,28 @@ func (c *Client) ObservationLatestByStationID(si string) (Observation, error) {
 // ObservationTemperature in which the "not available" field will be
 // true.
 func (o Observation) Dewpoint() ObservationTemperature {
-	if o.Data.DewPoint == nil {
+	if o.Data.Dewpoint == nil {
 		return ObservationTemperature{na: true}
 	}
 	return ObservationTemperature{
-		dt: o.Data.DewPoint.DateTime,
+		dt: o.Data.Dewpoint.DateTime,
 		n:  FieldDewpoint,
-		v:  o.Data.DewPoint.Value,
+		v:  o.Data.Dewpoint.Value,
+	}
+}
+
+// DewpointMean returns the mean dewpoint data point as ObservationTemperature.
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) DewpointMean() ObservationTemperature {
+	if o.Data.DewpointMean == nil {
+		return ObservationTemperature{na: true}
+	}
+	return ObservationTemperature{
+		dt: o.Data.DewpointMean.DateTime,
+		n:  FieldDewpointMean,
+		v:  o.Data.DewpointMean.Value,
 	}
 }
 

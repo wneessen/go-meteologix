@@ -122,6 +122,54 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 	}
 }
 
+func TestClient_ObservationLatestByStationID_DewpointMean(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation dewpoint
+		t *ObservationTemperature
+	}{
+		{"K-Botanischer Garten", "199942", nil},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationTemperature{v: 8.3}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s failed: %s", tc.sid, err)
+				return
+			}
+			if tc.t != nil && tc.t.String() != o.DewpointMean().String() {
+				t.Errorf("ObservationLatestByStationID failed, expected mean dewpoint "+
+					"string: %s, got: %s", tc.t.String(), o.DewpointMean())
+			}
+			if tc.t != nil && tc.t.Value() != o.DewpointMean().Value() {
+				t.Errorf("ObservationLatestByStationID failed, expected mean dewpoint "+
+					"float: %f, got: %f", tc.t.Value(), o.DewpointMean().Value())
+			}
+			if tc.t == nil {
+				if o.DewpointMean().IsAvailable() {
+					t.Errorf("ObservationLatestByStationID failed, expected mean dewpoint "+
+						"to have no data, but got: %s", o.DewpointMean())
+				}
+				if !math.IsNaN(o.DewpointMean().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected mean dewpoint "+
+						"to return NaN, but got: %s", o.DewpointMean().String())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 	tt := []struct {
 		// Test name
