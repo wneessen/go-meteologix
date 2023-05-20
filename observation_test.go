@@ -655,6 +655,54 @@ func TestClient_ObservationLatestByStationID_TemperatureAtGroundMin(t *testing.T
 	}
 }
 
+func TestClient_ObservationLatestByStationID_TemperatureMean(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation dewpoint
+		t *ObservationTemperature
+	}{
+		{"K-Botanischer Garten", "199942", nil},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationTemperature{v: 16.3}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s failed: %s", tc.sid, err)
+				return
+			}
+			if tc.t != nil && tc.t.String() != o.TemperatureMean().String() {
+				t.Errorf("ObservationLatestByStationID failed, expected mean temperature "+
+					"string: %s, got: %s", tc.t.String(), o.TemperatureMean())
+			}
+			if tc.t != nil && tc.t.Value() != o.TemperatureMean().Value() {
+				t.Errorf("ObservationLatestByStationID failed, expected mean temperature "+
+					"float: %f, got: %f", tc.t.Value(), o.TemperatureMean().Value())
+			}
+			if tc.t == nil {
+				if o.TemperatureMean().IsAvailable() {
+					t.Errorf("ObservationLatestByStationID failed, expected mean temperature "+
+						"to have no data, but got: %s", o.TemperatureMean())
+				}
+				if !math.IsNaN(o.TemperatureMean().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected mean temperature "+
+						"to return NaN, but got: %s", o.TemperatureMean().String())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 	tt := []struct {
 		// Test name

@@ -38,6 +38,8 @@ const (
 	FieldPrecipitation1h
 	// FieldPrecipitation24h represents the Precipitation24h data point
 	FieldPrecipitation24h
+	// FieldTemperatureMean represents the TemperatureMean data point
+	FieldTemperatureMean
 )
 
 const (
@@ -93,6 +95,8 @@ type ObservationData struct {
 	Temperature *ObservationValue `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
 	TemperatureMax *ObservationValue `json:"tempMax,omitempty"`
+	// TemperatureMean represents the mean temperature in °C
+	TemperatureMean *ObservationValue `json:"tempMean,omitempty"`
 	// TemperatureMin represents the minimum temperature in °C
 	TemperatureMin *ObservationValue `json:"tempMin,omitempty"`
 	// Temperature5cm represents the temperature 5cm above ground in °C
@@ -249,6 +253,21 @@ func (o Observation) TemperatureAtGroundMin() ObservationTemperature {
 		dt: o.Data.Temperature5cmMin.DateTime,
 		n:  FieldTemperatureAtGroundMin,
 		v:  o.Data.Temperature5cmMin.Value,
+	}
+}
+
+// TemperatureMean returns the mean temperature data point as ObservationTemperature.
+// If the data point is not available in the Observation it will return
+// ObservationTemperature in which the "not available" field will be
+// true.
+func (o Observation) TemperatureMean() ObservationTemperature {
+	if o.Data.TemperatureMean == nil {
+		return ObservationTemperature{na: true}
+	}
+	return ObservationTemperature{
+		dt: o.Data.TemperatureMean.DateTime,
+		n:  FieldTemperatureMean,
+		v:  o.Data.TemperatureMean.Value,
 	}
 }
 
