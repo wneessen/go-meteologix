@@ -35,7 +35,7 @@ func TestClient_StationSearchByLocation(t *testing.T) {
 	}
 }
 
-func TestClient_StationSearchByLocation_Failed(t *testing.T) {
+func TestClient_StationSearchByLocation_Fail(t *testing.T) {
 	c := New(WithUsername("invalid"), WithPassword("invalid"))
 	if c == nil {
 		t.Errorf("failed to create new Client, got nil")
@@ -56,6 +56,29 @@ func TestClient_StationSearchByLocation_Failed(t *testing.T) {
 	}
 	if err != nil && !errors.As(err, &APIError{}) {
 		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't")
+	}
+}
+
+func TestClient_StationSearchByLocationWithRadius_Fail(t *testing.T) {
+	ak := getAPIKeyFromEnv(t)
+	if ak == "" {
+		t.Skip("no API_KEY found in environment, skipping test")
+	}
+	c := New(WithAPIKey(ak))
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	_, err := c.StationSearchByLocationWithinRadius("Cologne, Germany", 0)
+	if err == nil {
+		t.Errorf("StationSearchByLocationWithRadius was supposed to fail but didn't")
+	}
+	if !errors.Is(err, ErrRadiusTooSmall) {
+		t.Errorf("StationSearchByLocationWithRadius was supposed to return ErrRadiusTooSmall, got: %s", err)
+	}
+	_, err = c.StationSearchByLocationWithinRadius("Cologne, Germany", 1000)
+	if err == nil {
+		t.Errorf("StationSearchByLocationWithRadius was supposed to fail but didn't")
 	}
 }
 
