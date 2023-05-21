@@ -48,6 +48,8 @@ const (
 	FieldGlobalRadiation1h
 	// FieldGlobalRadiation24h represents the GlobalRadiation24h data point
 	FieldGlobalRadiation24h
+	// FieldWindspeed represents the Windspeed data point
+	FieldWindspeed
 )
 
 const (
@@ -123,6 +125,8 @@ type ObservationData struct {
 	// Temperature5cm represents the minimum temperature 5cm above
 	// ground in °C
 	Temperature5cmMin *ObservationValue `json:"temp5cmMin,omitempty"`
+	// Windspeed represents the wind speed in knots
+	Windspeed *ObservationValue `json:"windSpeed,omitempty"`
 }
 
 // ObservationValue is the JSON structure of the Observation data that is
@@ -164,6 +168,10 @@ type ObservationRadiation ObservationField
 // ObservationTemperature is a type wrapper of an ObservationField for
 // holding temperature values
 type ObservationTemperature ObservationField
+
+// ObservationSpeed is a type wrapper of an ObservationField for
+// holding speed values
+type ObservationSpeed ObservationField
 
 // Timespan is a type wrapper for an int type
 type Timespan int
@@ -437,6 +445,20 @@ func (o Observation) GlobalRadiation(ts Timespan) ObservationRadiation {
 	}
 }
 
+// Windspeed returns the current windspeed data point as ObservationSpeed.
+// If the data point is not available in the Observation it will return
+// ObservationSpeed in which the "not available" field will be true.
+func (o Observation) Windspeed() ObservationSpeed {
+	if o.Data.Windspeed == nil {
+		return ObservationSpeed{na: true}
+	}
+	return ObservationSpeed{
+		dt: o.Data.Windspeed.DateTime,
+		n:  FieldWindspeed,
+		v:  o.Data.Windspeed.Value,
+	}
+}
+
 // IsAvailable returns true if an ObservationTemperature value was
 // available at time of query
 func (t ObservationTemperature) IsAvailable() bool {
@@ -594,4 +616,51 @@ func (t ObservationRadiation) Value() float64 {
 // String satisfies the fmt.Stringer interface for the ObservationRadiation type
 func (t ObservationRadiation) String() string {
 	return fmt.Sprintf("%.0fkJ/m²", t.v)
+}
+
+// IsAvailable returns true if an ObservationSpeed value was
+// available at time of query
+func (t ObservationSpeed) IsAvailable() bool {
+	return !t.na
+}
+
+// DateTime returns true if an ObservationSpeed value was
+// available at time of query
+func (t ObservationSpeed) DateTime() time.Time {
+	return t.dt
+}
+
+// Value returns the float64 value of an ObservationSpeed in knots
+// If the ObservationSpeed is not available in the Observation
+// Vaule will return math.NaN instead.
+func (t ObservationSpeed) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
+	return t.v
+}
+
+// String satisfies the fmt.Stringer interface for the ObservationSpeed type
+func (t ObservationSpeed) String() string {
+	return fmt.Sprintf("%.0fkn", t.v)
+}
+
+// KMH returns the ObservationSpeed value in km/h
+func (t ObservationSpeed) KMH() float64 {
+	return t.v * 1.852
+}
+
+// KMHString returns the ObservationSpeed value as formatted string in km/h
+func (t ObservationSpeed) KMHString() string {
+	return fmt.Sprintf("%.1fkm/h", t.KMH())
+}
+
+// MPH returns the ObservationSpeed value in mi/h
+func (t ObservationSpeed) MPH() float64 {
+	return t.v * 1.151
+}
+
+// MPHString returns the ObservationSpeed value as formatted string in mi/h
+func (t ObservationSpeed) MPHString() string {
+	return fmt.Sprintf("%.1fmi/h", t.MPH())
 }
