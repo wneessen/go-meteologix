@@ -185,6 +185,20 @@ func (c *Client) ObservationLatestByStationID(si string) (Observation, error) {
 	return o, nil
 }
 
+// ObservationLatestByLocation performs a GeoLocation lookup of the location string, checks for any
+// nearby weather stations (25 km radius) and returns the latest Observation values from the
+// Stations with the shortest distance. It will also return the Station that was used for the query.
+// It will throw an error if no station could be found in that queried location.
+func (c *Client) ObservationLatestByLocation(l string) (Observation, Station, error) {
+	sl, err := c.StationSearchByLocationWithinRadius(l, 25)
+	if err != nil {
+		return Observation{}, Station{}, fmt.Errorf("failed search locations at given location: %w", err)
+	}
+	s := sl[0]
+	o, err := c.ObservationLatestByStationID(s.ID)
+	return o, s, err
+}
+
 // Dewpoint returns the dewpoint data point as ObservationTemperature
 // If the data point is not available in the Observation it will return
 // ObservationTemperature in which the "not available" field will be
