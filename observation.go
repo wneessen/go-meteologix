@@ -14,32 +14,6 @@ import (
 const (
 	// FieldDewpoint represents the Dewpoint data point
 	FieldDewpoint ObservationFieldName = iota
-	// FieldTemperature represents the Temperature data point
-	FieldTemperature
-	// FieldTemperatureAtGround represents the TemperatureAtGround data point
-	FieldTemperatureAtGround
-	// FieldTemperatureMax represents the TemperatureMax data point
-	FieldTemperatureMax
-	// FieldTemperatureMin represents the TemperatureMin data point
-	FieldTemperatureMin
-	// FieldTemperatureAtGroundMin represents the TemperatureAtGroundMin data point
-	FieldTemperatureAtGroundMin
-	// FieldHumidityRelative represents the HumidityRelative data point
-	FieldHumidityRelative
-	// FieldPressureMSL represents the PressureMSL data point
-	FieldPressureMSL
-	// FieldPressureQFE represents the PressureQFE data point
-	FieldPressureQFE
-	// FieldPrecipitation represents the Precipitation data point
-	FieldPrecipitation
-	// FieldPrecipitation10m represents the Precipitation10m data point
-	FieldPrecipitation10m
-	// FieldPrecipitation1h represents the Precipitation1h data point
-	FieldPrecipitation1h
-	// FieldPrecipitation24h represents the Precipitation24h data point
-	FieldPrecipitation24h
-	// FieldTemperatureMean represents the TemperatureMean data point
-	FieldTemperatureMean
 	// FieldDewpointMean represents the TemperatureMean data point
 	FieldDewpointMean
 	// FieldGlobalRadiation10m represents the GlobalRadiation10m data point
@@ -48,6 +22,34 @@ const (
 	FieldGlobalRadiation1h
 	// FieldGlobalRadiation24h represents the GlobalRadiation24h data point
 	FieldGlobalRadiation24h
+	// FieldHumidityRelative represents the HumidityRelative data point
+	FieldHumidityRelative
+	// FieldPrecipitation represents the Precipitation data point
+	FieldPrecipitation
+	// FieldPrecipitation10m represents the Precipitation10m data point
+	FieldPrecipitation10m
+	// FieldPrecipitation1h represents the Precipitation1h data point
+	FieldPrecipitation1h
+	// FieldPrecipitation24h represents the Precipitation24h data point
+	FieldPrecipitation24h
+	// FieldPressureMSL represents the PressureMSL data point
+	FieldPressureMSL
+	// FieldPressureQFE represents the PressureQFE data point
+	FieldPressureQFE
+	// FieldTemperature represents the Temperature data point
+	FieldTemperature
+	// FieldTemperatureAtGround represents the TemperatureAtGround data point
+	FieldTemperatureAtGround
+	// FieldTemperatureAtGroundMin represents the TemperatureAtGroundMin data point
+	FieldTemperatureAtGroundMin
+	// FieldTemperatureMax represents the TemperatureMax data point
+	FieldTemperatureMax
+	// FieldTemperatureMean represents the TemperatureMean data point
+	FieldTemperatureMean
+	// FieldTemperatureMin represents the TemperatureMin data point
+	FieldTemperatureMin
+	// FieldWinddirection represents the Winddirection data point
+	FieldWinddirection
 	// FieldWindspeed represents the Windspeed data point
 	FieldWindspeed
 )
@@ -62,6 +64,37 @@ const (
 	// Timespan24Hours represents the last 24 hours
 	Timespan24Hours
 )
+
+// WindDirAbbrMap is a map to associate a wind direction degree value with
+// the abbreviated direction string
+var WindDirAbbrMap = map[float64]string{
+	0: "N", 11.25: "NbE", 22.5: "NNE", 33.75: "NEbN", 45: "NE", 56.25: "NEbE",
+	67.5: "ENE", 78.75: "EbN", 90: "E", 101.25: "EbS", 112.5: "ESE", 123.75: "SEbE",
+	135: "SE", 146.25: "SEbS", 157.5: "SSE", 168.75: "SbE", 180: "S",
+	191.25: "SbW", 202.5: "SSW", 213.75: "SWbS", 225: "SW", 236.25: "SWbW",
+	247.5: "WSW", 258.75: "WbS", 270: "W", 281.25: "WbN", 292.5: "WNW",
+	303.75: "NWbW", 315: "NW", 326.25: "NWbN", 337.5: "NNW", 348.75: "NbW",
+}
+
+// WindDirFullMap is a map to associate a wind direction degree value with
+// the full direction string
+var WindDirFullMap = map[float64]string{
+	0: "North", 11.25: "North by East", 22.5: "North-Northeast",
+	33.75: "Northeast by North", 45: "Northeast", 56.25: "Northeast by East",
+	67.5: "East-Northeast", 78.75: "East by North", 90: "East",
+	101.25: "East by South", 112.5: "East-Southeast", 123.75: "Southeast by East",
+	135: "Southeast", 146.25: "Southeast by South", 157.5: "South-Southeast",
+	168.75: "South by East", 180: "South", 191.25: "South by West",
+	202.5: "South-Southwest", 213.75: "Southwest by South", 225: "Southwest",
+	236.25: "Southwest by West", 247.5: "West-Southwest", 258.75: "West by South",
+	270: "West", 281.25: "West by North", 292.5: "West-Northwest",
+	303.75: "Northwest by West", 315: "Northwest", 326.25: "Northwest by North",
+	337.5: "North-Northwest", 348.75: "North by West",
+}
+
+// ErrUnsupportedDirection is returned when a direction degree is given,
+// that is not resolvable
+var ErrUnsupportedDirection = "Unsupported direction"
 
 // Observation represents the observation API response for a Station
 type Observation struct {
@@ -125,6 +158,9 @@ type ObservationData struct {
 	// Temperature5cm represents the minimum temperature 5cm above
 	// ground in °C
 	Temperature5cmMin *ObservationValue `json:"temp5cmMin,omitempty"`
+	// Winddirection represents the direction from which the wind
+	// originates in degree (0=N, 90=E, 180=S, 270=W)
+	Winddirection *ObservationValue `json:"windDirection,omitempty"`
 	// Windspeed represents the wind speed in knots
 	Windspeed *ObservationValue `json:"windSpeed,omitempty"`
 }
@@ -149,6 +185,10 @@ type ObservationField struct {
 // of an Observation
 type ObservationFieldName int
 
+// ObservationDirection is a type wrapper of an ObservationField for
+// holding directional values
+type ObservationDirection ObservationField
+
 // ObservationHumidity is a type wrapper of an ObservationField for
 // holding humidity values
 type ObservationHumidity ObservationField
@@ -165,13 +205,13 @@ type ObservationPressure ObservationField
 // holding radiation values
 type ObservationRadiation ObservationField
 
-// ObservationTemperature is a type wrapper of an ObservationField for
-// holding temperature values
-type ObservationTemperature ObservationField
-
 // ObservationSpeed is a type wrapper of an ObservationField for
 // holding speed values
 type ObservationSpeed ObservationField
+
+// ObservationTemperature is a type wrapper of an ObservationField for
+// holding temperature values
+type ObservationTemperature ObservationField
 
 // Timespan is a type wrapper for an int type
 type Timespan int
@@ -445,6 +485,21 @@ func (o Observation) GlobalRadiation(ts Timespan) ObservationRadiation {
 	}
 }
 
+// Winddirection returns the current direction from which the wind
+// originates in degree (0=N, 90=E, 180=S, 270=W) as ObservationDirection.
+// If the data point is not available in the Observation it will return
+// ObservationDirection in which the "not available" field will be true.
+func (o Observation) Winddirection() ObservationDirection {
+	if o.Data.Winddirection == nil {
+		return ObservationDirection{na: true}
+	}
+	return ObservationDirection{
+		dt: o.Data.Winddirection.DateTime,
+		n:  FieldWinddirection,
+		v:  o.Data.Winddirection.Value,
+	}
+}
+
 // Windspeed returns the current windspeed data point as ObservationSpeed.
 // If the data point is not available in the Observation it will return
 // ObservationSpeed in which the "not available" field will be true.
@@ -663,4 +718,47 @@ func (t ObservationSpeed) MPH() float64 {
 // MPHString returns the ObservationSpeed value as formatted string in mi/h
 func (t ObservationSpeed) MPHString() string {
 	return fmt.Sprintf("%.1fmi/h", t.MPH())
+}
+
+// IsAvailable returns true if an ObservationDirection value was
+// available at time of query
+func (t ObservationDirection) IsAvailable() bool {
+	return !t.na
+}
+
+// DateTime returns true if an ObservationDirection value was
+// available at time of query
+func (t ObservationDirection) DateTime() time.Time {
+	return t.dt
+}
+
+// Value returns the float64 value of an ObservationDirection in degrees
+// If the ObservationDirection is not available in the Observation
+// Vaule will return math.NaN instead.
+func (t ObservationDirection) Value() float64 {
+	if t.na {
+		return math.NaN()
+	}
+	return t.v
+}
+
+// String satisfies the fmt.Stringer interface for the ObservationDirection type
+func (t ObservationDirection) String() string {
+	return fmt.Sprintf("%.0f°", t.v)
+}
+
+// Direction returns the abbreviation string for a given ObservationDirection type
+func (t ObservationDirection) Direction() string {
+	if ds, ok := WindDirAbbrMap[t.v]; ok {
+		return ds
+	}
+	return ErrUnsupportedDirection
+}
+
+// DirectionFull returns the full string for a given ObservationDirection type
+func (t ObservationDirection) DirectionFull() string {
+	if ds, ok := WindDirFullMap[t.v]; ok {
+		return ds
+	}
+	return ErrUnsupportedDirection
 }

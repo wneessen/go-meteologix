@@ -1104,6 +1104,61 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation24h(t *testing.T) {
 	}
 }
 
+func TestClient_ObservationLatestByStationID_Winddirection(t *testing.T) {
+	tt := []struct {
+		// Test name
+		n string
+		// Station ID
+		sid string
+		// Observation dewpoint
+		p *ObservationDirection
+	}{
+		{"K-Botanischer Garten", "199942", nil},
+		{"K-Stammheim", "H744", nil},
+		{"All data fields", "all", &ObservationDirection{
+			dt: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
+			v:  90,
+		}},
+		{"No data fields", "none", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.n, func(t *testing.T) {
+			o, err := c.ObservationLatestByStationID(tc.sid)
+			if err != nil {
+				t.Errorf("ObservationLatestByStationID with station %s failed: %s", tc.sid, err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.Winddirection().String() {
+				t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
+					"string: %s, got: %s", tc.p.String(), o.Winddirection())
+			}
+			if tc.p != nil && tc.p.Value() != o.Winddirection().Value() {
+				t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
+					"float: %f, got: %f", tc.p.Value(), o.Winddirection().Value())
+			}
+			if tc.p != nil && tc.p.dt.Unix() != o.Winddirection().DateTime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.p.dt.Format(time.RFC3339), o.Winddirection().DateTime().Format(time.RFC3339))
+			}
+			if tc.p == nil {
+				if o.Winddirection().IsAvailable() {
+					t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
+						"to have no data, but got: %s", o.Winddirection())
+				}
+				if !math.IsNaN(o.Winddirection().Value()) {
+					t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
+						"to return NaN, but got: %s", o.Winddirection().String())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 	tt := []struct {
 		// Test name
@@ -1115,7 +1170,10 @@ func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", nil},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &ObservationSpeed{v: 15}},
+		{"All data fields", "all", &ObservationSpeed{
+			dt: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
+			v:  15,
+		}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -1137,6 +1195,10 @@ func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 			if tc.p != nil && tc.p.Value() != o.Windspeed().Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
 					"float: %f, got: %f", tc.p.Value(), o.Windspeed().Value())
+			}
+			if tc.p != nil && tc.p.dt.Unix() != o.Windspeed().DateTime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.p.dt.Format(time.RFC3339), o.Windspeed().DateTime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
 				if o.Windspeed().IsAvailable() {
@@ -1237,9 +1299,6 @@ func TestObservationSpeed_Conversion(t *testing.T) {
 	for _, tc := range tt {
 		t.Run(fmt.Sprintf("%.0fkn", tc.kn), func(t *testing.T) {
 			os := ObservationSpeed{v: tc.kn}
-			t.Log(os.String())
-			t.Log(os.KMHString())
-			t.Log(os.MPHString())
 			if os.Value() != tc.kn {
 				t.Errorf("ObservationSpeed.Value failed, expected: %f, got: %f", tc.kn,
 					os.Value())
@@ -1263,6 +1322,110 @@ func TestObservationSpeed_Conversion(t *testing.T) {
 			if os.MPHString() != fmt.Sprintf(mphf, tc.mph) {
 				t.Errorf("ObservationSpeed.MPHString failed, expected: %s, got: %s",
 					fmt.Sprintf(mphf, tc.mph), os.MPHString())
+			}
+		})
+	}
+}
+
+func TestObservationDirection_Direction(t *testing.T) {
+	tt := []struct {
+		// Original direction in degree
+		d float64
+		// Direction string
+		ds string
+	}{
+		{0, "N"},
+		{11.25, "NbE"},
+		{22.5, "NNE"},
+		{33.75, "NEbN"},
+		{45, "NE"},
+		{56.25, "NEbE"},
+		{67.5, "ENE"},
+		{78.75, "EbN"},
+		{90, "E"},
+		{101.25, "EbS"},
+		{112.5, "ESE"},
+		{123.75, "SEbE"},
+		{135, "SE"},
+		{146.25, "SEbS"},
+		{157.5, "SSE"},
+		{168.75, "SbE"},
+		{180, "S"},
+		{191.25, "SbW"},
+		{202.5, "SSW"},
+		{213.75, "SWbS"},
+		{225, "SW"},
+		{236.25, "SWbW"},
+		{247.5, "WSW"},
+		{258.75, "WbS"},
+		{270, "W"},
+		{281.25, "WbN"},
+		{292.5, "WNW"},
+		{303.75, "NWbW"},
+		{315, "NW"},
+		{326.25, "NWbN"},
+		{337.5, "NNW"},
+		{348.75, "NbW"},
+		{999, ErrUnsupportedDirection},
+	}
+	for _, tc := range tt {
+		t.Run(fmt.Sprintf("%.2f° => %s", tc.d, tc.ds), func(t *testing.T) {
+			d := ObservationDirection{v: tc.d}
+			if d.Direction() != tc.ds {
+				t.Errorf("ObservationDirection.Direction failed, expected: %s, got: %s",
+					tc.ds, d.Direction())
+			}
+		})
+	}
+}
+
+func TestObservationDirection_DirectionFull(t *testing.T) {
+	tt := []struct {
+		// Original direction in degree
+		d float64
+		// Direction string
+		ds string
+	}{
+		{0, "North"},
+		{11.25, "North by East"},
+		{22.5, "North-Northeast"},
+		{33.75, "Northeast by North"},
+		{45, "Northeast"},
+		{56.25, "Northeast by East"},
+		{67.5, "East-Northeast"},
+		{78.75, "East by North"},
+		{90, "East"},
+		{101.25, "East by South"},
+		{112.5, "East-Southeast"},
+		{123.75, "Southeast by East"},
+		{135, "Southeast"},
+		{146.25, "Southeast by South"},
+		{157.5, "South-Southeast"},
+		{168.75, "South by East"},
+		{180, "South"},
+		{191.25, "South by West"},
+		{202.5, "South-Southwest"},
+		{213.75, "Southwest by South"},
+		{225, "Southwest"},
+		{236.25, "Southwest by West"},
+		{247.5, "West-Southwest"},
+		{258.75, "West by South"},
+		{270, "West"},
+		{281.25, "West by North"},
+		{292.5, "West-Northwest"},
+		{303.75, "Northwest by West"},
+		{315, "Northwest"},
+		{326.25, "Northwest by North"},
+		{337.5, "North-Northwest"},
+		{348.75, "North by West"},
+		{999, ErrUnsupportedDirection},
+	}
+	for _, tc := range tt {
+		t.Run(fmt.Sprintf("%.2f° => %s", tc.d, tc.ds), func(t *testing.T) {
+			d := ObservationDirection{v: tc.d}
+			if d.DirectionFull() != tc.ds {
+				t.Errorf("ObservationDirection.Direction failed, expected: %s, got: %s",
+					tc.ds, d.DirectionFull())
 			}
 		})
 	}
