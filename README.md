@@ -124,3 +124,34 @@ func main() {
 	}
 }
 ```
+
+### Get latest station observation by location
+
+This program takes a location string, searches for the weather station with the shortest distancen and looks up 
+the station's latest observation data. We then print out the temperature in C and F, as well as the station name
+and the time of the measurement (if the data point is available from that station).
+
+```go
+package main
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/wneessen/go-meteologix"
+)
+
+func main() {
+	c := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
+	o, s, err := c.ObservationLatestByLocation("Ehrenfeld, Germany")
+	if err != nil {
+		fmt.Printf("Failed: %s\n", err)
+		os.Exit(1)
+	}
+	if o.Temperature().IsAvailable() {
+		fmt.Printf("Temperature at %s: %s/%s (time of measurement: %s)\n",
+			s.Name, o.Temperature(), o.Temperature().FahrenheitString(),
+			o.Temperature().DateTime().Local().Format("15:04h"))
+	}
+}
+```
