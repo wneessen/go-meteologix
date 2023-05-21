@@ -60,6 +60,74 @@ func TestClient_ObservationLatestByStationID_Mock(t *testing.T) {
 	}
 }
 
+func TestClient_ObservationLatestByStationID_MockFail(t *testing.T) {
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	_, err := c.ObservationLatestByStationID(" ")
+	if err == nil {
+		t.Errorf("ObservationLatestByStationID with non-sense station ID was supposed to fail, but didn't")
+	}
+}
+
+func TestClient_ObservationLatestByLocation(t *testing.T) {
+	ak := getAPIKeyFromEnv(t)
+	if ak == "" {
+		t.Skip("no API_KEY found in environment, skipping test")
+	}
+	c := New(WithAPIKey(ak))
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	o, s, err := c.ObservationLatestByLocation("Ehrenfeld, Germany")
+	if err != nil {
+		t.Errorf("ObservationLatestByLocation failed: %s", err)
+		return
+	}
+	if o.Name != "Koeln-Botanischer Garten" {
+		t.Errorf("ObservationLatestByLocation failed, expected name: %s, got: %s",
+			"Koeln-Botanischer Garten", o.Name)
+	}
+	if o.StationID != s.ID {
+		t.Errorf("ObservationLatestByLocation failed, expected ID: %s, got: %s",
+			"Köln-Botanischer Garten", o.StationID)
+	}
+	if o.Altitude != nil && *o.Altitude != s.Altitude {
+		t.Errorf("ObservationLatestByLocation failed, expected altitude: %d, got: %d",
+			s.Altitude, *o.Altitude)
+	}
+	if o.Altitude == nil {
+		t.Errorf("ObservationLatestByLocation failed, expected altitude, got nil")
+	}
+	if o.Latitude != 50.966700 {
+		t.Errorf("ObservationLatestByLocation failed, expected latitude: %f, got: %f",
+			50.966700, o.Latitude)
+	}
+	if o.Longitude != 6.966700 {
+		t.Errorf("ObservationLatestByLocation failed, expected longitude: %f, got: %f",
+			6.966700, o.Longitude)
+	}
+}
+
+func TestClient_ObservationLatestByLocation_Fail(t *testing.T) {
+	ak := getAPIKeyFromEnv(t)
+	if ak == "" {
+		t.Skip("no API_KEY found in environment, skipping test")
+	}
+	c := New(WithAPIKey(ak))
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	_, _, err := c.ObservationLatestByLocation("Timbugtu")
+	if err == nil {
+		t.Errorf("ObservationLatestByLocation with non-sense location was supposed to fail, but didn't")
+	}
+}
+
 func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 	tt := []struct {
 		// Test name
@@ -857,6 +925,28 @@ func TestClient_ObservationLatestByStationID_PressureQFE(t *testing.T) {
 	}
 }
 
+func TestClient_ObservationLatestByStationID_GlobalRadiationCurrent(t *testing.T) {
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	o, err := c.ObservationLatestByStationID("199942")
+	if err != nil {
+		t.Errorf("ObservationLatestByStationID with station %s "+
+			"failed: %s", "199942", err)
+		return
+	}
+	if o.GlobalRadiation(TimespanCurrent).IsAvailable() {
+		t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+			"to have no data, but got: %s", o.GlobalRadiation(TimespanCurrent))
+	}
+	if !math.IsNaN(o.GlobalRadiation(TimespanCurrent).Value()) {
+		t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
+			"to return NaN, but got: %s", o.GlobalRadiation(TimespanCurrent).String())
+	}
+}
+
 func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 	tt := []struct {
 		// Test name
@@ -866,9 +956,15 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 		// Observation radiation
 		p *ObservationRadiation
 	}{
-		{"K-Botanischer Garten", "199942", &ObservationRadiation{v: 0}},
+		{"K-Botanischer Garten", "199942", &ObservationRadiation{
+			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			v:  0,
+		}},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &ObservationRadiation{v: 62}},
+		{"All data fields", "all", &ObservationRadiation{
+			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			v:  62,
+		}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -891,6 +987,10 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 			if tc.p != nil && tc.p.Value() != o.GlobalRadiation(Timespan10Min).Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
 					"float: %f, got: %f", tc.p.Value(), o.GlobalRadiation(Timespan10Min).Value())
+			}
+			if tc.p != nil && tc.p.dt.Unix() != o.GlobalRadiation(Timespan10Min).DateTime().Unix() {
+				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
+					tc.p.dt.Format(time.RFC3339), o.GlobalRadiation(Timespan10Min).DateTime().Format(time.RFC3339))
 			}
 			if tc.p == nil {
 				if o.GlobalRadiation(Timespan10Min).IsAvailable() {
