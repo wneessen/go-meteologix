@@ -7,90 +7,7 @@ package meteologix
 import (
 	"encoding/json"
 	"fmt"
-	"math"
-	"time"
 )
-
-const (
-	// FieldDewpoint represents the Dewpoint data point
-	FieldDewpoint ObservationFieldName = iota
-	// FieldDewpointMean represents the TemperatureMean data point
-	FieldDewpointMean
-	// FieldGlobalRadiation10m represents the GlobalRadiation10m data point
-	FieldGlobalRadiation10m
-	// FieldGlobalRadiation1h represents the GlobalRadiation1h data point
-	FieldGlobalRadiation1h
-	// FieldGlobalRadiation24h represents the GlobalRadiation24h data point
-	FieldGlobalRadiation24h
-	// FieldHumidityRelative represents the HumidityRelative data point
-	FieldHumidityRelative
-	// FieldPrecipitation represents the Precipitation data point
-	FieldPrecipitation
-	// FieldPrecipitation10m represents the Precipitation10m data point
-	FieldPrecipitation10m
-	// FieldPrecipitation1h represents the Precipitation1h data point
-	FieldPrecipitation1h
-	// FieldPrecipitation24h represents the Precipitation24h data point
-	FieldPrecipitation24h
-	// FieldPressureMSL represents the PressureMSL data point
-	FieldPressureMSL
-	// FieldPressureQFE represents the PressureQFE data point
-	FieldPressureQFE
-	// FieldTemperature represents the Temperature data point
-	FieldTemperature
-	// FieldTemperatureAtGround represents the TemperatureAtGround data point
-	FieldTemperatureAtGround
-	// FieldTemperatureAtGroundMin represents the TemperatureAtGroundMin data point
-	FieldTemperatureAtGroundMin
-	// FieldTemperatureMax represents the TemperatureMax data point
-	FieldTemperatureMax
-	// FieldTemperatureMean represents the TemperatureMean data point
-	FieldTemperatureMean
-	// FieldTemperatureMin represents the TemperatureMin data point
-	FieldTemperatureMin
-	// FieldWinddirection represents the Winddirection data point
-	FieldWinddirection
-	// FieldWindspeed represents the Windspeed data point
-	FieldWindspeed
-)
-
-const (
-	// TimespanCurrent represents the moment of the last observation
-	TimespanCurrent Timespan = iota
-	// Timespan10Min represents the last 10 minutes
-	Timespan10Min
-	// Timespan1Hour represents the last hour
-	Timespan1Hour
-	// Timespan24Hours represents the last 24 hours
-	Timespan24Hours
-)
-
-// WindDirAbbrMap is a map to associate a wind direction degree value with
-// the abbreviated direction string
-var WindDirAbbrMap = map[float64]string{
-	0: "N", 11.25: "NbE", 22.5: "NNE", 33.75: "NEbN", 45: "NE", 56.25: "NEbE",
-	67.5: "ENE", 78.75: "EbN", 90: "E", 101.25: "EbS", 112.5: "ESE", 123.75: "SEbE",
-	135: "SE", 146.25: "SEbS", 157.5: "SSE", 168.75: "SbE", 180: "S",
-	191.25: "SbW", 202.5: "SSW", 213.75: "SWbS", 225: "SW", 236.25: "SWbW",
-	247.5: "WSW", 258.75: "WbS", 270: "W", 281.25: "WbN", 292.5: "WNW",
-	303.75: "NWbW", 315: "NW", 326.25: "NWbN", 337.5: "NNW", 348.75: "NbW",
-}
-
-// WindDirFullMap is a map to associate a wind direction degree value with
-// the full direction string
-var WindDirFullMap = map[float64]string{
-	0: "North", 11.25: "North by East", 22.5: "North-Northeast",
-	33.75: "Northeast by North", 45: "Northeast", 56.25: "Northeast by East",
-	67.5: "East-Northeast", 78.75: "East by North", 90: "East",
-	101.25: "East by South", 112.5: "East-Southeast", 123.75: "Southeast by East",
-	135: "Southeast", 146.25: "Southeast by South", 157.5: "South-Southeast",
-	168.75: "South by East", 180: "South", 191.25: "South by West",
-	202.5: "South-Southwest", 213.75: "Southwest by South", 225: "Southwest",
-	236.25: "Southwest by West", 247.5: "West-Southwest", 258.75: "West by South",
-	270: "West", 281.25: "West by North", 292.5: "West-Northwest",
-	303.75: "Northwest by West", 315: "Northwest", 326.25: "Northwest by North",
-	337.5: "North-Northwest", 348.75: "North by West",
-}
 
 // ErrUnsupportedDirection is returned when a direction degree is given,
 // that is not resolvable
@@ -100,8 +17,8 @@ var ErrUnsupportedDirection = "Unsupported direction"
 type Observation struct {
 	// Altitude is the altitude of the station providing the Observation
 	Altitude *int `json:"ele,omitempty"`
-	// Data holds the different ObservationData points
-	Data ObservationData `json:"data"`
+	// Data holds the different APIObservationData points
+	Data APIObservationData `json:"data"`
 	// Name is the name of the Station providing the Observation
 	Name string `json:"name"`
 	// Latitude represents the GeoLocation latitude coordinates for the Station
@@ -112,109 +29,59 @@ type Observation struct {
 	StationID string `json:"stationId"`
 }
 
-// ObservationData holds the different data points of the Observation.
+// APIObservationData holds the different data points of the Observation as
+// returned by the station observation API endpoints.
 //
 // Please keep in mind that different Station types return different values, therefore
 // all values are represented as pointer type returning nil if the data point in question
 // is not returned for the requested Station.
-type ObservationData struct {
+type APIObservationData struct {
 	// Dewpoint represents the dewpoint in °C
-	Dewpoint *ObservationValue `json:"dewpoint,omitempty"`
+	Dewpoint *APIValue `json:"dewpoint,omitempty"`
 	// DewPointMean represents the mean dewpoint in °C
-	DewpointMean *ObservationValue `json:"dewpointMean,omitempty"`
+	DewpointMean *APIValue `json:"dewpointMean,omitempty"`
 	// GlobalRadiation10m represents the sum of global radiation over the last
 	// 10 minutes in kJ/m²
-	GlobalRadiation10m *ObservationValue `json:"globalRadiation10m,omitempty"`
+	GlobalRadiation10m *APIValue `json:"globalRadiation10m,omitempty"`
 	// GlobalRadiation1h represents the sum of global radiation over the last
 	// 1 hour in kJ/m²
-	GlobalRadiation1h *ObservationValue `json:"globalRadiation1h,omitempty"`
+	GlobalRadiation1h *APIValue `json:"globalRadiation1h,omitempty"`
 	// GlobalRadiation24h represents the sum of global radiation over the last
 	// 24 hour in kJ/m²
-	GlobalRadiation24h *ObservationValue `json:"globalRadiation24h,omitempty"`
+	GlobalRadiation24h *APIValue `json:"globalRadiation24h,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
-	HumidityRelative *ObservationValue `json:"humidityRelative,omitempty"`
+	HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
-	Precipitation *ObservationValue `json:"prec"`
+	Precipitation *APIValue `json:"prec"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
-	Precipitation10m *ObservationValue `json:"prec10m"`
+	Precipitation10m *APIValue `json:"prec10m"`
 	// Precipitation1h represents the amount of precipitation over the last hour
-	Precipitation1h *ObservationValue `json:"prec1h"`
+	Precipitation1h *APIValue `json:"prec1h"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
-	Precipitation24h *ObservationValue `json:"prec24h"`
+	Precipitation24h *APIValue `json:"prec24h"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
-	PressureMSL *ObservationValue `json:"pressureMsl"`
+	PressureMSL *APIValue `json:"pressureMsl"`
 	// PressureMSL represents the pressure at station level (QFE) in hPa
-	PressureQFE *ObservationValue `json:"pressure"`
+	PressureQFE *APIValue `json:"pressure"`
 	// Temperature represents the temperature in °C
-	Temperature *ObservationValue `json:"temp,omitempty"`
+	Temperature *APIValue `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
-	TemperatureMax *ObservationValue `json:"tempMax,omitempty"`
+	TemperatureMax *APIValue `json:"tempMax,omitempty"`
 	// TemperatureMean represents the mean temperature in °C
-	TemperatureMean *ObservationValue `json:"tempMean,omitempty"`
+	TemperatureMean *APIValue `json:"tempMean,omitempty"`
 	// TemperatureMin represents the minimum temperature in °C
-	TemperatureMin *ObservationValue `json:"tempMin,omitempty"`
+	TemperatureMin *APIValue `json:"tempMin,omitempty"`
 	// Temperature5cm represents the temperature 5cm above ground in °C
-	Temperature5cm *ObservationValue `json:"temp5cm,omitempty"`
+	Temperature5cm *APIValue `json:"temp5cm,omitempty"`
 	// Temperature5cm represents the minimum temperature 5cm above
 	// ground in °C
-	Temperature5cmMin *ObservationValue `json:"temp5cmMin,omitempty"`
+	Temperature5cmMin *APIValue `json:"temp5cmMin,omitempty"`
 	// Winddirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
-	Winddirection *ObservationValue `json:"windDirection,omitempty"`
+	Winddirection *APIValue `json:"windDirection,omitempty"`
 	// Windspeed represents the wind speed in knots
-	Windspeed *ObservationValue `json:"windSpeed,omitempty"`
+	Windspeed *APIValue `json:"windSpeed,omitempty"`
 }
-
-// ObservationValue is the JSON structure of the Observation data that is
-// returned by the API endpoints
-type ObservationValue struct {
-	DateTime time.Time `json:"dateTime"`
-	Value    float64   `json:"value"`
-}
-
-// ObservationField is a type that holds Observation data and can be wrapped
-// into other types to provide type specific receiver methods
-type ObservationField struct {
-	dt time.Time
-	n  ObservationFieldName
-	na bool
-	v  float64
-}
-
-// ObservationFieldName is a type wrapper for an int for field names
-// of an Observation
-type ObservationFieldName int
-
-// ObservationDirection is a type wrapper of an ObservationField for
-// holding directional values
-type ObservationDirection ObservationField
-
-// ObservationHumidity is a type wrapper of an ObservationField for
-// holding humidity values
-type ObservationHumidity ObservationField
-
-// ObservationPrecipitation is a type wrapper for a precipitation value
-// in an Observation
-type ObservationPrecipitation ObservationField
-
-// ObservationPressure is a type wrapper for a pressure value
-// in an Observation
-type ObservationPressure ObservationField
-
-// ObservationRadiation is a type wrapper of an ObservationField for
-// holding radiation values
-type ObservationRadiation ObservationField
-
-// ObservationSpeed is a type wrapper of an ObservationField for
-// holding speed values
-type ObservationSpeed ObservationField
-
-// ObservationTemperature is a type wrapper of an ObservationField for
-// holding temperature values
-type ObservationTemperature ObservationField
-
-// Timespan is a type wrapper for an int type
-type Timespan int
 
 // ObservationLatestByStationID returns the latest Observation values from the
 // given Station
@@ -247,185 +114,196 @@ func (c *Client) ObservationLatestByLocation(l string) (Observation, Station, er
 	return o, s, err
 }
 
-// Dewpoint returns the dewpoint data point as ObservationTemperature
+// Dewpoint returns the dewpoint data point as Temperature
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) Dewpoint() ObservationTemperature {
+func (o Observation) Dewpoint() Temperature {
 	if o.Data.Dewpoint == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.Dewpoint.DateTime,
 		n:  FieldDewpoint,
+		s:  SourceObservation,
 		v:  o.Data.Dewpoint.Value,
 	}
 }
 
-// DewpointMean returns the mean dewpoint data point as ObservationTemperature.
+// DewpointMean returns the mean dewpoint data point as Temperature.
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) DewpointMean() ObservationTemperature {
+func (o Observation) DewpointMean() Temperature {
 	if o.Data.DewpointMean == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.DewpointMean.DateTime,
 		n:  FieldDewpointMean,
+		s:  SourceObservation,
 		v:  o.Data.DewpointMean.Value,
 	}
 }
 
-// Temperature returns the temperature data point as ObservationTemperature.
+// Temperature returns the temperature data point as Temperature.
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) Temperature() ObservationTemperature {
+func (o Observation) Temperature() Temperature {
 	if o.Data.Temperature == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.Temperature.DateTime,
 		n:  FieldTemperature,
+		s:  SourceObservation,
 		v:  o.Data.Temperature.Value,
 	}
 }
 
 // TemperatureAtGround returns the temperature at ground level (5cm)
-// data point as ObservationTemperature.
+// data point as Temperature.
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) TemperatureAtGround() ObservationTemperature {
+func (o Observation) TemperatureAtGround() Temperature {
 	if o.Data.Temperature5cm == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.Temperature5cm.DateTime,
 		n:  FieldTemperatureAtGround,
+		s:  SourceObservation,
 		v:  o.Data.Temperature5cm.Value,
 	}
 }
 
 // TemperatureMax returns the maximum temperature so far data point as
-// ObservationTemperature.
+// Temperature.
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) TemperatureMax() ObservationTemperature {
+func (o Observation) TemperatureMax() Temperature {
 	if o.Data.TemperatureMax == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.TemperatureMax.DateTime,
 		n:  FieldTemperatureMax,
+		s:  SourceObservation,
 		v:  o.Data.TemperatureMax.Value,
 	}
 }
 
 // TemperatureMin returns the minimum temperature so far data point as
-// ObservationTemperature.
+// Temperature.
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) TemperatureMin() ObservationTemperature {
+func (o Observation) TemperatureMin() Temperature {
 	if o.Data.TemperatureMin == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.TemperatureMin.DateTime,
 		n:  FieldTemperatureMin,
+		s:  SourceObservation,
 		v:  o.Data.TemperatureMin.Value,
 	}
 }
 
 // TemperatureAtGroundMin returns the minimum temperature so far
-// at ground level (5cm) data point as ObservationTemperature
+// at ground level (5cm) data point as Temperature
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) TemperatureAtGroundMin() ObservationTemperature {
+func (o Observation) TemperatureAtGroundMin() Temperature {
 	if o.Data.Temperature5cmMin == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.Temperature5cmMin.DateTime,
 		n:  FieldTemperatureAtGroundMin,
+		s:  SourceObservation,
 		v:  o.Data.Temperature5cmMin.Value,
 	}
 }
 
-// TemperatureMean returns the mean temperature data point as ObservationTemperature.
+// TemperatureMean returns the mean temperature data point as Temperature.
 // If the data point is not available in the Observation it will return
-// ObservationTemperature in which the "not available" field will be
+// Temperature in which the "not available" field will be
 // true.
-func (o Observation) TemperatureMean() ObservationTemperature {
+func (o Observation) TemperatureMean() Temperature {
 	if o.Data.TemperatureMean == nil {
-		return ObservationTemperature{na: true}
+		return Temperature{na: true}
 	}
-	return ObservationTemperature{
+	return Temperature{
 		dt: o.Data.TemperatureMean.DateTime,
 		n:  FieldTemperatureMean,
+		s:  SourceObservation,
 		v:  o.Data.TemperatureMean.Value,
 	}
 }
 
 // HumidityRelative returns the relative humidity data point as float64.
 // If the data point is not available in the Observation it will return
-// ObservationHumidity in which the "not available" field will be
+// Humidity in which the "not available" field will be
 // true.
-func (o Observation) HumidityRelative() ObservationHumidity {
+func (o Observation) HumidityRelative() Humidity {
 	if o.Data.HumidityRelative == nil {
-		return ObservationHumidity{na: true}
+		return Humidity{na: true}
 	}
-	return ObservationHumidity{
+	return Humidity{
 		dt: o.Data.HumidityRelative.DateTime,
 		n:  FieldHumidityRelative,
+		s:  SourceObservation,
 		v:  o.Data.HumidityRelative.Value,
 	}
 }
 
 // PressureMSL returns the relative pressure at mean seal level data point
-// as ObservationPressure.
+// as Pressure.
 // If the data point is not available in the Observation it will return
-// ObservationPressure in which the "not available" field will be
+// Pressure in which the "not available" field will be
 // true.
-func (o Observation) PressureMSL() ObservationPressure {
+func (o Observation) PressureMSL() Pressure {
 	if o.Data.PressureMSL == nil {
-		return ObservationPressure{na: true}
+		return Pressure{na: true}
 	}
-	return ObservationPressure{
+	return Pressure{
 		dt: o.Data.PressureMSL.DateTime,
 		n:  FieldPressureMSL,
+		s:  SourceObservation,
 		v:  o.Data.PressureMSL.Value,
 	}
 }
 
 // PressureQFE returns the relative pressure at mean seal level data point
-// as ObservationPressure.
+// as Pressure.
 // If the data point is not available in the Observation it will return
-// ObservationPressure in which the "not available" field will be
+// Pressure in which the "not available" field will be
 // true.
-func (o Observation) PressureQFE() ObservationPressure {
+func (o Observation) PressureQFE() Pressure {
 	if o.Data.PressureQFE == nil {
-		return ObservationPressure{na: true}
+		return Pressure{na: true}
 	}
-	return ObservationPressure{
+	return Pressure{
 		dt: o.Data.PressureQFE.DateTime,
 		n:  FieldPressureQFE,
+		s:  SourceObservation,
 		v:  o.Data.PressureQFE.Value,
 	}
 }
 
 // Precipitation returns the current amount of precipitation (mm) as
-// ObservationPrecipitation
+// Precipitation
 // If the data point is not available in the Observation it will return
-// ObservationPrecipitation in which the "not available" field will be
+// Precipitation in which the "not available" field will be
 // true.
-func (o Observation) Precipitation(ts Timespan) ObservationPrecipitation {
-	var df *ObservationValue
-	var fn ObservationFieldName
+func (o Observation) Precipitation(ts Timespan) Precipitation {
+	var df *APIValue
+	var fn Fieldname
 	switch ts {
 	case TimespanCurrent:
 		df = o.Data.Precipitation
@@ -440,27 +318,28 @@ func (o Observation) Precipitation(ts Timespan) ObservationPrecipitation {
 		df = o.Data.Precipitation24h
 		fn = FieldPrecipitation24h
 	default:
-		return ObservationPrecipitation{na: true}
+		return Precipitation{na: true}
 	}
 
 	if df == nil {
-		return ObservationPrecipitation{na: true}
+		return Precipitation{na: true}
 	}
-	return ObservationPrecipitation{
+	return Precipitation{
 		dt: df.DateTime,
 		n:  fn,
+		s:  SourceObservation,
 		v:  df.Value,
 	}
 }
 
 // GlobalRadiation returns the current amount of global radiation as
-// ObservationRadiation
+// Radiation
 // If the data point is not available in the Observation it will return
-// ObservationRadiation in which the "not available" field will be
+// Radiation in which the "not available" field will be
 // true.
-func (o Observation) GlobalRadiation(ts Timespan) ObservationRadiation {
-	var df *ObservationValue
-	var fn ObservationFieldName
+func (o Observation) GlobalRadiation(ts Timespan) Radiation {
+	var df *APIValue
+	var fn Fieldname
 	switch ts {
 	case Timespan10Min:
 		df = o.Data.GlobalRadiation10m
@@ -472,293 +351,47 @@ func (o Observation) GlobalRadiation(ts Timespan) ObservationRadiation {
 		df = o.Data.GlobalRadiation24h
 		fn = FieldGlobalRadiation24h
 	default:
-		return ObservationRadiation{na: true}
+		return Radiation{na: true}
 	}
 
 	if df == nil {
-		return ObservationRadiation{na: true}
+		return Radiation{na: true}
 	}
-	return ObservationRadiation{
+	return Radiation{
 		dt: df.DateTime,
 		n:  fn,
+		s:  SourceObservation,
 		v:  df.Value,
 	}
 }
 
 // Winddirection returns the current direction from which the wind
-// originates in degree (0=N, 90=E, 180=S, 270=W) as ObservationDirection.
+// originates in degree (0=N, 90=E, 180=S, 270=W) as Direction.
 // If the data point is not available in the Observation it will return
-// ObservationDirection in which the "not available" field will be true.
-func (o Observation) Winddirection() ObservationDirection {
+// Direction in which the "not available" field will be true.
+func (o Observation) Winddirection() Direction {
 	if o.Data.Winddirection == nil {
-		return ObservationDirection{na: true}
+		return Direction{na: true}
 	}
-	return ObservationDirection{
+	return Direction{
 		dt: o.Data.Winddirection.DateTime,
 		n:  FieldWinddirection,
+		s:  SourceObservation,
 		v:  o.Data.Winddirection.Value,
 	}
 }
 
-// Windspeed returns the current windspeed data point as ObservationSpeed.
+// Windspeed returns the current windspeed data point as Speed.
 // If the data point is not available in the Observation it will return
-// ObservationSpeed in which the "not available" field will be true.
-func (o Observation) Windspeed() ObservationSpeed {
+// Speed in which the "not available" field will be true.
+func (o Observation) Windspeed() Speed {
 	if o.Data.Windspeed == nil {
-		return ObservationSpeed{na: true}
+		return Speed{na: true}
 	}
-	return ObservationSpeed{
+	return Speed{
 		dt: o.Data.Windspeed.DateTime,
 		n:  FieldWindspeed,
+		s:  SourceObservation,
 		v:  o.Data.Windspeed.Value,
 	}
-}
-
-// IsAvailable returns true if an ObservationTemperature value was
-// available at time of query
-func (t ObservationTemperature) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationTemperature value was
-// available at time of query
-func (t ObservationTemperature) DateTime() time.Time {
-	return t.dt
-}
-
-// Value returns the float64 value of an ObservationTemperature
-// If the ObservationTemperature is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationTemperature) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationTemperature type
-func (t ObservationTemperature) String() string {
-	return fmt.Sprintf("%.1f°C", t.v)
-}
-
-// Celsius returns the ObservationTemperature value in Celsius
-func (t ObservationTemperature) Celsius() float64 {
-	return t.v
-}
-
-// CelsiusString returns the ObservationTemperature value as Celsius
-// formated string.
-//
-// This is an alias for the fmt.Stringer interface
-func (t ObservationTemperature) CelsiusString() string {
-	return t.String()
-}
-
-// Fahrenheit returns the ObservationTemperature value in Fahrenheit
-func (t ObservationTemperature) Fahrenheit() float64 {
-	return t.v*9/5 + 32
-}
-
-// FahrenheitString returns the ObservationTemperature value as Fahrenheit
-// formated string.
-func (t ObservationTemperature) FahrenheitString() string {
-	return fmt.Sprintf("%.1f°F", t.Fahrenheit())
-}
-
-// IsAvailable returns true if an ObservationHumidity value was
-// available at time of query
-func (t ObservationHumidity) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationHumidity value was
-// available at time of query
-func (t ObservationHumidity) DateTime() time.Time {
-	return t.dt
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationHumidity type
-func (t ObservationHumidity) String() string {
-	return fmt.Sprintf("%.1f%%", t.v)
-}
-
-// Value returns the float64 value of an ObservationHumidity
-// If the ObservationHumidity is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationHumidity) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// IsAvailable returns true if an ObservationPrecipitation value was
-// available at time of query
-func (t ObservationPrecipitation) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationPrecipitation value was
-// available at time of query
-func (t ObservationPrecipitation) DateTime() time.Time {
-	return t.dt
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationPrecipitation type
-func (t ObservationPrecipitation) String() string {
-	return fmt.Sprintf("%.1fmm", t.v)
-}
-
-// Value returns the float64 value of an ObservationPrecipitation
-// If the ObservationPrecipitation is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationPrecipitation) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// IsAvailable returns true if an ObservationPressure value was
-// available at time of query
-func (t ObservationPressure) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationPressure value was
-// available at time of query
-func (t ObservationPressure) DateTime() time.Time {
-	return t.dt
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationPressure type
-func (t ObservationPressure) String() string {
-	return fmt.Sprintf("%.1fhPa", t.v)
-}
-
-// Value returns the float64 value of an ObservationPressure
-// If the ObservationPressure is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationPressure) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// IsAvailable returns true if an ObservationRadiation value was
-// available at time of query
-func (t ObservationRadiation) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationRadiation value was
-// available at time of query
-func (t ObservationRadiation) DateTime() time.Time {
-	return t.dt
-}
-
-// Value returns the float64 value of an ObservationRadiation
-// If the ObservationRadiation is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationRadiation) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationRadiation type
-func (t ObservationRadiation) String() string {
-	return fmt.Sprintf("%.0fkJ/m²", t.v)
-}
-
-// IsAvailable returns true if an ObservationSpeed value was
-// available at time of query
-func (t ObservationSpeed) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationSpeed value was
-// available at time of query
-func (t ObservationSpeed) DateTime() time.Time {
-	return t.dt
-}
-
-// Value returns the float64 value of an ObservationSpeed in knots
-// If the ObservationSpeed is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationSpeed) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationSpeed type
-func (t ObservationSpeed) String() string {
-	return fmt.Sprintf("%.0fkn", t.v)
-}
-
-// KMH returns the ObservationSpeed value in km/h
-func (t ObservationSpeed) KMH() float64 {
-	return t.v * 1.852
-}
-
-// KMHString returns the ObservationSpeed value as formatted string in km/h
-func (t ObservationSpeed) KMHString() string {
-	return fmt.Sprintf("%.1fkm/h", t.KMH())
-}
-
-// MPH returns the ObservationSpeed value in mi/h
-func (t ObservationSpeed) MPH() float64 {
-	return t.v * 1.151
-}
-
-// MPHString returns the ObservationSpeed value as formatted string in mi/h
-func (t ObservationSpeed) MPHString() string {
-	return fmt.Sprintf("%.1fmi/h", t.MPH())
-}
-
-// IsAvailable returns true if an ObservationDirection value was
-// available at time of query
-func (t ObservationDirection) IsAvailable() bool {
-	return !t.na
-}
-
-// DateTime returns true if an ObservationDirection value was
-// available at time of query
-func (t ObservationDirection) DateTime() time.Time {
-	return t.dt
-}
-
-// Value returns the float64 value of an ObservationDirection in degrees
-// If the ObservationDirection is not available in the Observation
-// Vaule will return math.NaN instead.
-func (t ObservationDirection) Value() float64 {
-	if t.na {
-		return math.NaN()
-	}
-	return t.v
-}
-
-// String satisfies the fmt.Stringer interface for the ObservationDirection type
-func (t ObservationDirection) String() string {
-	return fmt.Sprintf("%.0f°", t.v)
-}
-
-// Direction returns the abbreviation string for a given ObservationDirection type
-func (t ObservationDirection) Direction() string {
-	if ds, ok := WindDirAbbrMap[t.v]; ok {
-		return ds
-	}
-	return ErrUnsupportedDirection
-}
-
-// DirectionFull returns the full string for a given ObservationDirection type
-func (t ObservationDirection) DirectionFull() string {
-	if ds, ok := WindDirFullMap[t.v]; ok {
-		return ds
-	}
-	return ErrUnsupportedDirection
 }
