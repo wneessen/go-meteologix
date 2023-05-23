@@ -101,6 +101,10 @@ func TestClient_CurrentWeatherByLocation_Fail(t *testing.T) {
 	if err == nil {
 		t.Errorf("CurrentWeatherByCoordinates was supposed to fail, but didn't")
 	}
+	_, err = c.CurrentWeatherByLocation("")
+	if err == nil {
+		t.Errorf("CurrentWeatherByCoordinates was supposed to fail, but didn't")
+	}
 }
 
 func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
@@ -153,6 +157,62 @@ func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 				if !math.IsNaN(o.Temperature().Value()) {
 					t.Errorf("CurrentWeatherByLocation failed, expected temperature "+
 						"to return NaN, but got: %s", o.Temperature().String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// Observation dewpoint
+		t *Temperature
+	}{
+		{"Ehrenfeld, Germany", &Temperature{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceObservation,
+			v:  11.5,
+		}},
+		{"Berlin, Germany", &Temperature{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  11.0,
+		}},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.t != nil && tc.t.String() != o.Dewpoint().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected dewpoint "+
+					"string: %s, got: %s", tc.t.String(), o.Dewpoint())
+			}
+			if tc.t != nil && tc.t.Value() != o.Dewpoint().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected dewpoint "+
+					"float: %f, got: %f", tc.t.Value(), o.Dewpoint().Value())
+			}
+			if o.Dewpoint().Source() != tc.t.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.t.s, o.Dewpoint().Source())
+			}
+			if tc.t == nil {
+				if o.Dewpoint().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected dewpoint "+
+						"to have no data, but got: %s", o.Dewpoint())
+				}
+				if !math.IsNaN(o.Dewpoint().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected dewpoint "+
+						"to return NaN, but got: %s", o.Dewpoint().String())
 				}
 			}
 		})

@@ -30,9 +30,9 @@ type CurrentWeather struct {
 // all values are represented as pointer type returning nil if the data point in question
 // is not returned for the requested Station.
 type APICurrentWeatherData struct {
+	// Dewpoint represents the dewpoint in °C
+	Dewpoint *APIValue `json:"dewpoint,omitempty"`
 	/*
-		// Dewpoint represents the dewpoint in °C
-		Dewpoint *APIValue `json:"dewpoint,omitempty"`
 		// DewPointMean represents the mean dewpoint in °C
 		DewpointMean *APIValue `json:"dewpointMean,omitempty"`
 		// GlobalRadiation10m represents the sum of global radiation over the last
@@ -119,8 +119,7 @@ func (c *Client) CurrentWeatherByLocation(lo string) (CurrentWeather, error) {
 
 // Temperature returns the temperature data point as Temperature.
 // If the data point is not available in the CurrentWeather it will return
-// Temperature in which the "not available" field will be
-// true.
+// Temperature in which the "not available" field will be true.
 func (cw CurrentWeather) Temperature() Temperature {
 	if cw.Data.Temperature == nil {
 		return Temperature{na: true}
@@ -133,6 +132,25 @@ func (cw CurrentWeather) Temperature() Temperature {
 	}
 	if cw.Data.Temperature.Source != nil {
 		v.s = StringToSource(*cw.Data.Temperature.Source)
+	}
+	return v
+}
+
+// Dewpoint returns the dewpoint data point as Temperature.
+// If the data point is not available in the CurrentWeather it will return
+// Temperature in which the "not available" field will be true.
+func (cw CurrentWeather) Dewpoint() Temperature {
+	if cw.Data.Dewpoint == nil {
+		return Temperature{na: true}
+	}
+	v := Temperature{
+		dt: cw.Data.Dewpoint.DateTime,
+		n:  FieldDewpoint,
+		s:  SourceUnknown,
+		v:  cw.Data.Dewpoint.Value,
+	}
+	if cw.Data.Dewpoint.Source != nil {
+		v.s = StringToSource(*cw.Data.Dewpoint.Source)
 	}
 	return v
 }
