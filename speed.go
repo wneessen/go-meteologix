@@ -16,47 +16,53 @@ type Speed WeatherData
 
 // IsAvailable returns true if an Speed value was
 // available at time of query
-func (t Speed) IsAvailable() bool {
-	return !t.na
+func (s Speed) IsAvailable() bool {
+	return !s.na
 }
 
 // DateTime returns true if an Speed value was
 // available at time of query
-func (t Speed) DateTime() time.Time {
-	return t.dt
+func (s Speed) DateTime() time.Time {
+	return s.dt
 }
 
 // Value returns the float64 value of an Speed in knots
 // If the Speed is not available in the Observation
 // Vaule will return math.NaN instead.
-func (t Speed) Value() float64 {
-	if t.na {
+func (s Speed) Value() float64 {
+	if s.na {
 		return math.NaN()
 	}
-	return t.v
+	return s.v
 }
 
 // String satisfies the fmt.Stringer interface for the Speed type
-func (t Speed) String() string {
-	return fmt.Sprintf("%.0fkn", t.v)
+func (s Speed) String() string {
+	return fmt.Sprintf("%.0fkn", s.v)
+}
+
+// Source returns the Source of Speed
+// If the Source is not available it will return SourceUnknown
+func (s Speed) Source() Source {
+	return s.s
 }
 
 // KMH returns the Speed value in km/h
-func (t Speed) KMH() float64 {
-	return t.v * 1.852
+func (s Speed) KMH() float64 {
+	return s.v * 1.852
 }
 
 // KMHString returns the Speed value as formatted string in km/h
-func (t Speed) KMHString() string {
-	return fmt.Sprintf("%.1fkm/h", t.KMH())
+func (s Speed) KMHString() string {
+	return fmt.Sprintf("%.1fkm/h", s.KMH())
 }
 
 // MPH returns the Speed value in mi/h
-func (t Speed) MPH() float64 {
-	return t.v * 1.151
+func (s Speed) MPH() float64 {
+	return s.v * 1.151
 }
 
 // MPHString returns the Speed value as formatted string in mi/h
-func (t Speed) MPHString() string {
-	return fmt.Sprintf("%.1fmi/h", t.MPH())
+func (s Speed) MPHString() string {
+	return fmt.Sprintf("%.1fmi/h", s.MPH())
 }

@@ -285,6 +285,10 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.h.dt.Format(time.RFC3339), o.HumidityRelative().DateTime().Format(time.RFC3339))
 			}
+			if o.HumidityRelative().Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.HumidityRelative().Source())
+			}
 			if tc.h == nil {
 				if o.HumidityRelative().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected humidity "+
@@ -347,6 +351,10 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339),
 					o.Precipitation(TimespanCurrent).DateTime().Format(time.RFC3339))
+			}
+			if o.Precipitation(TimespanCurrent).Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.Precipitation(TimespanCurrent).Source())
 			}
 			if tc.p == nil {
 				if o.Precipitation(TimespanCurrent).IsAvailable() {
@@ -564,6 +572,10 @@ func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 			if tc.t != nil && tc.t.Value() != o.Temperature().Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected temperature "+
 					"float: %f, got: %f", tc.t.Value(), o.Temperature().Value())
+			}
+			if o.Temperature().Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.Temperature().Source())
 			}
 			if tc.t == nil {
 				if o.Temperature().IsAvailable() {
@@ -863,6 +875,10 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339), o.PressureMSL().DateTime().Format(time.RFC3339))
 			}
+			if o.PressureMSL().Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.PressureMSL().Source())
+			}
 			if tc.p == nil {
 				if o.PressureMSL().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
@@ -991,6 +1007,10 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 			if tc.p != nil && tc.p.dt.Unix() != o.GlobalRadiation(Timespan10Min).DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339), o.GlobalRadiation(Timespan10Min).DateTime().Format(time.RFC3339))
+			}
+			if o.GlobalRadiation(Timespan10Min).Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.GlobalRadiation(Timespan10Min).Source())
 			}
 			if tc.p == nil {
 				if o.GlobalRadiation(Timespan10Min).IsAvailable() {
@@ -1145,6 +1165,10 @@ func TestClient_ObservationLatestByStationID_Winddirection(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339), o.Winddirection().DateTime().Format(time.RFC3339))
 			}
+			if o.Winddirection().Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.Winddirection().Source())
+			}
 			if tc.p == nil {
 				if o.Winddirection().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
@@ -1199,6 +1223,10 @@ func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 			if tc.p != nil && tc.p.dt.Unix() != o.Windspeed().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
 					tc.p.dt.Format(time.RFC3339), o.Windspeed().DateTime().Format(time.RFC3339))
+			}
+			if o.Windspeed().Source() != SourceObservation {
+				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
+					o.Windspeed().Source())
 			}
 			if tc.p == nil {
 				if o.Windspeed().IsAvailable() {

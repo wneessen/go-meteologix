@@ -16,27 +16,33 @@ type Pressure WeatherData
 
 // IsAvailable returns true if an Pressure value was
 // available at time of query
-func (t Pressure) IsAvailable() bool {
-	return !t.na
+func (p Pressure) IsAvailable() bool {
+	return !p.na
 }
 
 // DateTime returns true if an Pressure value was
 // available at time of query
-func (t Pressure) DateTime() time.Time {
-	return t.dt
+func (p Pressure) DateTime() time.Time {
+	return p.dt
 }
 
 // String satisfies the fmt.Stringer interface for the Pressure type
-func (t Pressure) String() string {
-	return fmt.Sprintf("%.1fhPa", t.v)
+func (p Pressure) String() string {
+	return fmt.Sprintf("%.1fhPa", p.v)
+}
+
+// Source returns the Source of Pressure
+// If the Source is not available it will return SourceUnknown
+func (p Pressure) Source() Source {
+	return p.s
 }
 
 // Value returns the float64 value of an Pressure
 // If the Pressure is not available in the Observation
 // Vaule will return math.NaN instead.
-func (t Pressure) Value() float64 {
-	if t.na {
+func (p Pressure) Value() float64 {
+	if p.na {
 		return math.NaN()
 	}
-	return t.v
+	return p.v
 }

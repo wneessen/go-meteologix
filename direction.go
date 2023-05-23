@@ -43,42 +43,48 @@ type Direction WeatherData
 
 // IsAvailable returns true if an Direction value was
 // available at time of query
-func (t Direction) IsAvailable() bool {
-	return !t.na
+func (d Direction) IsAvailable() bool {
+	return !d.na
 }
 
 // DateTime returns true if an Direction value was
 // available at time of query
-func (t Direction) DateTime() time.Time {
-	return t.dt
+func (d Direction) DateTime() time.Time {
+	return d.dt
 }
 
 // Value returns the float64 value of an Direction in degrees
 // If the Direction is not available in the Observation
 // Vaule will return math.NaN instead.
-func (t Direction) Value() float64 {
-	if t.na {
+func (d Direction) Value() float64 {
+	if d.na {
 		return math.NaN()
 	}
-	return t.v
+	return d.v
 }
 
 // String satisfies the fmt.Stringer interface for the Direction type
-func (t Direction) String() string {
-	return fmt.Sprintf("%.0f°", t.v)
+func (d Direction) String() string {
+	return fmt.Sprintf("%.0f°", d.v)
+}
+
+// Source returns the Source of a Direction
+// If the Source is not available it will return SourceUnknown
+func (d Direction) Source() Source {
+	return d.s
 }
 
 // Direction returns the abbreviation string for a given Direction type
-func (t Direction) Direction() string {
-	if ds, ok := WindDirAbbrMap[t.v]; ok {
+func (d Direction) Direction() string {
+	if ds, ok := WindDirAbbrMap[d.v]; ok {
 		return ds
 	}
 	return ErrUnsupportedDirection
 }
 
 // DirectionFull returns the full string for a given Direction type
-func (t Direction) DirectionFull() string {
-	if ds, ok := WindDirFullMap[t.v]; ok {
+func (d Direction) DirectionFull() string {
+	if ds, ok := WindDirFullMap[d.v]; ok {
 		return ds
 	}
 	return ErrUnsupportedDirection

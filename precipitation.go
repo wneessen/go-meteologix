@@ -16,27 +16,33 @@ type Precipitation WeatherData
 
 // IsAvailable returns true if an Precipitation value was
 // available at time of query
-func (t Precipitation) IsAvailable() bool {
-	return !t.na
+func (p Precipitation) IsAvailable() bool {
+	return !p.na
 }
 
 // DateTime returns true if an Precipitation value was
 // available at time of query
-func (t Precipitation) DateTime() time.Time {
-	return t.dt
+func (p Precipitation) DateTime() time.Time {
+	return p.dt
 }
 
 // String satisfies the fmt.Stringer interface for the Precipitation type
-func (t Precipitation) String() string {
-	return fmt.Sprintf("%.1fmm", t.v)
+func (p Precipitation) String() string {
+	return fmt.Sprintf("%.1fmm", p.v)
+}
+
+// Source returns the Source of Precipitation
+// If the Source is not available it will return SourceUnknown
+func (p Precipitation) Source() Source {
+	return p.s
 }
 
 // Value returns the float64 value of an Precipitation
 // If the Precipitation is not available in the Observation
 // Vaule will return math.NaN instead.
-func (t Precipitation) Value() float64 {
-	if t.na {
+func (p Precipitation) Value() float64 {
+	if p.na {
 		return math.NaN()
 	}
-	return t.v
+	return p.v
 }

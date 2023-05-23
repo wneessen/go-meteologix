@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/url"
+	"strconv"
 )
 
 // CurrentWeather represents the current weather API response
@@ -82,11 +83,12 @@ type APICurrentWeatherData struct {
 	*/
 }
 
-// CurrentWeatherByCoordinates returns the CurrentWeather values for the
-// given coordinates
+// CurrentWeatherByCoordinates returns the CurrentWeather values for the given coordinates
 func (c *Client) CurrentWeatherByCoordinates(la, lo float64) (CurrentWeather, error) {
 	var cw CurrentWeather
-	u, err := url.Parse(fmt.Sprintf("%s/current/%f/%f", c.config.apiURL, la, lo))
+	lat := strconv.FormatFloat(la, 'f', -1, 64)
+	lon := strconv.FormatFloat(lo, 'f', -1, 64)
+	u, err := url.Parse(fmt.Sprintf("%s/current/%s/%s", c.config.apiURL, lat, lon))
 	if err != nil {
 		return cw, fmt.Errorf("failed to parse current weather URL: %w", err)
 	}
@@ -104,6 +106,15 @@ func (c *Client) CurrentWeatherByCoordinates(la, lo float64) (CurrentWeather, er
 	}
 
 	return cw, nil
+}
+
+// CurrentWeatherByLocation returns the CurrentWeather values for the given location
+func (c *Client) CurrentWeatherByLocation(lo string) (CurrentWeather, error) {
+	gl, err := c.GetGeoLocationByName(lo)
+	if err != nil {
+		return CurrentWeather{}, fmt.Errorf("failed too look up geolocation: %w", err)
+	}
+	return c.CurrentWeatherByCoordinates(gl.Latitude, gl.Longitude)
 }
 
 // Temperature returns the temperature data point as Temperature.

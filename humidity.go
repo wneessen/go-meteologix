@@ -16,27 +16,33 @@ type Humidity WeatherData
 
 // IsAvailable returns true if an Humidity value was
 // available at time of query
-func (t Humidity) IsAvailable() bool {
-	return !t.na
+func (h Humidity) IsAvailable() bool {
+	return !h.na
 }
 
 // DateTime returns true if an Humidity value was
 // available at time of query
-func (t Humidity) DateTime() time.Time {
-	return t.dt
+func (h Humidity) DateTime() time.Time {
+	return h.dt
 }
 
 // String satisfies the fmt.Stringer interface for the Humidity type
-func (t Humidity) String() string {
-	return fmt.Sprintf("%.1f%%", t.v)
+func (h Humidity) String() string {
+	return fmt.Sprintf("%.1f%%", h.v)
+}
+
+// Source returns the Source of Humidity
+// If the Source is not available it will return SourceUnknown
+func (h Humidity) Source() Source {
+	return h.s
 }
 
 // Value returns the float64 value of an Humidity
 // If the Humidity is not available in the Observation
 // Vaule will return math.NaN instead.
-func (t Humidity) Value() float64 {
-	if t.na {
+func (h Humidity) Value() float64 {
+	if h.na {
 		return math.NaN()
 	}
-	return t.v
+	return h.v
 }
