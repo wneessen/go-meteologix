@@ -32,6 +32,25 @@ type CurrentWeather struct {
 type APICurrentWeatherData struct {
 	// Dewpoint represents the dewpoint in °C
 	Dewpoint *APIValue `json:"dewpoint,omitempty"`
+	// HumidityRelative represents the relative humidity in percent
+	HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
+	// Precipitation represents the current amount of precipitation
+	Precipitation *APIValue `json:"prec"`
+	// Precipitation10m represents the amount of precipitation over the last 10 minutes
+	Precipitation10m *APIValue `json:"prec10m"`
+	// Precipitation1h represents the amount of precipitation over the last hour
+	Precipitation1h *APIValue `json:"prec1h"`
+	// Precipitation24h represents the amount of precipitation over the last 24 hours
+	Precipitation24h *APIValue `json:"prec24h"`
+	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
+	PressureMSL *APIValue `json:"pressureMsl"`
+	// Temperature represents the temperature in °C
+	Temperature *APIValue `json:"temp,omitempty"`
+	// Windspeed represents the wind speed in knots
+	Windspeed *APIValue `json:"windSpeed,omitempty"`
+	// Winddirection represents the direction from which the wind
+	// originates in degree (0=N, 90=E, 180=S, 270=W)
+	Winddirection *APIValue `json:"windDirection,omitempty"`
 	/*
 		// DewPointMean represents the mean dewpoint in °C
 		DewpointMean *APIValue `json:"dewpointMean,omitempty"`
@@ -44,25 +63,8 @@ type APICurrentWeatherData struct {
 		// GlobalRadiation24h represents the sum of global radiation over the last
 		// 24 hour in kJ/m²
 		GlobalRadiation24h *APIValue `json:"globalRadiation24h,omitempty"`
-		// HumidityRelative represents the relative humidity in percent
-		HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
-		// Precipitation represents the current amount of precipitation
-		Precipitation *APIValue `json:"prec"`
-		// Precipitation10m represents the amount of precipitation over the last 10 minutes
-		Precipitation10m *APIValue `json:"prec10m"`
-		// Precipitation1h represents the amount of precipitation over the last hour
-		Precipitation1h *APIValue `json:"prec1h"`
-		// Precipitation24h represents the amount of precipitation over the last 24 hours
-		Precipitation24h *APIValue `json:"prec24h"`
-		// PressureMSL represents the pressure at mean sea level (MSL) in hPa
-		PressureMSL *APIValue `json:"pressureMsl"`
 		// PressureMSL represents the pressure at station level (QFE) in hPa
 		PressureQFE *APIValue `json:"pressure"`
-
-	*/
-	// Temperature represents the temperature in °C
-	Temperature *APIValue `json:"temp,omitempty"`
-	/*
 		// TemperatureMax represents the maximum temperature in °C
 		TemperatureMax *APIValue `json:"tempMax,omitempty"`
 		// TemperatureMean represents the mean temperature in °C
@@ -74,11 +76,6 @@ type APICurrentWeatherData struct {
 		// Temperature5cm represents the minimum temperature 5cm above
 		// ground in °C
 		Temperature5cmMin *APIValue `json:"temp5cmMin,omitempty"`
-		// Winddirection represents the direction from which the wind
-		// originates in degree (0=N, 90=E, 180=S, 270=W)
-		Winddirection *APIValue `json:"windDirection,omitempty"`
-		// Windspeed represents the wind speed in knots
-		Windspeed *APIValue `json:"windSpeed,omitempty"`
 
 	*/
 }
@@ -151,6 +148,124 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 	}
 	if cw.Data.Dewpoint.Source != nil {
 		v.s = StringToSource(*cw.Data.Dewpoint.Source)
+	}
+	return v
+}
+
+// HumidityRelative returns the relative humidity data point as Humidity.
+// If the data point is not available in the CurrentWeather it will return
+// Humidity in which the "not available" field will be true.
+func (cw CurrentWeather) HumidityRelative() Humidity {
+	if cw.Data.Dewpoint == nil {
+		return Humidity{na: true}
+	}
+	v := Humidity{
+		dt: cw.Data.HumidityRelative.DateTime,
+		n:  FieldHumidityRelative,
+		s:  SourceUnknown,
+		v:  cw.Data.HumidityRelative.Value,
+	}
+	if cw.Data.HumidityRelative.Source != nil {
+		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
+	}
+	return v
+}
+
+// Precipitation returns the current amount of precipitation (mm) as Precipitation
+// If the data point is not available in the CurrentWeather it will return
+// Precipitation in which the "not available" field will be true.
+//
+// At this point of development, it looks like currently only the 1 Hour value
+// is returned by the endpoint, so expect non-availablity for any other Timespan
+// at this point.
+func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
+	var df *APIValue
+	var fn Fieldname
+	switch ts {
+	case TimespanCurrent:
+		df = cw.Data.Precipitation
+		fn = FieldPrecipitation
+	case Timespan10Min:
+		df = cw.Data.Precipitation10m
+		fn = FieldPrecipitation10m
+	case Timespan1Hour:
+		df = cw.Data.Precipitation1h
+		fn = FieldPrecipitation1h
+	case Timespan24Hours:
+		df = cw.Data.Precipitation24h
+		fn = FieldPrecipitation24h
+	default:
+		return Precipitation{na: true}
+	}
+
+	if df == nil {
+		return Precipitation{na: true}
+	}
+	v := Precipitation{
+		dt: df.DateTime,
+		n:  fn,
+		s:  SourceUnknown,
+		v:  df.Value,
+	}
+	if df.Source != nil {
+		v.s = StringToSource(*df.Source)
+	}
+	return v
+}
+
+// PressureMSL returns the pressure at mean sea level data point as Pressure.
+// If the data point is not available in the CurrentWeather it will return
+// Pressure in which the "not available" field will be true.
+func (cw CurrentWeather) PressureMSL() Pressure {
+	if cw.Data.PressureMSL == nil {
+		return Pressure{na: true}
+	}
+	v := Pressure{
+		dt: cw.Data.PressureMSL.DateTime,
+		n:  FieldPressureMSL,
+		s:  SourceUnknown,
+		v:  cw.Data.PressureMSL.Value,
+	}
+	if cw.Data.PressureMSL.Source != nil {
+		v.s = StringToSource(*cw.Data.PressureMSL.Source)
+	}
+	return v
+}
+
+// Winddirection returns the wind direction data point as Direction.
+// If the data point is not available in the CurrentWeather it will return
+// Direction in which the "not available" field will be true.
+func (cw CurrentWeather) Winddirection() Direction {
+	if cw.Data.Winddirection == nil {
+		return Direction{na: true}
+	}
+	v := Direction{
+		dt: cw.Data.Winddirection.DateTime,
+		n:  FieldWinddirection,
+		s:  SourceUnknown,
+		v:  cw.Data.Winddirection.Value,
+	}
+	if cw.Data.Winddirection.Source != nil {
+		v.s = StringToSource(*cw.Data.Winddirection.Source)
+	}
+	return v
+}
+
+// Windspeed returns the wind speed data point as Speed.
+// If the data point is not available in the CurrentWeather it will return
+// Speed in which the "not available" field will be true.
+func (cw CurrentWeather) Windspeed() Speed {
+	if cw.Data.Windspeed == nil {
+		return Speed{na: true}
+	}
+	v := Speed{
+		dt: cw.Data.Windspeed.DateTime,
+		n:  FieldWindspeed,
+		s:  SourceUnknown,
+		v:  cw.Data.Windspeed.Value,
+	}
+	if cw.Data.Windspeed.Source != nil {
+		v.s = StringToSource(*cw.Data.Windspeed.Source)
 	}
 	return v
 }
