@@ -28,7 +28,7 @@ func (p Pressure) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Pressure type
 func (p Pressure) String() string {
-	return fmt.Sprintf("%.1fhPa", p.v)
+	return fmt.Sprintf("%.1fhPa", p.fv)
 }
 
 // Source returns the Source of Pressure
@@ -44,5 +44,5 @@ func (p Pressure) Value() float64 {
 	if p.na {
 		return math.NaN()
 	}
-	return p.v
+	return p.fv
 }

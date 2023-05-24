@@ -28,7 +28,7 @@ func (h Humidity) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Humidity type
 func (h Humidity) String() string {
-	return fmt.Sprintf("%.1f%%", h.v)
+	return fmt.Sprintf("%.1f%%", h.fv)
 }
 
 // Source returns the Source of Humidity
@@ -44,5 +44,5 @@ func (h Humidity) Value() float64 {
 	if h.na {
 		return math.NaN()
 	}
-	return h.v
+	return h.fv
 }

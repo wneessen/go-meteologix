@@ -33,12 +33,12 @@ func (r Radiation) Value() float64 {
 	if r.na {
 		return math.NaN()
 	}
-	return r.v
+	return r.fv
 }
 
 // String satisfies the fmt.Stringer interface for the Radiation type
 func (r Radiation) String() string {
-	return fmt.Sprintf("%.0fkJ/m²", r.v)
+	return fmt.Sprintf("%.0fkJ/m²", r.fv)
 }
 
 // Source returns the Source of Pressure

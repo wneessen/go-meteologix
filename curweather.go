@@ -31,51 +31,54 @@ type CurrentWeather struct {
 // is not returned for the requested Station.
 type APICurrentWeatherData struct {
 	// Dewpoint represents the dewpoint in °C
-	Dewpoint *APIValue `json:"dewpoint,omitempty"`
+	Dewpoint *APIFloat `json:"dewpoint,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
-	HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
+	HumidityRelative *APIFloat `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
-	Precipitation *APIValue `json:"prec"`
+	Precipitation *APIFloat `json:"prec"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
-	Precipitation10m *APIValue `json:"prec10m"`
+	Precipitation10m *APIFloat `json:"prec10m"`
 	// Precipitation1h represents the amount of precipitation over the last hour
-	Precipitation1h *APIValue `json:"prec1h"`
+	Precipitation1h *APIFloat `json:"prec1h"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
-	Precipitation24h *APIValue `json:"prec24h"`
+	Precipitation24h *APIFloat `json:"prec24h"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
-	PressureMSL *APIValue `json:"pressureMsl"`
+	PressureMSL *APIFloat `json:"pressureMsl"`
 	// Temperature represents the temperature in °C
-	Temperature *APIValue `json:"temp,omitempty"`
+	Temperature *APIFloat `json:"temp,omitempty"`
 	// Windspeed represents the wind speed in knots
-	Windspeed *APIValue `json:"windSpeed,omitempty"`
+	Windspeed *APIFloat `json:"windSpeed,omitempty"`
 	// Winddirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
-	Winddirection *APIValue `json:"windDirection,omitempty"`
+	Winddirection *APIFloat `json:"windDirection,omitempty"`
+	// WeatherSymbol is a text representation of the current weather
+	// conditions
+	WeatherSymbol *APIString `json:"weatherSymbol,omitempty"`
 	/*
 		// DewPointMean represents the mean dewpoint in °C
-		DewpointMean *APIValue `json:"dewpointMean,omitempty"`
+		DewpointMean *APIFloat `json:"dewpointMean,omitempty"`
 		// GlobalRadiation10m represents the sum of global radiation over the last
 		// 10 minutes in kJ/m²
-		GlobalRadiation10m *APIValue `json:"globalRadiation10m,omitempty"`
+		GlobalRadiation10m *APIFloat `json:"globalRadiation10m,omitempty"`
 		// GlobalRadiation1h represents the sum of global radiation over the last
 		// 1 hour in kJ/m²
-		GlobalRadiation1h *APIValue `json:"globalRadiation1h,omitempty"`
+		GlobalRadiation1h *APIFloat `json:"globalRadiation1h,omitempty"`
 		// GlobalRadiation24h represents the sum of global radiation over the last
 		// 24 hour in kJ/m²
-		GlobalRadiation24h *APIValue `json:"globalRadiation24h,omitempty"`
+		GlobalRadiation24h *APIFloat `json:"globalRadiation24h,omitempty"`
 		// PressureMSL represents the pressure at station level (QFE) in hPa
-		PressureQFE *APIValue `json:"pressure"`
+		PressureQFE *APIFloat `json:"pressure"`
 		// TemperatureMax represents the maximum temperature in °C
-		TemperatureMax *APIValue `json:"tempMax,omitempty"`
+		TemperatureMax *APIFloat `json:"tempMax,omitempty"`
 		// TemperatureMean represents the mean temperature in °C
-		TemperatureMean *APIValue `json:"tempMean,omitempty"`
+		TemperatureMean *APIFloat `json:"tempMean,omitempty"`
 		// TemperatureMin represents the minimum temperature in °C
-		TemperatureMin *APIValue `json:"tempMin,omitempty"`
+		TemperatureMin *APIFloat `json:"tempMin,omitempty"`
 		// Temperature5cm represents the temperature 5cm above ground in °C
-		Temperature5cm *APIValue `json:"temp5cm,omitempty"`
+		Temperature5cm *APIFloat `json:"temp5cm,omitempty"`
 		// Temperature5cm represents the minimum temperature 5cm above
 		// ground in °C
-		Temperature5cmMin *APIValue `json:"temp5cmMin,omitempty"`
+		Temperature5cmMin *APIFloat `json:"temp5cmMin,omitempty"`
 
 	*/
 }
@@ -125,7 +128,7 @@ func (cw CurrentWeather) Temperature() Temperature {
 		dt: cw.Data.Temperature.DateTime,
 		n:  FieldTemperature,
 		s:  SourceUnknown,
-		v:  cw.Data.Temperature.Value,
+		fv: cw.Data.Temperature.Value,
 	}
 	if cw.Data.Temperature.Source != nil {
 		v.s = StringToSource(*cw.Data.Temperature.Source)
@@ -144,7 +147,7 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 		dt: cw.Data.Dewpoint.DateTime,
 		n:  FieldDewpoint,
 		s:  SourceUnknown,
-		v:  cw.Data.Dewpoint.Value,
+		fv: cw.Data.Dewpoint.Value,
 	}
 	if cw.Data.Dewpoint.Source != nil {
 		v.s = StringToSource(*cw.Data.Dewpoint.Source)
@@ -163,7 +166,7 @@ func (cw CurrentWeather) HumidityRelative() Humidity {
 		dt: cw.Data.HumidityRelative.DateTime,
 		n:  FieldHumidityRelative,
 		s:  SourceUnknown,
-		v:  cw.Data.HumidityRelative.Value,
+		fv: cw.Data.HumidityRelative.Value,
 	}
 	if cw.Data.HumidityRelative.Source != nil {
 		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
@@ -176,10 +179,10 @@ func (cw CurrentWeather) HumidityRelative() Humidity {
 // Precipitation in which the "not available" field will be true.
 //
 // At this point of development, it looks like currently only the 1 Hour value
-// is returned by the endpoint, so expect non-availablity for any other Timespan
+// is returned by the endpoint, so expect non-availability for any other Timespan
 // at this point.
 func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
-	var df *APIValue
+	var df *APIFloat
 	var fn Fieldname
 	switch ts {
 	case TimespanCurrent:
@@ -205,7 +208,7 @@ func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
 		dt: df.DateTime,
 		n:  fn,
 		s:  SourceUnknown,
-		v:  df.Value,
+		fv: df.Value,
 	}
 	if df.Source != nil {
 		v.s = StringToSource(*df.Source)
@@ -224,10 +227,30 @@ func (cw CurrentWeather) PressureMSL() Pressure {
 		dt: cw.Data.PressureMSL.DateTime,
 		n:  FieldPressureMSL,
 		s:  SourceUnknown,
-		v:  cw.Data.PressureMSL.Value,
+		fv: cw.Data.PressureMSL.Value,
 	}
 	if cw.Data.PressureMSL.Source != nil {
 		v.s = StringToSource(*cw.Data.PressureMSL.Source)
+	}
+	return v
+}
+
+// WeatherSymbol returns a text representation of the current weather
+// as GenericString.
+// If the data point is not available in the CurrentWeather it will return
+// GenericString in which the "not available" field will be true.
+func (cw CurrentWeather) WeatherSymbol() GenericString {
+	if cw.Data.WeatherSymbol == nil {
+		return GenericString{na: true}
+	}
+	v := GenericString{
+		dt: cw.Data.WeatherSymbol.DateTime,
+		n:  FieldWeatherSymbol,
+		s:  SourceUnknown,
+		sv: cw.Data.WeatherSymbol.Value,
+	}
+	if cw.Data.WeatherSymbol.Source != nil {
+		v.s = StringToSource(*cw.Data.WeatherSymbol.Source)
 	}
 	return v
 }
@@ -243,7 +266,7 @@ func (cw CurrentWeather) Winddirection() Direction {
 		dt: cw.Data.Winddirection.DateTime,
 		n:  FieldWinddirection,
 		s:  SourceUnknown,
-		v:  cw.Data.Winddirection.Value,
+		fv: cw.Data.Winddirection.Value,
 	}
 	if cw.Data.Winddirection.Source != nil {
 		v.s = StringToSource(*cw.Data.Winddirection.Source)
@@ -251,7 +274,7 @@ func (cw CurrentWeather) Winddirection() Direction {
 	return v
 }
 
-// Windspeed returns the wind speed data point as Speed.
+// Windspeed returns the average wind speed data point as Speed.
 // If the data point is not available in the CurrentWeather it will return
 // Speed in which the "not available" field will be true.
 func (cw CurrentWeather) Windspeed() Speed {
@@ -262,7 +285,7 @@ func (cw CurrentWeather) Windspeed() Speed {
 		dt: cw.Data.Windspeed.DateTime,
 		n:  FieldWindspeed,
 		s:  SourceUnknown,
-		v:  cw.Data.Windspeed.Value,
+		fv: cw.Data.Windspeed.Value,
 	}
 	if cw.Data.Windspeed.Source != nil {
 		v.s = StringToSource(*cw.Data.Windspeed.Source)

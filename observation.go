@@ -37,50 +37,50 @@ type Observation struct {
 // is not returned for the requested Station.
 type APIObservationData struct {
 	// Dewpoint represents the dewpoint in °C
-	Dewpoint *APIValue `json:"dewpoint,omitempty"`
+	Dewpoint *APIFloat `json:"dewpoint,omitempty"`
 	// DewPointMean represents the mean dewpoint in °C
-	DewpointMean *APIValue `json:"dewpointMean,omitempty"`
+	DewpointMean *APIFloat `json:"dewpointMean,omitempty"`
 	// GlobalRadiation10m represents the sum of global radiation over the last
 	// 10 minutes in kJ/m²
-	GlobalRadiation10m *APIValue `json:"globalRadiation10m,omitempty"`
+	GlobalRadiation10m *APIFloat `json:"globalRadiation10m,omitempty"`
 	// GlobalRadiation1h represents the sum of global radiation over the last
 	// 1 hour in kJ/m²
-	GlobalRadiation1h *APIValue `json:"globalRadiation1h,omitempty"`
+	GlobalRadiation1h *APIFloat `json:"globalRadiation1h,omitempty"`
 	// GlobalRadiation24h represents the sum of global radiation over the last
 	// 24 hour in kJ/m²
-	GlobalRadiation24h *APIValue `json:"globalRadiation24h,omitempty"`
+	GlobalRadiation24h *APIFloat `json:"globalRadiation24h,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
-	HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
+	HumidityRelative *APIFloat `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
-	Precipitation *APIValue `json:"prec"`
+	Precipitation *APIFloat `json:"prec"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
-	Precipitation10m *APIValue `json:"prec10m"`
+	Precipitation10m *APIFloat `json:"prec10m"`
 	// Precipitation1h represents the amount of precipitation over the last hour
-	Precipitation1h *APIValue `json:"prec1h"`
+	Precipitation1h *APIFloat `json:"prec1h"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
-	Precipitation24h *APIValue `json:"prec24h"`
+	Precipitation24h *APIFloat `json:"prec24h"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
-	PressureMSL *APIValue `json:"pressureMsl"`
+	PressureMSL *APIFloat `json:"pressureMsl"`
 	// PressureMSL represents the pressure at station level (QFE) in hPa
-	PressureQFE *APIValue `json:"pressure"`
+	PressureQFE *APIFloat `json:"pressure"`
 	// Temperature represents the temperature in °C
-	Temperature *APIValue `json:"temp,omitempty"`
+	Temperature *APIFloat `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
-	TemperatureMax *APIValue `json:"tempMax,omitempty"`
+	TemperatureMax *APIFloat `json:"tempMax,omitempty"`
 	// TemperatureMean represents the mean temperature in °C
-	TemperatureMean *APIValue `json:"tempMean,omitempty"`
+	TemperatureMean *APIFloat `json:"tempMean,omitempty"`
 	// TemperatureMin represents the minimum temperature in °C
-	TemperatureMin *APIValue `json:"tempMin,omitempty"`
+	TemperatureMin *APIFloat `json:"tempMin,omitempty"`
 	// Temperature5cm represents the temperature 5cm above ground in °C
-	Temperature5cm *APIValue `json:"temp5cm,omitempty"`
+	Temperature5cm *APIFloat `json:"temp5cm,omitempty"`
 	// Temperature5cm represents the minimum temperature 5cm above
 	// ground in °C
-	Temperature5cmMin *APIValue `json:"temp5cmMin,omitempty"`
+	Temperature5cmMin *APIFloat `json:"temp5cmMin,omitempty"`
 	// Winddirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
-	Winddirection *APIValue `json:"windDirection,omitempty"`
+	Winddirection *APIFloat `json:"windDirection,omitempty"`
 	// Windspeed represents the wind speed in knots
-	Windspeed *APIValue `json:"windSpeed,omitempty"`
+	Windspeed *APIFloat `json:"windSpeed,omitempty"`
 }
 
 // ObservationLatestByStationID returns the latest Observation values from the
@@ -126,7 +126,7 @@ func (o Observation) Dewpoint() Temperature {
 		dt: o.Data.Dewpoint.DateTime,
 		n:  FieldDewpoint,
 		s:  SourceObservation,
-		v:  o.Data.Dewpoint.Value,
+		fv: o.Data.Dewpoint.Value,
 	}
 }
 
@@ -142,7 +142,7 @@ func (o Observation) DewpointMean() Temperature {
 		dt: o.Data.DewpointMean.DateTime,
 		n:  FieldDewpointMean,
 		s:  SourceObservation,
-		v:  o.Data.DewpointMean.Value,
+		fv: o.Data.DewpointMean.Value,
 	}
 }
 
@@ -158,7 +158,7 @@ func (o Observation) Temperature() Temperature {
 		dt: o.Data.Temperature.DateTime,
 		n:  FieldTemperature,
 		s:  SourceObservation,
-		v:  o.Data.Temperature.Value,
+		fv: o.Data.Temperature.Value,
 	}
 }
 
@@ -175,7 +175,7 @@ func (o Observation) TemperatureAtGround() Temperature {
 		dt: o.Data.Temperature5cm.DateTime,
 		n:  FieldTemperatureAtGround,
 		s:  SourceObservation,
-		v:  o.Data.Temperature5cm.Value,
+		fv: o.Data.Temperature5cm.Value,
 	}
 }
 
@@ -192,7 +192,7 @@ func (o Observation) TemperatureMax() Temperature {
 		dt: o.Data.TemperatureMax.DateTime,
 		n:  FieldTemperatureMax,
 		s:  SourceObservation,
-		v:  o.Data.TemperatureMax.Value,
+		fv: o.Data.TemperatureMax.Value,
 	}
 }
 
@@ -209,7 +209,7 @@ func (o Observation) TemperatureMin() Temperature {
 		dt: o.Data.TemperatureMin.DateTime,
 		n:  FieldTemperatureMin,
 		s:  SourceObservation,
-		v:  o.Data.TemperatureMin.Value,
+		fv: o.Data.TemperatureMin.Value,
 	}
 }
 
@@ -226,7 +226,7 @@ func (o Observation) TemperatureAtGroundMin() Temperature {
 		dt: o.Data.Temperature5cmMin.DateTime,
 		n:  FieldTemperatureAtGroundMin,
 		s:  SourceObservation,
-		v:  o.Data.Temperature5cmMin.Value,
+		fv: o.Data.Temperature5cmMin.Value,
 	}
 }
 
@@ -242,7 +242,7 @@ func (o Observation) TemperatureMean() Temperature {
 		dt: o.Data.TemperatureMean.DateTime,
 		n:  FieldTemperatureMean,
 		s:  SourceObservation,
-		v:  o.Data.TemperatureMean.Value,
+		fv: o.Data.TemperatureMean.Value,
 	}
 }
 
@@ -258,7 +258,7 @@ func (o Observation) HumidityRelative() Humidity {
 		dt: o.Data.HumidityRelative.DateTime,
 		n:  FieldHumidityRelative,
 		s:  SourceObservation,
-		v:  o.Data.HumidityRelative.Value,
+		fv: o.Data.HumidityRelative.Value,
 	}
 }
 
@@ -275,7 +275,7 @@ func (o Observation) PressureMSL() Pressure {
 		dt: o.Data.PressureMSL.DateTime,
 		n:  FieldPressureMSL,
 		s:  SourceObservation,
-		v:  o.Data.PressureMSL.Value,
+		fv: o.Data.PressureMSL.Value,
 	}
 }
 
@@ -292,7 +292,7 @@ func (o Observation) PressureQFE() Pressure {
 		dt: o.Data.PressureQFE.DateTime,
 		n:  FieldPressureQFE,
 		s:  SourceObservation,
-		v:  o.Data.PressureQFE.Value,
+		fv: o.Data.PressureQFE.Value,
 	}
 }
 
@@ -302,7 +302,7 @@ func (o Observation) PressureQFE() Pressure {
 // Precipitation in which the "not available" field will be
 // true.
 func (o Observation) Precipitation(ts Timespan) Precipitation {
-	var df *APIValue
+	var df *APIFloat
 	var fn Fieldname
 	switch ts {
 	case TimespanCurrent:
@@ -328,7 +328,7 @@ func (o Observation) Precipitation(ts Timespan) Precipitation {
 		dt: df.DateTime,
 		n:  fn,
 		s:  SourceObservation,
-		v:  df.Value,
+		fv: df.Value,
 	}
 }
 
@@ -338,7 +338,7 @@ func (o Observation) Precipitation(ts Timespan) Precipitation {
 // Radiation in which the "not available" field will be
 // true.
 func (o Observation) GlobalRadiation(ts Timespan) Radiation {
-	var df *APIValue
+	var df *APIFloat
 	var fn Fieldname
 	switch ts {
 	case Timespan10Min:
@@ -361,7 +361,7 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 		dt: df.DateTime,
 		n:  fn,
 		s:  SourceObservation,
-		v:  df.Value,
+		fv: df.Value,
 	}
 }
 
@@ -377,7 +377,7 @@ func (o Observation) Winddirection() Direction {
 		dt: o.Data.Winddirection.DateTime,
 		n:  FieldWinddirection,
 		s:  SourceObservation,
-		v:  o.Data.Winddirection.Value,
+		fv: o.Data.Winddirection.Value,
 	}
 }
 
@@ -392,6 +392,6 @@ func (o Observation) Windspeed() Speed {
 		dt: o.Data.Windspeed.DateTime,
 		n:  FieldWindspeed,
 		s:  SourceObservation,
-		v:  o.Data.Windspeed.Value,
+		fv: o.Data.Windspeed.Value,
 	}
 }

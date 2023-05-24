@@ -33,7 +33,7 @@ func (t Temperature) Value() float64 {
 	if t.na {
 		return math.NaN()
 	}
-	return t.v
+	return t.fv
 }
 
 // Source returns the Source of an Temperature
@@ -44,12 +44,12 @@ func (t Temperature) Source() Source {
 
 // String satisfies the fmt.Stringer interface for the Temperature type
 func (t Temperature) String() string {
-	return fmt.Sprintf("%.1f°C", t.v)
+	return fmt.Sprintf("%.1f°C", t.fv)
 }
 
 // Celsius returns the Temperature value in Celsius
 func (t Temperature) Celsius() float64 {
-	return t.v
+	return t.fv
 }
 
 // CelsiusString returns the Temperature value as Celsius
@@ -62,7 +62,7 @@ func (t Temperature) CelsiusString() string {
 
 // Fahrenheit returns the Temperature value in Fahrenheit
 func (t Temperature) Fahrenheit() float64 {
-	return t.v*9/5 + 32
+	return t.fv*9/5 + 32
 }
 
 // FahrenheitString returns the Temperature value as Fahrenheit

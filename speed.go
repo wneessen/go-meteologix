@@ -33,12 +33,12 @@ func (s Speed) Value() float64 {
 	if s.na {
 		return math.NaN()
 	}
-	return s.v
+	return s.fv
 }
 
 // String satisfies the fmt.Stringer interface for the Speed type
 func (s Speed) String() string {
-	return fmt.Sprintf("%.0fkn", s.v)
+	return fmt.Sprintf("%.0fkn", s.fv)
 }
 
 // Source returns the Source of Speed
@@ -49,7 +49,7 @@ func (s Speed) Source() Source {
 
 // KMH returns the Speed value in km/h
 func (s Speed) KMH() float64 {
-	return s.v * 1.852
+	return s.fv * 1.852
 }
 
 // KMHString returns the Speed value as formatted string in km/h
@@ -59,7 +59,7 @@ func (s Speed) KMHString() string {
 
 // MPH returns the Speed value in mi/h
 func (s Speed) MPH() float64 {
-	return s.v * 1.151
+	return s.fv * 1.151
 }
 
 // MPHString returns the Speed value as formatted string in mi/h
