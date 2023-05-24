@@ -32,6 +32,8 @@ type CurrentWeather struct {
 type APICurrentWeatherData struct {
 	// Dewpoint represents the dewpoint in °C
 	Dewpoint *APIValue `json:"dewpoint,omitempty"`
+	// HumidityRelative represents the relative humidity in percent
+	HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
 	/*
 		// DewPointMean represents the mean dewpoint in °C
 		DewpointMean *APIValue `json:"dewpointMean,omitempty"`
@@ -44,8 +46,6 @@ type APICurrentWeatherData struct {
 		// GlobalRadiation24h represents the sum of global radiation over the last
 		// 24 hour in kJ/m²
 		GlobalRadiation24h *APIValue `json:"globalRadiation24h,omitempty"`
-		// HumidityRelative represents the relative humidity in percent
-		HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
 		// Precipitation represents the current amount of precipitation
 		Precipitation *APIValue `json:"prec"`
 		// Precipitation10m represents the amount of precipitation over the last 10 minutes
@@ -151,6 +151,25 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 	}
 	if cw.Data.Dewpoint.Source != nil {
 		v.s = StringToSource(*cw.Data.Dewpoint.Source)
+	}
+	return v
+}
+
+// HumidityRelative returns the relative humidity data point as Humidity.
+// If the data point is not available in the CurrentWeather it will return
+// Humidity in which the "not available" field will be true.
+func (cw CurrentWeather) HumidityRelative() Humidity {
+	if cw.Data.Dewpoint == nil {
+		return Humidity{na: true}
+	}
+	v := Humidity{
+		dt: cw.Data.HumidityRelative.DateTime,
+		n:  FieldHumidityRelative,
+		s:  SourceUnknown,
+		v:  cw.Data.HumidityRelative.Value,
+	}
+	if cw.Data.HumidityRelative.Source != nil {
+		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
 	}
 	return v
 }

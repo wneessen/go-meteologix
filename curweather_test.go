@@ -111,7 +111,7 @@ func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 	tt := []struct {
 		// Location name
 		loc string
-		// Observation dewpoint
+		// CurWeather temperature
 		t *Temperature
 	}{
 		{"Ehrenfeld, Germany", &Temperature{
@@ -167,7 +167,7 @@ func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
 	tt := []struct {
 		// Location name
 		loc string
-		// Observation dewpoint
+		// CurWeather dewpoint
 		t *Temperature
 	}{
 		{"Ehrenfeld, Germany", &Temperature{
@@ -213,6 +213,62 @@ func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
 				if !math.IsNaN(o.Dewpoint().Value()) {
 					t.Errorf("CurrentWeatherByLocation failed, expected dewpoint "+
 						"to return NaN, but got: %s", o.Dewpoint().String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_HumidityRelative(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather humidity
+		h *Humidity
+	}{
+		{"Ehrenfeld, Germany", &Humidity{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceObservation,
+			v:  82,
+		}},
+		{"Berlin, Germany", &Humidity{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  64,
+		}},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.h != nil && tc.h.String() != o.HumidityRelative().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected humidity "+
+					"string: %s, got: %s", tc.h.String(), o.HumidityRelative())
+			}
+			if tc.h != nil && tc.h.Value() != o.HumidityRelative().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected humidity "+
+					"float: %f, got: %f", tc.h.Value(), o.HumidityRelative().Value())
+			}
+			if o.HumidityRelative().Source() != tc.h.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.h.s, o.HumidityRelative().Source())
+			}
+			if tc.h == nil {
+				if o.HumidityRelative().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected humidity "+
+						"to have no data, but got: %s", o.HumidityRelative())
+				}
+				if !math.IsNaN(o.HumidityRelative().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected humidity "+
+						"to return NaN, but got: %s", o.HumidityRelative().String())
 				}
 			}
 		})
