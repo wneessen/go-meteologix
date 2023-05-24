@@ -139,15 +139,15 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", &Temperature{
 			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
-			v:  10.1,
+			fv: 10.1,
 		}},
 		{"K-Stammheim", "H744", &Temperature{
 			dt: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
-			v:  9.7,
+			fv: 9.7,
 		}},
 		{"All data fields", "all", &Temperature{
 			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
-			v:  6.5,
+			fv: 6.5,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -201,7 +201,7 @@ func TestClient_ObservationLatestByStationID_DewpointMean(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", nil},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &Temperature{v: 8.3}},
+		{"All data fields", "all", &Temperature{fv: 8.3}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -249,15 +249,15 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", &Humidity{
 			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
-			v:  80,
+			fv: 80,
 		}},
 		{"K-Stammheim", "H744", &Humidity{
 			dt: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
-			v:  73,
+			fv: 73,
 		}},
 		{"All data fields", "all", &Humidity{
 			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
-			v:  72,
+			fv: 72,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -314,15 +314,15 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 	}{
 		{"K-Botanischer Garten", "199942", &Precipitation{
 			dt: time.Date(2023, 0o5, 15, 18, 0, 0, 0, time.UTC),
-			v:  0,
+			fv: 0,
 		}},
 		{"K-Stammheim", "H744", &Precipitation{
 			dt: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
-			v:  0,
+			fv: 0,
 		}},
 		{"All data fields", "all", &Precipitation{
 			dt: time.Date(2023, 0o5, 17, 7, 30, 0, 0, time.UTC),
-			v:  0.1,
+			fv: 0.1,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -379,9 +379,9 @@ func TestClient_ObservationLatestByStationID_Precipitation10m(t *testing.T) {
 		// Observation precipitation
 		p *Precipitation
 	}{
-		{"K-Botanischer Garten", "199942", &Precipitation{v: 0}},
-		{"K-Stammheim", "H744", &Precipitation{v: 0}},
-		{"All data fields", "all", &Precipitation{v: 0.5}},
+		{"K-Botanischer Garten", "199942", &Precipitation{fv: 0}},
+		{"K-Stammheim", "H744", &Precipitation{fv: 0}},
+		{"All data fields", "all", &Precipitation{fv: 0.5}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -428,9 +428,9 @@ func TestClient_ObservationLatestByStationID_Precipitation1h(t *testing.T) {
 		// Observation precipitation
 		p *Precipitation
 	}{
-		{"K-Botanischer Garten", "199942", &Precipitation{v: 0}},
-		{"K-Stammheim", "H744", &Precipitation{v: 0}},
-		{"All data fields", "all", &Precipitation{v: 10.3}},
+		{"K-Botanischer Garten", "199942", &Precipitation{fv: 0}},
+		{"K-Stammheim", "H744", &Precipitation{fv: 0}},
+		{"All data fields", "all", &Precipitation{fv: 10.3}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -477,9 +477,9 @@ func TestClient_ObservationLatestByStationID_Precipitation24h(t *testing.T) {
 		// Observation precipitation
 		p *Precipitation
 	}{
-		{"K-Botanischer Garten", "199942", &Precipitation{v: 0}},
-		{"K-Stammheim", "H744", &Precipitation{v: 0}},
-		{"All data fields", "all", &Precipitation{v: 32.12}},
+		{"K-Botanischer Garten", "199942", &Precipitation{fv: 0}},
+		{"K-Stammheim", "H744", &Precipitation{fv: 0}},
+		{"All data fields", "all", &Precipitation{fv: 32.12}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -548,9 +548,9 @@ func TestClient_ObservationLatestByStationID_Temperature(t *testing.T) {
 		// Observation dewpoint
 		t *Temperature
 	}{
-		{"K-Botanischer Garten", "199942", &Temperature{v: 13.4}},
-		{"K-Stammheim", "H744", &Temperature{v: 14.4}},
-		{"All data fields", "all", &Temperature{v: 10.8}},
+		{"K-Botanischer Garten", "199942", &Temperature{fv: 13.4}},
+		{"K-Stammheim", "H744", &Temperature{fv: 14.4}},
+		{"All data fields", "all", &Temperature{fv: 10.8}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -601,8 +601,8 @@ func TestClient_ObservationLatestByStationID_TemperatureAtGround(t *testing.T) {
 		t *Temperature
 	}{
 		{"K-Botanischer Garten", "199942", nil},
-		{"K-Stammheim", "H744", &Temperature{v: 14.3}},
-		{"All data fields", "all", &Temperature{v: 15.4}},
+		{"K-Stammheim", "H744", &Temperature{fv: 14.3}},
+		{"All data fields", "all", &Temperature{fv: 15.4}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -648,9 +648,9 @@ func TestClient_ObservationLatestByStationID_TemperatureMin(t *testing.T) {
 		// Observation dewpoint
 		t *Temperature
 	}{
-		{"K-Botanischer Garten", "199942", &Temperature{v: 12.3}},
-		{"K-Stammheim", "H744", &Temperature{v: 11.9}},
-		{"All data fields", "all", &Temperature{v: 6.2}},
+		{"K-Botanischer Garten", "199942", &Temperature{fv: 12.3}},
+		{"K-Stammheim", "H744", &Temperature{fv: 11.9}},
+		{"All data fields", "all", &Temperature{fv: 6.2}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -696,9 +696,9 @@ func TestClient_ObservationLatestByStationID_TemperatureMax(t *testing.T) {
 		// Observation dewpoint
 		t *Temperature
 	}{
-		{"K-Botanischer Garten", "199942", &Temperature{v: 20.5}},
-		{"K-Stammheim", "H744", &Temperature{v: 20.7}},
-		{"All data fields", "all", &Temperature{v: 12.4}},
+		{"K-Botanischer Garten", "199942", &Temperature{fv: 20.5}},
+		{"K-Stammheim", "H744", &Temperature{fv: 20.7}},
+		{"All data fields", "all", &Temperature{fv: 12.4}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -745,8 +745,8 @@ func TestClient_ObservationLatestByStationID_TemperatureAtGroundMin(t *testing.T
 		t *Temperature
 	}{
 		{"K-Botanischer Garten", "199942", nil},
-		{"K-Stammheim", "H744", &Temperature{v: 12.8}},
-		{"All data fields", "all", &Temperature{v: 3.7}},
+		{"K-Stammheim", "H744", &Temperature{fv: 12.8}},
+		{"All data fields", "all", &Temperature{fv: 3.7}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -794,7 +794,7 @@ func TestClient_ObservationLatestByStationID_TemperatureMean(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", nil},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &Temperature{v: 16.3}},
+		{"All data fields", "all", &Temperature{fv: 16.3}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -842,12 +842,12 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", &Pressure{
 			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
-			v:  1015.5,
+			fv: 1015.5,
 		}},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Pressure{
 			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
-			v:  1026.3,
+			fv: 1026.3,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -902,9 +902,9 @@ func TestClient_ObservationLatestByStationID_PressureQFE(t *testing.T) {
 		// Observation dewpoint
 		p *Pressure
 	}{
-		{"K-Botanischer Garten", "199942", &Pressure{v: 1010.2}},
+		{"K-Botanischer Garten", "199942", &Pressure{fv: 1010.2}},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &Pressure{v: 1020.9}},
+		{"All data fields", "all", &Pressure{fv: 1020.9}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -974,12 +974,12 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 	}{
 		{"K-Botanischer Garten", "199942", &Radiation{
 			dt: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
-			v:  0,
+			fv: 0,
 		}},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Radiation{
 			dt: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
-			v:  62,
+			fv: 62,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -1035,9 +1035,9 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation1h(t *testing.T) {
 		// Observation radiation
 		p *Radiation
 	}{
-		{"K-Botanischer Garten", "199942", &Radiation{v: 0}},
+		{"K-Botanischer Garten", "199942", &Radiation{fv: 0}},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &Radiation{v: 200}},
+		{"All data fields", "all", &Radiation{fv: 200}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -1084,9 +1084,9 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation24h(t *testing.T) {
 		// Observation radiation
 		p *Radiation
 	}{
-		{"K-Botanischer Garten", "199942", &Radiation{v: 774}},
+		{"K-Botanischer Garten", "199942", &Radiation{fv: 774}},
 		{"K-Stammheim", "H744", nil},
-		{"All data fields", "all", &Radiation{v: 756}},
+		{"All data fields", "all", &Radiation{fv: 756}},
 		{"No data fields", "none", nil},
 	}
 	c := New(withMockAPI())
@@ -1137,7 +1137,7 @@ func TestClient_ObservationLatestByStationID_Winddirection(t *testing.T) {
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Direction{
 			dt: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
-			v:  90,
+			fv: 90,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -1196,7 +1196,7 @@ func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Speed{
 			dt: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
-			v:  15,
+			fv: 15,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -1285,7 +1285,7 @@ func TestObservationTemperature_String(t *testing.T) {
 	ff := "%.1f°F"
 	for _, tc := range tt {
 		t.Run(fmt.Sprintf("%.2f°C", tc.c), func(t *testing.T) {
-			ot := Temperature{v: tc.c}
+			ot := Temperature{fv: tc.c}
 			if ot.Celsius() != tc.c {
 				t.Errorf("Temperature.Celsius failed, expected: %f, got: %f", tc.c,
 					ot.Celsius())
@@ -1326,7 +1326,7 @@ func TestObservationSpeed_Conversion(t *testing.T) {
 	mphf := "%.1fmi/h"
 	for _, tc := range tt {
 		t.Run(fmt.Sprintf("%.0fkn", tc.kn), func(t *testing.T) {
-			os := Speed{v: tc.kn}
+			os := Speed{fv: tc.kn}
 			if os.Value() != tc.kn {
 				t.Errorf("Speed.Value failed, expected: %f, got: %f", tc.kn,
 					os.Value())
@@ -1398,7 +1398,7 @@ func TestObservationDirection_Direction(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(fmt.Sprintf("%.2f° => %s", tc.d, tc.ds), func(t *testing.T) {
-			d := Direction{v: tc.d}
+			d := Direction{fv: tc.d}
 			if d.Direction() != tc.ds {
 				t.Errorf("Direction.Direction failed, expected: %s, got: %s",
 					tc.ds, d.Direction())
@@ -1450,7 +1450,7 @@ func TestObservationDirection_DirectionFull(t *testing.T) {
 	}
 	for _, tc := range tt {
 		t.Run(fmt.Sprintf("%.2f° => %s", tc.d, tc.ds), func(t *testing.T) {
-			d := Direction{v: tc.d}
+			d := Direction{fv: tc.d}
 			if d.DirectionFull() != tc.ds {
 				t.Errorf("Direction.Direction failed, expected: %s, got: %s",
 					tc.ds, d.DirectionFull())

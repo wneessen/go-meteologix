@@ -68,12 +68,12 @@ func (d Direction) Value() float64 {
 	if d.na {
 		return math.NaN()
 	}
-	return d.v
+	return d.fv
 }
 
 // String satisfies the fmt.Stringer interface for the Direction type
 func (d Direction) String() string {
-	return fmt.Sprintf("%.0f°", d.v)
+	return fmt.Sprintf("%.0f°", d.fv)
 }
 
 // Source returns the Source of a Direction
@@ -84,24 +84,24 @@ func (d Direction) Source() Source {
 
 // Direction returns the abbreviation string for a given Direction type
 func (d Direction) Direction() string {
-	if d.v < DirectionMinAngel || d.v > DirectionMaxAngel {
+	if d.fv < DirectionMinAngel || d.fv > DirectionMaxAngel {
 		return ErrUnsupportedDirection
 	}
-	if ds, ok := WindDirAbbrMap[d.v]; ok {
+	if ds, ok := WindDirAbbrMap[d.fv]; ok {
 		return ds
 	}
-	return findDirection(d.v, WindDirAbbrMap)
+	return findDirection(d.fv, WindDirAbbrMap)
 }
 
 // DirectionFull returns the full string for a given Direction type
 func (d Direction) DirectionFull() string {
-	if d.v < DirectionMinAngel || d.v > DirectionMaxAngel {
+	if d.fv < DirectionMinAngel || d.fv > DirectionMaxAngel {
 		return ErrUnsupportedDirection
 	}
-	if ds, ok := WindDirFullMap[d.v]; ok {
+	if ds, ok := WindDirFullMap[d.fv]; ok {
 		return ds
 	}
-	return findDirection(d.v, WindDirFullMap)
+	return findDirection(d.fv, WindDirFullMap)
 }
 
 // findDirection takes a Direction and tries to estimate the nearest

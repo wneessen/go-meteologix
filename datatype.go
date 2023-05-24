@@ -6,6 +6,10 @@ package meteologix
 
 import "time"
 
+// DataUnavailable is a constant string that is returned if a
+// data point is not available
+const DataUnavailable = "Data unavailable"
+
 // Enum for different Fieldname values
 const (
 	// FieldDewpoint represents the Dewpoint data point
@@ -44,6 +48,8 @@ const (
 	FieldTemperatureMean
 	// FieldTemperatureMin represents the TemperatureMin data point
 	FieldTemperatureMin
+	// FieldWeatherSymbol represents the weather symbol data point
+	FieldWeatherSymbol
 	// FieldWinddirection represents the Winddirection data point
 	FieldWinddirection
 	// FieldWindspeed represents the Windspeed data point
@@ -62,25 +68,35 @@ const (
 	Timespan24Hours
 )
 
-// APIValue is the JSON structure of the weather data that is returned by the
-// API endpoints
-type APIValue struct {
+// APIFloat is the JSON structure of the weather data that is
+// returned by the API endpoints in which the value is a float
+type APIFloat struct {
 	DateTime time.Time `json:"dateTime"`
 	Source   *string   `json:"source,omitempty"`
 	Value    float64   `json:"value"`
 }
 
+// APIString is the JSON structure of the weather data that is
+// returned by the API endpoints in which the value is a string
+type APIString struct {
+	DateTime time.Time `json:"dateTime"`
+	Source   *string   `json:"source,omitempty"`
+	Value    string    `json:"value"`
+}
+
 // Timespan is a type wrapper for an int type
 type Timespan int
 
-// WeatherData is a type that holds weather (Observation, Current Weather) data and
-// can be wrapped into other types to provide type specific receiver methods
+// WeatherData is a type that holds weather (Observation, Current
+// Weather) data and can be wrapped into other types to provide type
+// specific receiver methods
 type WeatherData struct {
 	dt time.Time
+	fv float64
 	n  Fieldname
 	na bool
 	s  Source
-	v  float64
+	sv string
 }
 
 // Fieldname is a type wrapper for an int for field names

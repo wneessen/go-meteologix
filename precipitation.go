@@ -28,7 +28,7 @@ func (p Precipitation) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Precipitation type
 func (p Precipitation) String() string {
-	return fmt.Sprintf("%.1fmm", p.v)
+	return fmt.Sprintf("%.1fmm", p.fv)
 }
 
 // Source returns the Source of Precipitation
@@ -44,5 +44,5 @@ func (p Precipitation) Value() float64 {
 	if p.na {
 		return math.NaN()
 	}
-	return p.v
+	return p.fv
 }
