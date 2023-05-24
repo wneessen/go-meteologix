@@ -7,7 +7,15 @@ package meteologix
 import (
 	"fmt"
 	"math"
+	"sort"
 	"time"
+)
+
+const (
+	// DirectionMinAngel is the minimum angel for a direction
+	DirectionMinAngel = 0
+	// DirectionMaxAngel is the maximum angel for a direction
+	DirectionMaxAngel = 360
 )
 
 // WindDirAbbrMap is a map to associate a wind direction degree value with
@@ -76,16 +84,51 @@ func (d Direction) Source() Source {
 
 // Direction returns the abbreviation string for a given Direction type
 func (d Direction) Direction() string {
+	if d.v < DirectionMinAngel || d.v > DirectionMaxAngel {
+		return ErrUnsupportedDirection
+	}
 	if ds, ok := WindDirAbbrMap[d.v]; ok {
 		return ds
 	}
-	return ErrUnsupportedDirection
+	return findDirection(d.v, WindDirAbbrMap)
 }
 
 // DirectionFull returns the full string for a given Direction type
 func (d Direction) DirectionFull() string {
+	if d.v < DirectionMinAngel || d.v > DirectionMaxAngel {
+		return ErrUnsupportedDirection
+	}
 	if ds, ok := WindDirFullMap[d.v]; ok {
 		return ds
 	}
-	return ErrUnsupportedDirection
+	return findDirection(d.v, WindDirFullMap)
+}
+
+// findDirection takes a Direction and tries to estimate the nearest
+// direction string from a map
+func findDirection(v float64, m map[float64]string) string {
+	ks := make([]float64, 0, len(m))
+	for k := range m {
+		ks = append(ks, k)
+	}
+	sort.Float64s(ks)
+
+	sv := 0.0
+	ev := 0.0
+	for i := range ks {
+		if v > ks[i] {
+			sv = ks[i]
+			continue
+		}
+		if v < ks[i] {
+			ev = ks[i]
+			break
+		}
+	}
+	sr := math.Mod(v, sv)
+	er := math.Mod(ev, v)
+	if er > sr {
+		return m[sv]
+	}
+	return m[ev]
 }

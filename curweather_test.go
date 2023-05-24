@@ -124,6 +124,7 @@ func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 			s:  SourceAnalysis,
 			v:  17.8,
 		}},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -180,6 +181,7 @@ func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
 			s:  SourceAnalysis,
 			v:  11.0,
 		}},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -236,6 +238,7 @@ func TestClient_CurrentWeatherByLocation_HumidityRelative(t *testing.T) {
 			s:  SourceAnalysis,
 			v:  64,
 		}},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -284,6 +287,7 @@ func TestClient_CurrentWeatherByLocation_PrecipitationCurrent(t *testing.T) {
 	}{
 		{"Ehrenfeld, Germany", nil},
 		{"Berlin, Germany", nil},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -332,6 +336,7 @@ func TestClient_CurrentWeatherByLocation_Precipitation10m(t *testing.T) {
 	}{
 		{"Ehrenfeld, Germany", nil},
 		{"Berlin, Germany", nil},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -388,6 +393,7 @@ func TestClient_CurrentWeatherByLocation_Precipitation1h(t *testing.T) {
 			s:  SourceAnalysis,
 			v:  0.0092,
 		}},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -436,6 +442,7 @@ func TestClient_CurrentWeatherByLocation_Precipitation24h(t *testing.T) {
 	}{
 		{"Ehrenfeld, Germany", nil},
 		{"Berlin, Germany", nil},
+		{"Neermoor, Germany", nil},
 	}
 	c := New(withMockAPI())
 	if c == nil {
@@ -469,6 +476,189 @@ func TestClient_CurrentWeatherByLocation_Precipitation24h(t *testing.T) {
 				if !math.IsNaN(o.Precipitation(Timespan24Hours).Value()) {
 					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
 						"to return NaN, but got: %s", o.Precipitation(Timespan24Hours).String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_PressureMSL(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather pressure
+		p *Pressure
+	}{
+		{"Ehrenfeld, Germany", &Pressure{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  1018.9,
+		}},
+		{"Berlin, Germany", &Pressure{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  1011.5,
+		}},
+		{"Neermoor, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.PressureMSL().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+					"string: %s, got: %s", tc.p.String(), o.PressureMSL())
+			}
+			if tc.p != nil && tc.p.Value() != o.PressureMSL().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+					"float: %f, got: %f", tc.p.Value(), o.PressureMSL().Value())
+			}
+			if tc.p != nil && o.PressureMSL().Source() != tc.p.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.p.s, o.PressureMSL().Source())
+			}
+			if tc.p == nil {
+				if o.PressureMSL().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+						"to have no data, but got: %s", o.PressureMSL())
+				}
+				if !math.IsNaN(o.PressureMSL().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+						"to return NaN, but got: %s", o.PressureMSL().String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_Winddirection(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather direction
+		d *Direction
+		// Direction abbr. string
+		da string
+		// Direction full string
+		df string
+	}{
+		{"Ehrenfeld, Germany", &Direction{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  302,
+		}, "NWbW", "Northwest by West"},
+		{"Berlin, Germany", &Direction{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  286,
+		}, "WbN", "West by North"},
+		{"Neermoor, Germany", nil, "", ""},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.d != nil && tc.d.String() != o.Winddirection().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected wind direction "+
+					"string: %s, got: %s", tc.d.String(), o.Winddirection())
+			}
+			if tc.d != nil && tc.d.Value() != o.Winddirection().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected wind direction "+
+					"float: %f, got: %f", tc.d.Value(), o.Winddirection().Value())
+			}
+			if tc.d != nil && o.Winddirection().Source() != tc.d.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.d.s, o.Winddirection().Source())
+			}
+			if tc.d != nil && o.Winddirection().Direction() != tc.da {
+				t.Errorf("CurrentWeatherByLocation failed, expected direction abbr.: %s, but got: %s",
+					tc.da, o.Winddirection().Direction())
+			}
+			if tc.d != nil && o.Winddirection().DirectionFull() != tc.df {
+				t.Errorf("CurrentWeatherByLocation failed, expected direction full: %s, but got: %s",
+					tc.df, o.Winddirection().DirectionFull())
+			}
+			if tc.d == nil {
+				if o.Winddirection().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected wind direction "+
+						"to have no data, but got: %s", o.Winddirection())
+				}
+				if !math.IsNaN(o.Winddirection().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected wind direction "+
+						"to return NaN, but got: %s", o.Windspeed().String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_Windspeed(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather speed
+		s *Speed
+	}{
+		{"Ehrenfeld, Germany", &Speed{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  3.94,
+		}},
+		{"Berlin, Germany", &Speed{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  3.19,
+		}},
+		{"Neermoor, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.s != nil && tc.s.String() != o.Windspeed().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected wind speed "+
+					"string: %s, got: %s", tc.s.String(), o.Windspeed())
+			}
+			if tc.s != nil && tc.s.Value() != o.Windspeed().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected wind speed "+
+					"float: %f, got: %f", tc.s.Value(), o.Windspeed().Value())
+			}
+			if tc.s != nil && o.Windspeed().Source() != tc.s.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.s.s, o.Windspeed().Source())
+			}
+			if tc.s == nil {
+				if o.Windspeed().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected wind speed "+
+						"to have no data, but got: %s", o.Windspeed())
+				}
+				if !math.IsNaN(o.Windspeed().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected wind speed "+
+						"to return NaN, but got: %s", o.Windspeed().String())
 				}
 			}
 		})
