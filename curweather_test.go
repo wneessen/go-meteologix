@@ -145,7 +145,7 @@ func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected temperature "+
 					"float: %f, got: %f", tc.t.Value(), o.Temperature().Value())
 			}
-			if o.Temperature().Source() != tc.t.s {
+			if tc.t != nil && o.Temperature().Source() != tc.t.s {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
 					tc.t.s, o.Temperature().Source())
 			}
@@ -201,7 +201,7 @@ func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected dewpoint "+
 					"float: %f, got: %f", tc.t.Value(), o.Dewpoint().Value())
 			}
-			if o.Dewpoint().Source() != tc.t.s {
+			if tc.t != nil && o.Dewpoint().Source() != tc.t.s {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
 					tc.t.s, o.Dewpoint().Source())
 			}
@@ -257,7 +257,7 @@ func TestClient_CurrentWeatherByLocation_HumidityRelative(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected humidity "+
 					"float: %f, got: %f", tc.h.Value(), o.HumidityRelative().Value())
 			}
-			if o.HumidityRelative().Source() != tc.h.s {
+			if tc.h != nil && o.HumidityRelative().Source() != tc.h.s {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
 					tc.h.s, o.HumidityRelative().Source())
 			}
@@ -269,6 +269,206 @@ func TestClient_CurrentWeatherByLocation_HumidityRelative(t *testing.T) {
 				if !math.IsNaN(o.HumidityRelative().Value()) {
 					t.Errorf("CurrentWeatherByLocation failed, expected humidity "+
 						"to return NaN, but got: %s", o.HumidityRelative().String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_PrecipitationCurrent(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather precipitation
+		p *Precipitation
+	}{
+		{"Ehrenfeld, Germany", nil},
+		{"Berlin, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.Precipitation(TimespanCurrent).String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(TimespanCurrent))
+			}
+			if tc.p != nil && tc.p.Value() != o.Precipitation(TimespanCurrent).Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(TimespanCurrent).Value())
+			}
+			if tc.p != nil && o.Precipitation(TimespanCurrent).Source() != tc.p.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.p.s, o.Precipitation(TimespanCurrent).Source())
+			}
+			if tc.p == nil {
+				if o.Precipitation(TimespanCurrent).IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to have no data, but got: %s", o.Precipitation(TimespanCurrent))
+				}
+				if !math.IsNaN(o.Precipitation(TimespanCurrent).Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(TimespanCurrent).String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_Precipitation10m(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather precipitation
+		p *Precipitation
+	}{
+		{"Ehrenfeld, Germany", nil},
+		{"Berlin, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.Precipitation(Timespan10Min).String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Timespan10Min))
+			}
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Timespan10Min).Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Timespan10Min).Value())
+			}
+			if tc.p != nil && o.Precipitation(Timespan10Min).Source() != tc.p.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.p.s, o.Precipitation(Timespan10Min).Source())
+			}
+			if tc.p == nil {
+				if o.Precipitation(Timespan10Min).IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to have no data, but got: %s", o.Precipitation(Timespan10Min))
+				}
+				if !math.IsNaN(o.Precipitation(Timespan10Min).Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(Timespan10Min).String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_Precipitation1h(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather precipitation
+		p *Precipitation
+	}{
+		{"Ehrenfeld, Germany", &Precipitation{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceObservation,
+			v:  0,
+		}},
+		{"Berlin, Germany", &Precipitation{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			v:  0.0092,
+		}},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.Precipitation(Timespan1Hour).String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Timespan1Hour))
+			}
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Timespan1Hour).Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Timespan1Hour).Value())
+			}
+			if tc.p != nil && o.Precipitation(Timespan1Hour).Source() != tc.p.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.p.s, o.Precipitation(Timespan1Hour).Source())
+			}
+			if tc.p == nil {
+				if o.Precipitation(Timespan1Hour).IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to have no data, but got: %s", o.Precipitation(Timespan1Hour))
+				}
+				if !math.IsNaN(o.Precipitation(Timespan1Hour).Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(Timespan1Hour).String())
+				}
+			}
+		})
+	}
+}
+
+func TestClient_CurrentWeatherByLocation_Precipitation24h(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather precipitation
+		p *Precipitation
+	}{
+		{"Ehrenfeld, Germany", nil},
+		{"Berlin, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			o, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != o.Precipitation(Timespan24Hours).String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"string: %s, got: %s", tc.p.String(), o.Precipitation(Timespan24Hours))
+			}
+			if tc.p != nil && tc.p.Value() != o.Precipitation(Timespan24Hours).Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+					"float: %f, got: %f", tc.p.Value(), o.Precipitation(Timespan24Hours).Value())
+			}
+			if tc.p != nil && o.Precipitation(Timespan24Hours).Source() != tc.p.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.p.s, o.Precipitation(Timespan24Hours).Source())
+			}
+			if tc.p == nil {
+				if o.Precipitation(Timespan24Hours).IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to have no data, but got: %s", o.Precipitation(Timespan24Hours))
+				}
+				if !math.IsNaN(o.Precipitation(Timespan24Hours).Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected precipitation "+
+						"to return NaN, but got: %s", o.Precipitation(Timespan24Hours).String())
 				}
 			}
 		})

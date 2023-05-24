@@ -34,6 +34,15 @@ type APICurrentWeatherData struct {
 	Dewpoint *APIValue `json:"dewpoint,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *APIValue `json:"humidityRelative,omitempty"`
+	Precipitation    *APIValue `json:"prec"`
+	// Precipitation10m represents the amount of precipitation over the last 10 minutes
+	Precipitation10m *APIValue `json:"prec10m"`
+	// Precipitation1h represents the amount of precipitation over the last hour
+	Precipitation1h *APIValue `json:"prec1h"`
+	// Precipitation24h represents the amount of precipitation over the last 24 hours
+	Precipitation24h *APIValue `json:"prec24h"`
+	// Temperature represents the temperature in °C
+	Temperature *APIValue `json:"temp,omitempty"`
 	/*
 		// DewPointMean represents the mean dewpoint in °C
 		DewpointMean *APIValue `json:"dewpointMean,omitempty"`
@@ -47,22 +56,10 @@ type APICurrentWeatherData struct {
 		// 24 hour in kJ/m²
 		GlobalRadiation24h *APIValue `json:"globalRadiation24h,omitempty"`
 		// Precipitation represents the current amount of precipitation
-		Precipitation *APIValue `json:"prec"`
-		// Precipitation10m represents the amount of precipitation over the last 10 minutes
-		Precipitation10m *APIValue `json:"prec10m"`
-		// Precipitation1h represents the amount of precipitation over the last hour
-		Precipitation1h *APIValue `json:"prec1h"`
-		// Precipitation24h represents the amount of precipitation over the last 24 hours
-		Precipitation24h *APIValue `json:"prec24h"`
 		// PressureMSL represents the pressure at mean sea level (MSL) in hPa
 		PressureMSL *APIValue `json:"pressureMsl"`
 		// PressureMSL represents the pressure at station level (QFE) in hPa
 		PressureQFE *APIValue `json:"pressure"`
-
-	*/
-	// Temperature represents the temperature in °C
-	Temperature *APIValue `json:"temp,omitempty"`
-	/*
 		// TemperatureMax represents the maximum temperature in °C
 		TemperatureMax *APIValue `json:"tempMax,omitempty"`
 		// TemperatureMean represents the mean temperature in °C
@@ -170,6 +167,48 @@ func (cw CurrentWeather) HumidityRelative() Humidity {
 	}
 	if cw.Data.HumidityRelative.Source != nil {
 		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
+	}
+	return v
+}
+
+// Precipitation returns the current amount of precipitation (mm) as Precipitation
+// If the data point is not available in the CurrentWeather it will return
+// Precipitation in which the "not available" field will be true.
+//
+// At this point of development, it looks like currently only the 1 Hour value
+// is returned by the endpoint, so expect non-availablity for any other Timespan
+// at this point.
+func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
+	var df *APIValue
+	var fn Fieldname
+	switch ts {
+	case TimespanCurrent:
+		df = cw.Data.Precipitation
+		fn = FieldPrecipitation
+	case Timespan10Min:
+		df = cw.Data.Precipitation10m
+		fn = FieldPrecipitation10m
+	case Timespan1Hour:
+		df = cw.Data.Precipitation1h
+		fn = FieldPrecipitation1h
+	case Timespan24Hours:
+		df = cw.Data.Precipitation24h
+		fn = FieldPrecipitation24h
+	default:
+		return Precipitation{na: true}
+	}
+
+	if df == nil {
+		return Precipitation{na: true}
+	}
+	v := Precipitation{
+		dt: df.DateTime,
+		n:  fn,
+		s:  SourceUnknown,
+		v:  df.Value,
+	}
+	if df.Source != nil {
+		v.s = StringToSource(*df.Source)
 	}
 	return v
 }
