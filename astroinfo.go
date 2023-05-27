@@ -96,17 +96,26 @@ func (c *Client) AstronomicalInfoByLocation(lo string) (AstronomicalInfo, error)
 	return c.AstronomicalInfoByCoordinates(gl.Latitude, gl.Longitude)
 }
 
-// Sunset returns the date and time of the sunset on the current day
-// as DateTime type
+// SunsetByTime returns the date and time of the sunset on the give
+// time as DateTime type.
 // If the data point is not available in the AstronomicalInfo it will
 // return DateTime in which the "not available" field will be true.
-func (a *AstronomicalInfo) Sunset() DateTime {
-	n := time.Now()
+//
+// Please keep in mind that the API only returns 14 days in the future.
+// Any date given that exceeds that time, wil always return a
+// "not available" value.
+func (a *AstronomicalInfo) SunsetByTime(t time.Time) DateTime {
 	if len(a.DailyData) < 1 {
 		return DateTime{na: true}
 	}
-	cdd := a.DailyData[0]
-	if cdd.DateTime.Format("2006-01-02") != n.Format("2006-01-02") {
+	var cdd APIAstronomicalDailyData
+	for i := range a.DailyData {
+		if a.DailyData[i].DateTime.Format(DateFormat) != t.Format(DateFormat) {
+			continue
+		}
+		cdd = a.DailyData[i]
+	}
+	if cdd.DateTime.IsZero() {
 		return DateTime{na: true}
 	}
 	return DateTime{
@@ -115,4 +124,25 @@ func (a *AstronomicalInfo) Sunset() DateTime {
 		s:  SourceForecast,
 		dv: *cdd.Sunset,
 	}
+}
+
+// Sunset returns the date and time of the sunset on the current date
+// as DateTime type.
+// If the data point is not available in the AstronomicalInfo it will
+// return DateTime in which the "not available" field will be true.
+func (a *AstronomicalInfo) Sunset() DateTime {
+	return a.SunsetByTime(time.Now())
+}
+
+// SunsetByDateString returns the date and time of the sunset at a
+// given date string as DateTime type. Expected format is 2006-01-02.
+// If the date wasn't able to be parsed or if the data point is not
+// available in the AstronomicalInfo it will return DateTime in
+// which the "not available" field will be true.
+func (a *AstronomicalInfo) SunsetByDateString(ds string) DateTime {
+	t, err := time.Parse("2006-01-02", ds)
+	if err != nil {
+		return DateTime{na: true}
+	}
+	return a.SunsetByTime(t)
 }

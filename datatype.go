@@ -14,6 +14,10 @@ import (
 // data point is not available
 const DataUnavailable = "Data unavailable"
 
+// DateFormat is the parsing format that is used for datetime strings
+// that only hold the date but no time
+const DateFormat = "2006-02-01"
+
 // Enum for different Fieldname values
 const (
 	// FieldDewpoint represents the Dewpoint data point
@@ -128,7 +132,7 @@ func (a *APIDate) UnmarshalJSON(s []byte) error {
 	var err error
 	switch len(d) {
 	case 10:
-		pd, err = time.Parse("2006-01-02", d)
+		pd, err = time.Parse(DateFormat, d)
 	case 20:
 		pd, err = time.Parse(time.RFC3339, d)
 	default:
