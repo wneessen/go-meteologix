@@ -121,9 +121,9 @@ func TestAstronomicalInfo_SunsetByDateString(t *testing.T) {
 		t.Errorf("SunsetByDateString failed, expected entry, but got 'not available'")
 		return
 	}
-	if ai.SunsetByTime(ti).String() != ti.String() {
+	if ai.SunsetByTime(ti).String() != ti.Format(time.RFC3339) {
 		t.Errorf("SunsetByTime failed, expected sunset: %s, got: %s",
-			ti.String(), ai.SunsetByTime(ti).String())
+			ti.Format(time.RFC3339), ai.SunsetByTime(ti).String())
 	}
 	if ai.SunsetByDateString(ti.Format(DateFormat)).Value().UnixMilli() != ti.UnixMilli() {
 		t.Errorf("SunsetByDateString failed, expected sunset: %s, got: %s",

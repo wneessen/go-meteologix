@@ -28,8 +28,8 @@ func (dt DateTime) Value() time.Time {
 	return dt.dv
 }
 
-// String satisfies the fmt.Stringer interface for the DateTime
-// type
+// String satisfies the fmt.Stringer interface for the DateTime type
+// The date will returned as time.RFC3339 format
 func (dt DateTime) String() string {
-	return dt.dv.String()
+	return dt.dv.Format(time.RFC3339)
 }
