@@ -16,7 +16,7 @@ const DataUnavailable = "Data unavailable"
 
 // DateFormat is the parsing format that is used for datetime strings
 // that only hold the date but no time
-const DateFormat = "2006-02-01"
+const DateFormat = "2006-01-02"
 
 // Enum for different Fieldname values
 const (
@@ -120,7 +120,8 @@ type WeatherData struct {
 // of an Observation
 type Fieldname int
 
-// UnmarshalJSON interprets the API datestamp and converts it into a time.Time type
+// UnmarshalJSON interprets the API datestamp and converts it into a
+// time.Time type
 func (a *APIDate) UnmarshalJSON(s []byte) error {
 	d := string(s)
 	d = strings.ReplaceAll(d, `"`, ``)
@@ -128,17 +129,7 @@ func (a *APIDate) UnmarshalJSON(s []byte) error {
 		return nil
 	}
 
-	var pd time.Time
-	var err error
-	switch len(d) {
-	case 10:
-		pd, err = time.Parse(DateFormat, d)
-	case 20:
-		pd, err = time.Parse(time.RFC3339, d)
-	default:
-		return fmt.Errorf("failed to parse JSON string as API date: " +
-			"unknown input date format")
-	}
+	pd, err := time.Parse(DateFormat, d)
 	if err != nil {
 		return fmt.Errorf("failed to parse JSON string as APIDate string: %w", err)
 	}

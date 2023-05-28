@@ -23,7 +23,13 @@ func (dt DateTime) IsAvailable() bool {
 // Value will return time.Time with a zero value instead.
 func (dt DateTime) Value() time.Time {
 	if dt.na {
-		return time.Date(0, 0, 0, 0, 0, 0, 0, time.UTC)
+		return time.Time{}
 	}
 	return dt.dv
+}
+
+// String satisfies the fmt.Stringer interface for the DateTime
+// type
+func (dt DateTime) String() string {
+	return dt.dv.String()
 }
