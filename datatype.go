@@ -4,11 +4,19 @@
 
 package meteologix
 
-import "time"
+import (
+	"fmt"
+	"strings"
+	"time"
+)
 
 // DataUnavailable is a constant string that is returned if a
 // data point is not available
 const DataUnavailable = "Data unavailable"
+
+// DateFormat is the parsing format that is used for datetime strings
+// that only hold the date but no time
+const DateFormat = "2006-01-02"
 
 // Enum for different Fieldname values
 const (
@@ -36,6 +44,8 @@ const (
 	FieldPressureMSL
 	// FieldPressureQFE represents the PressureQFE data point
 	FieldPressureQFE
+	// FieldSunset represents the Sunset data point
+	FieldSunset
 	// FieldTemperature represents the Temperature data point
 	FieldTemperature
 	// FieldTemperatureAtGround represents the TemperatureAtGround data point
@@ -68,6 +78,12 @@ const (
 	Timespan24Hours
 )
 
+// APIDate is type wrapper for datestamp (without time) returned by
+// the API endpoints
+type APIDate struct {
+	time.Time
+}
+
 // APIFloat is the JSON structure of the weather data that is
 // returned by the API endpoints in which the value is a float
 type APIFloat struct {
@@ -92,6 +108,7 @@ type Timespan int
 // specific receiver methods
 type WeatherData struct {
 	dt time.Time
+	dv time.Time
 	fv float64
 	n  Fieldname
 	na bool
@@ -102,3 +119,20 @@ type WeatherData struct {
 // Fieldname is a type wrapper for an int for field names
 // of an Observation
 type Fieldname int
+
+// UnmarshalJSON interprets the API datestamp and converts it into a
+// time.Time type
+func (a *APIDate) UnmarshalJSON(s []byte) error {
+	d := string(s)
+	d = strings.ReplaceAll(d, `"`, ``)
+	if d == "null" {
+		return nil
+	}
+
+	pd, err := time.Parse(DateFormat, d)
+	if err != nil {
+		return fmt.Errorf("failed to parse JSON string as APIDate string: %w", err)
+	}
+	a.Time = pd
+	return nil
+}
