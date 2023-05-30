@@ -143,6 +143,18 @@ func TestAstronomicalInfo_SunsetByDateString(t *testing.T) {
 		t.Errorf("SunsetByTime failed, expected no entry, but got: %s",
 			ai.SunsetByTime(ti).Value().String())
 	}
+	if len(ai.SunsetAll()) != 14 {
+		t.Errorf("SunsetByTime failed, expected 14 entired, but got: %d", len(ai.SunsetAll()))
+		return
+	}
+	if ai.SunsetAll()[0].DateTime().Format("2006-01-02") != "2023-05-28" {
+		t.Errorf("SunsetByTime failed, expected first entry to be: %s, got: %s", "2023-05-28",
+			ai.SunsetAll()[0].DateTime().Format("2006-01-02"))
+	}
+	if ai.SunsetAll()[13].DateTime().Format("2006-01-02") != "2023-06-10" {
+		t.Errorf("SunsetByTime failed, expected first entry to be: %s, got: %s", "2023-06-10",
+			ai.SunsetAll()[13].DateTime().Format("2006-01-02"))
+	}
 }
 
 func TestAstronomicalInfo_SunriseByDateString(t *testing.T) {
@@ -193,5 +205,17 @@ func TestAstronomicalInfo_SunriseByDateString(t *testing.T) {
 	if !ai.SunriseByTime(ti).Value().IsZero() {
 		t.Errorf("SunriseByTime failed, expected no entry, but got: %s",
 			ai.SunriseByTime(ti).Value().String())
+	}
+	if len(ai.SunriseAll()) != 14 {
+		t.Errorf("SunriseByTime failed, expected 14 entired, but got: %d", len(ai.SunriseAll()))
+		return
+	}
+	if ai.SunriseAll()[0].DateTime().Format("2006-01-02") != "2023-05-28" {
+		t.Errorf("SunriseByTime failed, expected first entry to be: %s, got: %s", "2023-05-28",
+			ai.SunriseAll()[0].DateTime().Format("2006-01-02"))
+	}
+	if ai.SunriseAll()[13].DateTime().Format("2006-01-02") != "2023-06-10" {
+		t.Errorf("SunriseByTime failed, expected first entry to be: %s, got: %s", "2023-06-10",
+			ai.SunriseAll()[13].DateTime().Format("2006-01-02"))
 	}
 }
