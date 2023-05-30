@@ -119,7 +119,7 @@ func (a *AstronomicalInfo) SunsetByTime(t time.Time) DateTime {
 		return DateTime{na: true}
 	}
 	return DateTime{
-		dt: a.Run,
+		dt: cdd.DateTime.Time,
 		n:  FieldSunset,
 		s:  SourceForecast,
 		dv: *cdd.Sunset,
@@ -145,4 +145,85 @@ func (a *AstronomicalInfo) SunsetByDateString(ds string) DateTime {
 		return DateTime{na: true}
 	}
 	return a.SunsetByTime(t)
+}
+
+// SunsetAll returns a slice of all sunset data points in the given
+// AstronomicalInfo instance as DateTime types. If no sunset data
+// is available it will return an empty slice
+func (a *AstronomicalInfo) SunsetAll() []DateTime {
+	var sss []DateTime
+	for _, cd := range a.DailyData {
+		if cd.DateTime.IsZero() {
+			continue
+		}
+		sss = append(sss, a.SunsetByTime(cd.DateTime.Time))
+	}
+
+	return sss
+}
+
+// SunriseByTime returns the date and time of the sunrise on the give
+// time as DateTime type.
+// If the data point is not available in the AstronomicalInfo it will
+// return DateTime in which the "not available" field will be true.
+//
+// Please keep in mind that the API only returns 14 days in the future.
+// Any date given that exceeds that time, wil always return a
+// "not available" value.
+func (a *AstronomicalInfo) SunriseByTime(t time.Time) DateTime {
+	if len(a.DailyData) < 1 {
+		return DateTime{na: true}
+	}
+	var cdd APIAstronomicalDailyData
+	for i := range a.DailyData {
+		if a.DailyData[i].DateTime.Format(DateFormat) != t.Format(DateFormat) {
+			continue
+		}
+		cdd = a.DailyData[i]
+	}
+	if cdd.DateTime.IsZero() {
+		return DateTime{na: true}
+	}
+	return DateTime{
+		dt: cdd.DateTime.Time,
+		n:  FieldSunrise,
+		s:  SourceForecast,
+		dv: *cdd.Sunrise,
+	}
+}
+
+// Sunrise returns the date and time of the sunrise on the current date
+// as DateTime type.
+// If the data point is not available in the AstronomicalInfo it will
+// return DateTime in which the "not available" field will be true.
+func (a *AstronomicalInfo) Sunrise() DateTime {
+	return a.SunriseByTime(time.Now())
+}
+
+// SunriseByDateString returns the date and time of the sunrise at a
+// given date string as DateTime type. Expected format is 2006-01-02.
+// If the date wasn't able to be parsed or if the data point is not
+// available in the AstronomicalInfo it will return DateTime in
+// which the "not available" field will be true.
+func (a *AstronomicalInfo) SunriseByDateString(ds string) DateTime {
+	t, err := time.Parse("2006-01-02", ds)
+	if err != nil {
+		return DateTime{na: true}
+	}
+	return a.SunriseByTime(t)
+}
+
+// SunriseAll returns a slice of all sunrise data points in the given
+// AstronomicalInfo instance as DateTime types. If no sunrise data
+// is available it will return an empty slice
+func (a *AstronomicalInfo) SunriseAll() []DateTime {
+	var sss []DateTime
+	for _, cd := range a.DailyData {
+		if cd.DateTime.IsZero() {
+			continue
+		}
+		sss = append(sss, a.SunriseByTime(cd.DateTime.Time))
+	}
+
+	return sss
 }
