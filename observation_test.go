@@ -1328,7 +1328,7 @@ func TestObservationSpeed_Conversion(t *testing.T) {
 		t.Run(fmt.Sprintf("%.0fkn", tc.kn), func(t *testing.T) {
 			os := Speed{fv: tc.kn}
 			if os.Value() != tc.kn {
-				t.Errorf("Speed.RawString failed, expected: %f, got: %f", tc.kn,
+				t.Errorf("Speed.Value failed, expected: %f, got: %f", tc.kn,
 					os.Value())
 			}
 			if os.String() != fmt.Sprintf(knf, tc.kn) {

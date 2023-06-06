@@ -700,9 +700,9 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 					"string: %s, got: %s", tc.gs.String(), cw.WeatherSymbol())
 			}
-			if tc.gs != nil && tc.gs.RawString() != cw.WeatherSymbol().RawString() {
+			if tc.gs != nil && tc.gs.Value() != cw.WeatherSymbol().Value() {
 				t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
-					"string: %s, got: %s", tc.gs.RawString(), cw.WeatherSymbol().RawString())
+					"string: %s, got: %s", tc.gs.Value(), cw.WeatherSymbol().Value())
 			}
 			if tc.gs != nil && cw.WeatherSymbol().Source() != tc.gs.s {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
@@ -717,7 +717,7 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 					t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 						"to have no data, but got: %s", cw.WeatherSymbol())
 				}
-				if cw.WeatherSymbol().RawString() != DataUnavailable {
+				if cw.WeatherSymbol().Value() != DataUnavailable {
 					t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 						"to return DataUnavailable, but got: %s", cw.WeatherSymbol().String())
 				}

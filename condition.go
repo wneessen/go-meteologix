@@ -78,19 +78,24 @@ func (c Condition) DateTime() time.Time {
 	return c.dt
 }
 
-// RawString returns the raw string value of a Condition, as returned by
-// the API.
-// If the Condition is not available in the WeatherData, RawString will
+// Value returns the raw value of a Condition as unformatted string
+// as returned by the API
+// If the Condition is not available in the WeatherData, Value will
 // return DataUnavailable instead.
-func (c Condition) RawString() string {
+func (c Condition) Value() string {
 	if c.na {
 		return DataUnavailable
 	}
 	return c.sv
 }
 
-// Condition returns the formatted, human readable string for a given Condition type
+// Condition returns the actual value of that Condition as ConditionType.
+// If the value is not available or not supported it will return a
+// CondUnknown
 func (c Condition) Condition() ConditionType {
+	if c.na {
+		return CondUnknown
+	}
 	if _, ok := ConditionMap[ConditionType(c.sv)]; ok {
 		return ConditionType(c.sv)
 	}
