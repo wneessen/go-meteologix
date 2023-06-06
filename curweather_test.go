@@ -670,14 +670,14 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 		// Location name
 		loc string
 		// CurWeather generic string
-		gs *GenericString
+		gs *Condition
 	}{
-		{"Ehrenfeld, Germany", &GenericString{
+		{"Ehrenfeld, Germany", &Condition{
 			dt: time.Date(2023, 5, 23, 7, 30, 0, 0, time.UTC),
 			s:  SourceAnalysis,
 			sv: "overcast",
 		}},
-		{"Berlin, Germany", &GenericString{
+		{"Berlin, Germany", &Condition{
 			dt: time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
 			s:  SourceAnalysis,
 			sv: "cloudy",
@@ -700,9 +700,9 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 					"string: %s, got: %s", tc.gs.String(), cw.WeatherSymbol())
 			}
-			if tc.gs != nil && tc.gs.Value() != cw.WeatherSymbol().Value() {
+			if tc.gs != nil && tc.gs.RawString() != cw.WeatherSymbol().RawString() {
 				t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
-					"string: %s, got: %s", tc.gs.Value(), cw.WeatherSymbol().Value())
+					"string: %s, got: %s", tc.gs.RawString(), cw.WeatherSymbol().RawString())
 			}
 			if tc.gs != nil && cw.WeatherSymbol().Source() != tc.gs.s {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
@@ -717,7 +717,7 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 					t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 						"to have no data, but got: %s", cw.WeatherSymbol())
 				}
-				if cw.WeatherSymbol().Value() != DataUnavailable {
+				if cw.WeatherSymbol().RawString() != DataUnavailable {
 					t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 						"to return DataUnavailable, but got: %s", cw.WeatherSymbol().String())
 				}

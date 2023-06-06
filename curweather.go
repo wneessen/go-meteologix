@@ -236,14 +236,14 @@ func (cw CurrentWeather) PressureMSL() Pressure {
 }
 
 // WeatherSymbol returns a text representation of the current weather
-// as GenericString.
+// as Condition.
 // If the data point is not available in the CurrentWeather it will return
-// GenericString in which the "not available" field will be true.
-func (cw CurrentWeather) WeatherSymbol() GenericString {
+// Condition in which the "not available" field will be true.
+func (cw CurrentWeather) WeatherSymbol() Condition {
 	if cw.Data.WeatherSymbol == nil {
-		return GenericString{na: true}
+		return Condition{na: true}
 	}
-	v := GenericString{
+	v := Condition{
 		dt: cw.Data.WeatherSymbol.DateTime,
 		n:  FieldWeatherSymbol,
 		s:  SourceUnknown,
