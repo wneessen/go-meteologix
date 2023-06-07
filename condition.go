@@ -105,11 +105,20 @@ func (c Condition) Condition() ConditionType {
 // String returns the formatted, human readable string for a given
 // Condition type and satisfies the fmt.Stringer interface
 func (c Condition) String() string {
-	return ConditionMap[c.Condition()]
+	return c.Condition().String()
 }
 
 // Source returns the Source of a Condition
 // If the Source is not available it will return SourceUnknown
 func (c Condition) Source() Source {
 	return c.s
+}
+
+// String returns a human readable, formatted string for a ConditionType and
+// satisfies the fmt.Stringer interface.
+func (ct ConditionType) String() string {
+	if cs, ok := ConditionMap[ct]; ok {
+		return cs
+	}
+	return ConditionMap[CondUnknown]
 }

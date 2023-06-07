@@ -700,6 +700,10 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 					"string: %s, got: %s", tc.gs.String(), cw.WeatherSymbol())
 			}
+			if tc.gs != nil && tc.gs.Condition() != cw.WeatherSymbol().Condition() {
+				t.Errorf("CurrentWeatherByLocation failed, expected condition "+
+					"string: %s, got: %s", tc.gs.Condition(), cw.WeatherSymbol().Condition())
+			}
 			if tc.gs != nil && tc.gs.Value() != cw.WeatherSymbol().Value() {
 				t.Errorf("CurrentWeatherByLocation failed, expected weathersymbol "+
 					"string: %s, got: %s", tc.gs.Value(), cw.WeatherSymbol().Value())
