@@ -34,20 +34,22 @@ type APICurrentWeatherData struct {
 	Dewpoint *APIFloat `json:"dewpoint,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *APIFloat `json:"humidityRelative,omitempty"`
+	// IsDay is true when it is currently daytime
+	IsDay *APIBool `json:"isDay"`
 	// Precipitation represents the current amount of precipitation
-	Precipitation *APIFloat `json:"prec"`
+	Precipitation *APIFloat `json:"prec,omitempty"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
-	Precipitation10m *APIFloat `json:"prec10m"`
+	Precipitation10m *APIFloat `json:"prec10m,omitempty"`
 	// Precipitation1h represents the amount of precipitation over the last hour
-	Precipitation1h *APIFloat `json:"prec1h"`
+	Precipitation1h *APIFloat `json:"prec1h,omitempty"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
-	Precipitation24h *APIFloat `json:"prec24h"`
+	Precipitation24h *APIFloat `json:"prec24h,omitempty"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
-	PressureMSL *APIFloat `json:"pressureMsl"`
+	PressureMSL *APIFloat `json:"pressureMsl,omitempty"`
 	// Temperature represents the temperature in °C
-	Temperature *APIFloat `json:"temp,omitempty"`
+	Temperature *APIFloat `json:"temp,omitempty,omitempty"`
 	// Windspeed represents the wind speed in knots
-	Windspeed *APIFloat `json:"windSpeed,omitempty"`
+	Windspeed *APIFloat `json:"windSpeed,omitempty,omitempty"`
 	// Winddirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
 	Winddirection *APIFloat `json:"windDirection,omitempty"`
@@ -117,25 +119,6 @@ func (c *Client) CurrentWeatherByLocation(lo string) (CurrentWeather, error) {
 	return c.CurrentWeatherByCoordinates(gl.Latitude, gl.Longitude)
 }
 
-// Temperature returns the temperature data point as Temperature.
-// If the data point is not available in the CurrentWeather it will return
-// Temperature in which the "not available" field will be true.
-func (cw CurrentWeather) Temperature() Temperature {
-	if cw.Data.Temperature == nil {
-		return Temperature{na: true}
-	}
-	v := Temperature{
-		dt: cw.Data.Temperature.DateTime,
-		n:  FieldTemperature,
-		s:  SourceUnknown,
-		fv: cw.Data.Temperature.Value,
-	}
-	if cw.Data.Temperature.Source != nil {
-		v.s = StringToSource(*cw.Data.Temperature.Source)
-	}
-	return v
-}
-
 // Dewpoint returns the dewpoint data point as Temperature.
 // If the data point is not available in the CurrentWeather it will return
 // Temperature in which the "not available" field will be true.
@@ -172,6 +155,14 @@ func (cw CurrentWeather) HumidityRelative() Humidity {
 		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
 	}
 	return v
+}
+
+// IsDay returns true if it is currently day at queried location
+func (cw CurrentWeather) IsDay() bool {
+	if cw.Data.IsDay == nil {
+		return false
+	}
+	return cw.Data.IsDay.Value
 }
 
 // Precipitation returns the current amount of precipitation (mm) as Precipitation
@@ -235,6 +226,25 @@ func (cw CurrentWeather) PressureMSL() Pressure {
 	return v
 }
 
+// Temperature returns the temperature data point as Temperature.
+// If the data point is not available in the CurrentWeather it will return
+// Temperature in which the "not available" field will be true.
+func (cw CurrentWeather) Temperature() Temperature {
+	if cw.Data.Temperature == nil {
+		return Temperature{na: true}
+	}
+	v := Temperature{
+		dt: cw.Data.Temperature.DateTime,
+		n:  FieldTemperature,
+		s:  SourceUnknown,
+		fv: cw.Data.Temperature.Value,
+	}
+	if cw.Data.Temperature.Source != nil {
+		v.s = StringToSource(*cw.Data.Temperature.Source)
+	}
+	return v
+}
+
 // WeatherSymbol returns a text representation of the current weather
 // as Condition.
 // If the data point is not available in the CurrentWeather it will return
@@ -255,10 +265,10 @@ func (cw CurrentWeather) WeatherSymbol() Condition {
 	return v
 }
 
-// Winddirection returns the wind direction data point as Direction.
+// WindDirection returns the wind direction data point as Direction.
 // If the data point is not available in the CurrentWeather it will return
 // Direction in which the "not available" field will be true.
-func (cw CurrentWeather) Winddirection() Direction {
+func (cw CurrentWeather) WindDirection() Direction {
 	if cw.Data.Winddirection == nil {
 		return Direction{na: true}
 	}
@@ -274,10 +284,10 @@ func (cw CurrentWeather) Winddirection() Direction {
 	return v
 }
 
-// Windspeed returns the average wind speed data point as Speed.
+// WindSpeed returns the average wind speed data point as Speed.
 // If the data point is not available in the CurrentWeather it will return
 // Speed in which the "not available" field will be true.
-func (cw CurrentWeather) Windspeed() Speed {
+func (cw CurrentWeather) WindSpeed() Speed {
 	if cw.Data.Windspeed == nil {
 		return Speed{na: true}
 	}

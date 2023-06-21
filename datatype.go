@@ -62,9 +62,9 @@ const (
 	FieldTemperatureMin
 	// FieldWeatherSymbol represents the weather symbol data point
 	FieldWeatherSymbol
-	// FieldWinddirection represents the Winddirection data point
+	// FieldWinddirection represents the WindDirection data point
 	FieldWinddirection
-	// FieldWindspeed represents the Windspeed data point
+	// FieldWindspeed represents the WindSpeed data point
 	FieldWindspeed
 )
 
@@ -84,6 +84,14 @@ const (
 // the API endpoints
 type APIDate struct {
 	time.Time
+}
+
+// APIBool is the JSON structure of the weather data that is
+// returned by the API endpoints in which the value is a boolean
+type APIBool struct {
+	DateTime time.Time `json:"dateTime"`
+	Source   *string   `json:"source,omitempty"`
+	Value    bool      `json:"value"`
 }
 
 // APIFloat is the JSON structure of the weather data that is
@@ -109,6 +117,7 @@ type Timespan int
 // Weather) data and can be wrapped into other types to provide type
 // specific receiver methods
 type WeatherData struct {
+	bv bool
 	dt time.Time
 	dv time.Time
 	fv float64
