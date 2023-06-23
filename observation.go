@@ -76,11 +76,11 @@ type APIObservationData struct {
 	// Temperature5cm represents the minimum temperature 5cm above
 	// ground in °C
 	Temperature5cmMin *APIFloat `json:"temp5cmMin,omitempty"`
-	// Winddirection represents the direction from which the wind
+	// WindDirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
-	Winddirection *APIFloat `json:"windDirection,omitempty"`
-	// Windspeed represents the wind speed in knots
-	Windspeed *APIFloat `json:"windSpeed,omitempty"`
+	WindDirection *APIFloat `json:"windDirection,omitempty"`
+	// WindSpeed represents the wind speed in knots
+	WindSpeed *APIFloat `json:"windSpeed,omitempty"`
 }
 
 // ObservationLatestByStationID returns the latest Observation values from the
@@ -370,14 +370,14 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 // If the data point is not available in the Observation it will return
 // Direction in which the "not available" field will be true.
 func (o Observation) WindDirection() Direction {
-	if o.Data.Winddirection == nil {
+	if o.Data.WindDirection == nil {
 		return Direction{na: true}
 	}
 	return Direction{
-		dt: o.Data.Winddirection.DateTime,
-		n:  FieldWinddirection,
+		dt: o.Data.WindDirection.DateTime,
+		n:  FieldWindDirection,
 		s:  SourceObservation,
-		fv: o.Data.Winddirection.Value,
+		fv: o.Data.WindDirection.Value,
 	}
 }
 
@@ -385,13 +385,13 @@ func (o Observation) WindDirection() Direction {
 // If the data point is not available in the Observation it will return
 // Speed in which the "not available" field will be true.
 func (o Observation) WindSpeed() Speed {
-	if o.Data.Windspeed == nil {
+	if o.Data.WindSpeed == nil {
 		return Speed{na: true}
 	}
 	return Speed{
-		dt: o.Data.Windspeed.DateTime,
-		n:  FieldWindspeed,
+		dt: o.Data.WindSpeed.DateTime,
+		n:  FieldWindSpeed,
 		s:  SourceObservation,
-		fv: o.Data.Windspeed.Value * 0.5144444444,
+		fv: o.Data.WindSpeed.Value * 0.5144444444,
 	}
 }

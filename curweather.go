@@ -48,11 +48,13 @@ type APICurrentWeatherData struct {
 	PressureMSL *APIFloat `json:"pressureMsl,omitempty"`
 	// Temperature represents the temperature in °C
 	Temperature *APIFloat `json:"temp,omitempty,omitempty"`
-	// Windspeed represents the wind speed in knots
-	Windspeed *APIFloat `json:"windSpeed,omitempty,omitempty"`
-	// Winddirection represents the direction from which the wind
+	// WindDirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
-	Winddirection *APIFloat `json:"windDirection,omitempty"`
+	WindDirection *APIFloat `json:"windDirection,omitempty"`
+	// WindGust represents the wind gust speed in m/s
+	WindGust *APIFloat `json:"windGust,omitempty"`
+	// WindSpeed represents the wind speed in m/s
+	WindSpeed *APIFloat `json:"windSpeed,omitempty"`
 	// WeatherSymbol is a text representation of the current weather
 	// conditions
 	WeatherSymbol *APIString `json:"weatherSymbol,omitempty"`
@@ -269,17 +271,36 @@ func (cw CurrentWeather) WeatherSymbol() Condition {
 // If the data point is not available in the CurrentWeather it will return
 // Direction in which the "not available" field will be true.
 func (cw CurrentWeather) WindDirection() Direction {
-	if cw.Data.Winddirection == nil {
+	if cw.Data.WindDirection == nil {
 		return Direction{na: true}
 	}
 	v := Direction{
-		dt: cw.Data.Winddirection.DateTime,
-		n:  FieldWinddirection,
+		dt: cw.Data.WindDirection.DateTime,
+		n:  FieldWindDirection,
 		s:  SourceUnknown,
-		fv: cw.Data.Winddirection.Value,
+		fv: cw.Data.WindDirection.Value,
 	}
-	if cw.Data.Winddirection.Source != nil {
-		v.s = StringToSource(*cw.Data.Winddirection.Source)
+	if cw.Data.WindDirection.Source != nil {
+		v.s = StringToSource(*cw.Data.WindDirection.Source)
+	}
+	return v
+}
+
+// WindGust returns the wind gust data point as Speed.
+// If the data point is not available in the CurrentWeather it will return
+// Speed in which the "not available" field will be true.
+func (cw CurrentWeather) WindGust() Speed {
+	if cw.Data.WindGust == nil {
+		return Speed{na: true}
+	}
+	v := Speed{
+		dt: cw.Data.WindGust.DateTime,
+		n:  FieldWindGust,
+		s:  SourceUnknown,
+		fv: cw.Data.WindGust.Value,
+	}
+	if cw.Data.WindGust.Source != nil {
+		v.s = StringToSource(*cw.Data.WindGust.Source)
 	}
 	return v
 }
@@ -288,17 +309,17 @@ func (cw CurrentWeather) WindDirection() Direction {
 // If the data point is not available in the CurrentWeather it will return
 // Speed in which the "not available" field will be true.
 func (cw CurrentWeather) WindSpeed() Speed {
-	if cw.Data.Windspeed == nil {
+	if cw.Data.WindSpeed == nil {
 		return Speed{na: true}
 	}
 	v := Speed{
-		dt: cw.Data.Windspeed.DateTime,
-		n:  FieldWindspeed,
+		dt: cw.Data.WindSpeed.DateTime,
+		n:  FieldWindSpeed,
 		s:  SourceUnknown,
-		fv: cw.Data.Windspeed.Value,
+		fv: cw.Data.WindSpeed.Value,
 	}
-	if cw.Data.Windspeed.Source != nil {
-		v.s = StringToSource(*cw.Data.Windspeed.Source)
+	if cw.Data.WindSpeed.Source != nil {
+		v.s = StringToSource(*cw.Data.WindSpeed.Source)
 	}
 	return v
 }

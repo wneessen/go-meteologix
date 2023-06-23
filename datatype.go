@@ -62,10 +62,12 @@ const (
 	FieldTemperatureMin
 	// FieldWeatherSymbol represents the weather symbol data point
 	FieldWeatherSymbol
-	// FieldWinddirection represents the WindDirection data point
-	FieldWinddirection
-	// FieldWindspeed represents the WindSpeed data point
-	FieldWindspeed
+	// FieldWindDirection represents the WindDirection data point
+	FieldWindDirection
+	// FieldWindGust represents the WindGust data point
+	FieldWindGust
+	// FieldWindSpeed represents the WindSpeed data point
+	FieldWindSpeed
 )
 
 // Enum for different Timespan values

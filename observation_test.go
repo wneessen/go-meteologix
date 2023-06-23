@@ -1218,7 +1218,7 @@ func TestClient_ObservationLatestByStationID_WindSpeed(t *testing.T) {
 			}
 			if tc.p != nil && tc.p.Value() != o.WindSpeed().Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
-					"float: %f, got: %f, %+v", tc.p.Value(), o.WindSpeed().Value(), o.Data.Windspeed)
+					"float: %f, got: %f, %+v", tc.p.Value(), o.WindSpeed().Value(), o.Data.WindSpeed)
 			}
 			if tc.p != nil && tc.p.dt.Unix() != o.WindSpeed().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
