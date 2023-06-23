@@ -512,6 +512,59 @@ func TestClient_CurrentWeatherByLocation_PressureMSL(t *testing.T) {
 	}
 }
 
+func TestClient_CurrentWeatherByLocation_PressureQFE(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather pressure
+		p *Pressure
+	}{
+		{"Ehrenfeld, Germany", &Pressure{
+			dt: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			s:  SourceAnalysis,
+			fv: 1011.7,
+		}},
+		{"Berlin, Germany", nil},
+		{"Neermoor, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			cw, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.p != nil && tc.p.String() != cw.PressureQFE().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+					"string: %s, got: %s", tc.p.String(), cw.PressureQFE())
+			}
+			if tc.p != nil && tc.p.Value() != cw.PressureQFE().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+					"float: %f, got: %f", tc.p.Value(), cw.PressureQFE().Value())
+			}
+			if tc.p != nil && cw.PressureQFE().Source() != tc.p.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.p.s, cw.PressureQFE().Source())
+			}
+			if tc.p == nil {
+				if cw.PressureQFE().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+						"to have no data, but got: %s", cw.PressureQFE())
+				}
+				if !math.IsNaN(cw.PressureQFE().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected pressure "+
+						"to return NaN, but got: %s", cw.PressureQFE().String())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 	tt := []struct {
 		// Location name

@@ -46,6 +46,8 @@ type APICurrentWeatherData struct {
 	Precipitation24h *APIFloat `json:"prec24h,omitempty"`
 	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
 	PressureMSL *APIFloat `json:"pressureMsl,omitempty"`
+	// PressureQFE represents the pressure at station level (QFE) in hPa
+	PressureQFE *APIFloat `json:"pressure,omitempty"`
 	// Temperature represents the temperature in °C
 	Temperature *APIFloat `json:"temp,omitempty,omitempty"`
 	// WindDirection represents the direction from which the wind
@@ -224,6 +226,25 @@ func (cw CurrentWeather) PressureMSL() Pressure {
 	}
 	if cw.Data.PressureMSL.Source != nil {
 		v.s = StringToSource(*cw.Data.PressureMSL.Source)
+	}
+	return v
+}
+
+// PressureQFE returns the pressure at mean sea level data point as Pressure.
+// If the data point is not available in the CurrentWeather it will return
+// Pressure in which the "not available" field will be true.
+func (cw CurrentWeather) PressureQFE() Pressure {
+	if cw.Data.PressureQFE == nil {
+		return Pressure{na: true}
+	}
+	v := Pressure{
+		dt: cw.Data.PressureQFE.DateTime,
+		n:  FieldPressureQFE,
+		s:  SourceUnknown,
+		fv: cw.Data.PressureQFE.Value,
+	}
+	if cw.Data.PressureQFE.Source != nil {
+		v.s = StringToSource(*cw.Data.PressureQFE.Source)
 	}
 	return v
 }

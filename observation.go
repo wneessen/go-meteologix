@@ -52,17 +52,17 @@ type APIObservationData struct {
 	// HumidityRelative represents the relative humidity in percent
 	HumidityRelative *APIFloat `json:"humidityRelative,omitempty"`
 	// Precipitation represents the current amount of precipitation
-	Precipitation *APIFloat `json:"prec"`
+	Precipitation *APIFloat `json:"prec,omitempty"`
 	// Precipitation10m represents the amount of precipitation over the last 10 minutes
-	Precipitation10m *APIFloat `json:"prec10m"`
+	Precipitation10m *APIFloat `json:"prec10m,omitempty"`
 	// Precipitation1h represents the amount of precipitation over the last hour
-	Precipitation1h *APIFloat `json:"prec1h"`
+	Precipitation1h *APIFloat `json:"prec1h,omitempty"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
-	Precipitation24h *APIFloat `json:"prec24h"`
+	Precipitation24h *APIFloat `json:"prec24h,omitempty"`
 	// PressureMSL represents the air pressure at MSL / temperature adjusted (QFF) in hPa
-	PressureMSL *APIFloat `json:"pressureMsl"`
+	PressureMSL *APIFloat `json:"pressureMsl,omitempty"`
 	// PressureQFE represents the pressure at station level (QFE) in hPa
-	PressureQFE *APIFloat `json:"pressure"`
+	PressureQFE *APIFloat `json:"pressure,omitempty"`
 	// Temperature represents the temperature in °C
 	Temperature *APIFloat `json:"temp,omitempty"`
 	// TemperatureMax represents the maximum temperature in °C
@@ -79,7 +79,7 @@ type APIObservationData struct {
 	// WindDirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
 	WindDirection *APIFloat `json:"windDirection,omitempty"`
-	// WindSpeed represents the wind speed in knots
+	// WindSpeed represents the wind speed in knots (soon switched to m/s)
 	WindSpeed *APIFloat `json:"windSpeed,omitempty"`
 }
 
