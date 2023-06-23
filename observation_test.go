@@ -1124,7 +1124,7 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation24h(t *testing.T) {
 	}
 }
 
-func TestClient_ObservationLatestByStationID_Winddirection(t *testing.T) {
+func TestClient_ObservationLatestByStationID_WindDirection(t *testing.T) {
 	tt := []struct {
 		// Test name
 		n string
@@ -1153,37 +1153,37 @@ func TestClient_ObservationLatestByStationID_Winddirection(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID with station %s failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.Winddirection().String() {
+			if tc.p != nil && tc.p.String() != o.WindDirection().String() {
 				t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
-					"string: %s, got: %s", tc.p.String(), o.Winddirection())
+					"string: %s, got: %s", tc.p.String(), o.WindDirection())
 			}
-			if tc.p != nil && tc.p.Value() != o.Winddirection().Value() {
+			if tc.p != nil && tc.p.Value() != o.WindDirection().Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
-					"float: %f, got: %f", tc.p.Value(), o.Winddirection().Value())
+					"float: %f, got: %f", tc.p.Value(), o.WindDirection().Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.Winddirection().DateTime().Unix() {
+			if tc.p != nil && tc.p.dt.Unix() != o.WindDirection().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.Winddirection().DateTime().Format(time.RFC3339))
+					tc.p.dt.Format(time.RFC3339), o.WindDirection().DateTime().Format(time.RFC3339))
 			}
-			if o.Winddirection().Source() != SourceObservation {
+			if o.WindDirection().Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
-					o.Winddirection().Source())
+					o.WindDirection().Source())
 			}
 			if tc.p == nil {
-				if o.Winddirection().IsAvailable() {
+				if o.WindDirection().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
-						"to have no data, but got: %s", o.Winddirection())
+						"to have no data, but got: %s", o.WindDirection())
 				}
-				if !math.IsNaN(o.Winddirection().Value()) {
+				if !math.IsNaN(o.WindDirection().Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
-						"to return NaN, but got: %s", o.Winddirection().String())
+						"to return NaN, but got: %s", o.WindDirection().String())
 				}
 			}
 		})
 	}
 }
 
-func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
+func TestClient_ObservationLatestByStationID_WindSpeed(t *testing.T) {
 	tt := []struct {
 		// Test name
 		n string
@@ -1196,7 +1196,7 @@ func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Speed{
 			dt: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
-			fv: 15,
+			fv: 7.716666666,
 		}},
 		{"No data fields", "none", nil},
 	}
@@ -1212,30 +1212,30 @@ func TestClient_ObservationLatestByStationID_Windspeed(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID with station %s failed: %s", tc.sid, err)
 				return
 			}
-			if tc.p != nil && tc.p.String() != o.Windspeed().String() {
+			if tc.p != nil && tc.p.String() != o.WindSpeed().String() {
 				t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
-					"string: %s, got: %s", tc.p.String(), o.Windspeed())
+					"string: %s, got: %s", tc.p.String(), o.WindSpeed())
 			}
-			if tc.p != nil && tc.p.Value() != o.Windspeed().Value() {
+			if tc.p != nil && tc.p.Value() != o.WindSpeed().Value() {
 				t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
-					"float: %f, got: %f", tc.p.Value(), o.Windspeed().Value())
+					"float: %f, got: %f, %+v", tc.p.Value(), o.WindSpeed().Value(), o.Data.WindSpeed)
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.Windspeed().DateTime().Unix() {
+			if tc.p != nil && tc.p.dt.Unix() != o.WindSpeed().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.Windspeed().DateTime().Format(time.RFC3339))
+					tc.p.dt.Format(time.RFC3339), o.WindSpeed().DateTime().Format(time.RFC3339))
 			}
-			if o.Windspeed().Source() != SourceObservation {
+			if o.WindSpeed().Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
-					o.Windspeed().Source())
+					o.WindSpeed().Source())
 			}
 			if tc.p == nil {
-				if o.Windspeed().IsAvailable() {
+				if o.WindSpeed().IsAvailable() {
 					t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
-						"to have no data, but got: %s", o.Windspeed())
+						"to have no data, but got: %s", o.WindSpeed())
 				}
-				if !math.IsNaN(o.Windspeed().Value()) {
+				if !math.IsNaN(o.WindSpeed().Value()) {
 					t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
-						"to return NaN, but got: %s", o.Windspeed().String())
+						"to return NaN, but got: %s", o.WindSpeed().String())
 				}
 			}
 		})
@@ -1308,32 +1308,35 @@ func TestObservationTemperature_String(t *testing.T) {
 
 func TestObservationSpeed_Conversion(t *testing.T) {
 	tt := []struct {
-		// Original knots value
-		kn float64
+		// Original m/s value
+		ms float64
 		// km/h value
 		kmh float64
 		// mi/h value
 		mph float64
+		// knots value
+		kn float64
 	}{
-		{0, 0, 0},
-		{1, 1.852, 1.151},
-		{10, 18.52, 11.51},
-		{15, 27.78, 17.265},
-		{30, 55.56, 34.53},
+		{0, 0, 0, 0},
+		{1, 3.6, 2.236936, 1.9438444924},
+		{10, 36, 22.369360, 19.438444924},
+		{15, 54, 33.554040, 29.157667386},
+		{30, 108, 67.108080, 58.315334772},
 	}
+	msf := "%.1fm/s"
 	knf := "%.0fkn"
 	kmhf := "%.1fkm/h"
 	mphf := "%.1fmi/h"
 	for _, tc := range tt {
-		t.Run(fmt.Sprintf("%.0fkn", tc.kn), func(t *testing.T) {
-			os := Speed{fv: tc.kn}
-			if os.Value() != tc.kn {
-				t.Errorf("Speed.Value failed, expected: %f, got: %f", tc.kn,
+		t.Run(fmt.Sprintf("%.0fm/s", tc.ms), func(t *testing.T) {
+			os := Speed{fv: tc.ms}
+			if os.Value() != tc.ms {
+				t.Errorf("Speed.Value failed, expected: %f, got: %f", tc.ms,
 					os.Value())
 			}
-			if os.String() != fmt.Sprintf(knf, tc.kn) {
+			if os.String() != fmt.Sprintf(msf, tc.ms) {
 				t.Errorf("Speed.String failed, expected: %s, got: %s",
-					fmt.Sprintf(knf, tc.kn), os.String())
+					fmt.Sprintf(msf, tc.ms), os.String())
 			}
 			if os.KMH() != tc.kmh {
 				t.Errorf("Speed.KMH failed, expected: %f, got: %f", tc.kmh,
@@ -1350,6 +1353,14 @@ func TestObservationSpeed_Conversion(t *testing.T) {
 			if os.MPHString() != fmt.Sprintf(mphf, tc.mph) {
 				t.Errorf("Speed.MPHString failed, expected: %s, got: %s",
 					fmt.Sprintf(mphf, tc.mph), os.MPHString())
+			}
+			if os.Knots() != tc.kn {
+				t.Errorf("Speed.Knots failed, expected: %f, got: %f", tc.kn,
+					os.Knots())
+			}
+			if os.KnotsString() != fmt.Sprintf(knf, tc.kn) {
+				t.Errorf("Speed.KnotsString failed, expected: %s, got: %s",
+					fmt.Sprintf(knf, tc.kn), os.KnotsString())
 			}
 		})
 	}
