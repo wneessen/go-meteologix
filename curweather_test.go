@@ -565,6 +565,67 @@ func TestClient_CurrentWeatherByLocation_PressureQFE(t *testing.T) {
 	}
 }
 
+func TestClient_CurrentWeatherByLocation_SnowAmount(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather pressure
+		d *Density
+	}{
+		{"Ehrenfeld, Germany", &Density{
+			dt: time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
+			s:  SourceAnalysis,
+			fv: 0,
+		}},
+		{"Berlin, Germany", &Density{
+			dt: time.Date(2023, 5, 23, 8, 0, 0, 0, time.UTC),
+			s:  SourceAnalysis,
+			fv: 21.1,
+		}},
+		{"Neermoor, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			cw, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.d != nil && tc.d.String() != cw.SnowAmount().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow amount "+
+					"string: %s, got: %s", tc.d.String(), cw.SnowAmount())
+			}
+			if tc.d != nil && tc.d.Value() != cw.SnowAmount().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow amount "+
+					"float: %f, got: %f", tc.d.Value(), cw.SnowAmount().Value())
+			}
+			if tc.d != nil && cw.SnowAmount().Source() != tc.d.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.d.s, cw.SnowAmount().Source())
+			}
+			if tc.d != nil && tc.d.dt.Unix() != cw.SnowAmount().DateTime().Unix() {
+				t.Errorf("CurrentWeatherByLocation failed, expected datetime: %s, got: %s",
+					tc.d.dt.Format(time.RFC3339), cw.SnowAmount().DateTime().Format(time.RFC3339))
+			}
+			if tc.d == nil {
+				if cw.SnowAmount().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow amount "+
+						"to have no data, but got: %s", cw.SnowAmount())
+				}
+				if !math.IsNaN(cw.SnowAmount().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow amount "+
+						"to return NaN, but got: %s", cw.SnowAmount().String())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 	tt := []struct {
 		// Location name

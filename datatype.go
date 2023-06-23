@@ -44,6 +44,8 @@ const (
 	FieldPressureMSL
 	// FieldPressureQFE represents the PressureQFE data point
 	FieldPressureQFE
+	// FieldSnowAmount represents the SnowAmount data point
+	FieldSnowAmount
 	// FieldSunrise represents the Sunrise data point
 	FieldSunrise
 	// FieldSunset represents the Sunset data point

@@ -48,6 +48,8 @@ type APICurrentWeatherData struct {
 	PressureMSL *APIFloat `json:"pressureMsl,omitempty"`
 	// PressureQFE represents the pressure at station level (QFE) in hPa
 	PressureQFE *APIFloat `json:"pressure,omitempty"`
+	// SnowAmount represents the the amount of snow in kg/m3
+	SnowAmount *APIFloat `json:"snowAmount,omitempty"`
 	// Temperature represents the temperature in °C
 	Temperature *APIFloat `json:"temp,omitempty,omitempty"`
 	// WindDirection represents the direction from which the wind
@@ -72,8 +74,6 @@ type APICurrentWeatherData struct {
 		// GlobalRadiation24h represents the sum of global radiation over the last
 		// 24 hour in kJ/m²
 		GlobalRadiation24h *APIFloat `json:"globalRadiation24h,omitempty"`
-		// PressureMSL represents the pressure at station level (QFE) in hPa
-		PressureQFE *APIFloat `json:"pressure"`
 		// TemperatureMax represents the maximum temperature in °C
 		TemperatureMax *APIFloat `json:"tempMax,omitempty"`
 		// TemperatureMean represents the mean temperature in °C
@@ -245,6 +245,25 @@ func (cw CurrentWeather) PressureQFE() Pressure {
 	}
 	if cw.Data.PressureQFE.Source != nil {
 		v.s = StringToSource(*cw.Data.PressureQFE.Source)
+	}
+	return v
+}
+
+// SnowAmount returns the temperature data point as Density.
+// If the data point is not available in the CurrentWeather it will return
+// Density in which the "not available" field will be true.
+func (cw CurrentWeather) SnowAmount() Density {
+	if cw.Data.SnowAmount == nil {
+		return Density{na: true}
+	}
+	v := Density{
+		dt: cw.Data.SnowAmount.DateTime,
+		n:  FieldSnowAmount,
+		s:  SourceUnknown,
+		fv: cw.Data.SnowAmount.Value,
+	}
+	if cw.Data.SnowAmount.Source != nil {
+		v.s = StringToSource(*cw.Data.SnowAmount.Source)
 	}
 	return v
 }
