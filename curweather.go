@@ -51,7 +51,7 @@ type APICurrentWeatherData struct {
 	// SnowAmount represents the the amount of snow in kg/m3
 	SnowAmount *APIFloat `json:"snowAmount,omitempty"`
 	// Temperature represents the temperature in °C
-	Temperature *APIFloat `json:"temp,omitempty,omitempty"`
+	Temperature *APIFloat `json:"temp,omitempty"`
 	// WindDirection represents the direction from which the wind
 	// originates in degree (0=N, 90=E, 180=S, 270=W)
 	WindDirection *APIFloat `json:"windDirection,omitempty"`

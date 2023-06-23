@@ -121,7 +121,7 @@ type Timespan int
 // Weather) data and can be wrapped into other types to provide type
 // specific receiver methods
 type WeatherData struct {
-	bv bool
+	// bv bool
 	dt time.Time
 	dv time.Time
 	fv float64
