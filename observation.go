@@ -59,9 +59,9 @@ type APIObservationData struct {
 	Precipitation1h *APIFloat `json:"prec1h"`
 	// Precipitation24h represents the amount of precipitation over the last 24 hours
 	Precipitation24h *APIFloat `json:"prec24h"`
-	// PressureMSL represents the pressure at mean sea level (MSL) in hPa
+	// PressureMSL represents the air pressure at MSL / temperature adjusted (QFF) in hPa
 	PressureMSL *APIFloat `json:"pressureMsl"`
-	// PressureMSL represents the pressure at station level (QFE) in hPa
+	// PressureQFE represents the pressure at station level (QFE) in hPa
 	PressureQFE *APIFloat `json:"pressure"`
 	// Temperature represents the temperature in °C
 	Temperature *APIFloat `json:"temp,omitempty"`
@@ -365,11 +365,11 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 	}
 }
 
-// Winddirection returns the current direction from which the wind
+// WindDirection returns the current direction from which the wind
 // originates in degree (0=N, 90=E, 180=S, 270=W) as Direction.
 // If the data point is not available in the Observation it will return
 // Direction in which the "not available" field will be true.
-func (o Observation) Winddirection() Direction {
+func (o Observation) WindDirection() Direction {
 	if o.Data.Winddirection == nil {
 		return Direction{na: true}
 	}
@@ -381,10 +381,10 @@ func (o Observation) Winddirection() Direction {
 	}
 }
 
-// Windspeed returns the current windspeed data point as Speed.
+// WindSpeed returns the current windspeed data point as Speed.
 // If the data point is not available in the Observation it will return
 // Speed in which the "not available" field will be true.
-func (o Observation) Windspeed() Speed {
+func (o Observation) WindSpeed() Speed {
 	if o.Data.Windspeed == nil {
 		return Speed{na: true}
 	}
@@ -392,6 +392,6 @@ func (o Observation) Windspeed() Speed {
 		dt: o.Data.Windspeed.DateTime,
 		n:  FieldWindspeed,
 		s:  SourceObservation,
-		fv: o.Data.Windspeed.Value,
+		fv: o.Data.Windspeed.Value * 0.5144444444,
 	}
 }

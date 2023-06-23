@@ -26,7 +26,8 @@ func (s Speed) DateTime() time.Time {
 	return s.dt
 }
 
-// Value returns the float64 value of an Speed in knots
+// Value returns the float64 value of an Speed in meters
+// per second.
 // If the Speed is not available in the Observation
 // Vaule will return math.NaN instead.
 func (s Speed) Value() float64 {
@@ -38,7 +39,7 @@ func (s Speed) Value() float64 {
 
 // String satisfies the fmt.Stringer interface for the Speed type
 func (s Speed) String() string {
-	return fmt.Sprintf("%.0fkn", s.fv)
+	return fmt.Sprintf("%.1fm/s", s.fv)
 }
 
 // Source returns the Source of Speed
@@ -49,7 +50,7 @@ func (s Speed) Source() Source {
 
 // KMH returns the Speed value in km/h
 func (s Speed) KMH() float64 {
-	return s.fv * 1.852
+	return s.fv * 3.6
 }
 
 // KMHString returns the Speed value as formatted string in km/h
@@ -57,9 +58,19 @@ func (s Speed) KMHString() string {
 	return fmt.Sprintf("%.1fkm/h", s.KMH())
 }
 
+// Knots returns the Speed value in kn
+func (s Speed) Knots() float64 {
+	return s.fv * 1.9438444924
+}
+
+// KnotsString returns the Speed value as formatted string in kn
+func (s Speed) KnotsString() string {
+	return fmt.Sprintf("%.0fkn", s.Knots())
+}
+
 // MPH returns the Speed value in mi/h
 func (s Speed) MPH() float64 {
-	return s.fv * 1.151
+	return s.fv * 2.236936
 }
 
 // MPHString returns the Speed value as formatted string in mi/h
