@@ -38,7 +38,7 @@ func (h Humidity) Source() Source {
 }
 
 // Value returns the float64 value of an Humidity
-// If the Humidity is not available in the Observation
+// If the Humidity is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (h Humidity) Value() float64 {
 	if h.na {

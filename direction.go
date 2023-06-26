@@ -62,7 +62,7 @@ func (d Direction) DateTime() time.Time {
 }
 
 // Value returns the float64 value of an Direction in degrees
-// If the Direction is not available in the Observation
+// If the Direction is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (d Direction) Value() float64 {
 	if d.na {

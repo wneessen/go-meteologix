@@ -37,7 +37,7 @@ func (s Speed) DateTime() time.Time {
 
 // Value returns the float64 value of an Speed in meters
 // per second.
-// If the Speed is not available in the Observation
+// If the Speed is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (s Speed) Value() float64 {
 	if s.na {

@@ -18,12 +18,12 @@ import (
 const DefaultRadius int = 10
 
 const (
-	// PrecisionHigh is a high precision weather station
-	PrecisionHigh Precision = iota
-	// PrecisionMedium is a medium precision weather station
-	PrecisionMedium
-	// PrecisionLow is a low precision weather station
-	PrecisionLow
+	// PrecisionSuperHigh represents data of < ~4km resolution
+	PrecisionSuperHigh Precision = iota
+	// PrecisionHigh represents data of >= ~4km but < ~10km resolution
+	PrecisionHigh
+	// PrecisionStandard represents data of >= ~10km resolution
+	PrecisionStandard
 	// PrecisionUnknown is weather station of unknown precision
 	PrecisionUnknown
 )
@@ -157,12 +157,12 @@ func (p *Precision) UnmarshalJSON(s []byte) error {
 	v := string(s)
 	v = strings.ReplaceAll(v, `"`, ``)
 	switch strings.ToLower(v) {
+	case "super_high":
+		*p = PrecisionSuperHigh
 	case "high":
 		*p = PrecisionHigh
-	case "medium":
-		*p = PrecisionMedium
-	case "low":
-		*p = PrecisionLow
+	case "standard":
+		*p = PrecisionStandard
 	default:
 		*p = PrecisionUnknown
 	}
@@ -172,12 +172,12 @@ func (p *Precision) UnmarshalJSON(s []byte) error {
 // String satisfies the fmt.Stringer interface for the Precision type
 func (p *Precision) String() string {
 	switch *p {
+	case PrecisionSuperHigh:
+		return "SUPER_HIGH"
 	case PrecisionHigh:
 		return "HIGH"
-	case PrecisionMedium:
-		return "MEDIUM"
-	case PrecisionLow:
-		return "LOW"
+	case PrecisionStandard:
+		return "STANDARD"
 	case PrecisionUnknown:
 		return "UNKNOWN"
 	default:

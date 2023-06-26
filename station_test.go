@@ -165,15 +165,15 @@ func TestPrecision_UnmarshalJSON(t *testing.T) {
 		sf bool
 	}{
 		{
+			"Super high precision", []byte(`{"precision":"SUPER_HIGH"}`), PrecisionSuperHigh,
+			false,
+		},
+		{
 			"High precision", []byte(`{"precision":"HIGH"}`), PrecisionHigh,
 			false,
 		},
 		{
-			"Medium precision", []byte(`{"precision":"MEDIUM"}`), PrecisionMedium,
-			false,
-		},
-		{
-			"Low precision", []byte(`{"precision":"LOW"}`), PrecisionLow,
+			"Standard precision", []byte(`{"precision":"STANDARD"}`), PrecisionStandard,
 			false,
 		},
 		{
@@ -209,9 +209,9 @@ func TestPrecision_String(t *testing.T) {
 		// Expected string
 		es string
 	}{
+		{"Super high precision", PrecisionSuperHigh, "SUPER_HIGH"},
 		{"High precision", PrecisionHigh, "HIGH"},
-		{"Medium precision", PrecisionMedium, "MEDIUM"},
-		{"Low precision", PrecisionLow, "LOW"},
+		{"Standard precision", PrecisionStandard, "STANDARD"},
 		{"Unknown precision", PrecisionUnknown, "UNKNOWN"},
 		{"Undefined precision", 999, "UNKNOWN"},
 	}

@@ -38,7 +38,7 @@ func (p Precipitation) Source() Source {
 }
 
 // Value returns the float64 value of an Precipitation
-// If the Precipitation is not available in the Observation
+// If the Precipitation is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (p Precipitation) Value() float64 {
 	if p.na {

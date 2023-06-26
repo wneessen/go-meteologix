@@ -27,7 +27,7 @@ func (t Temperature) DateTime() time.Time {
 }
 
 // Value returns the float64 value of an Temperature
-// If the Temperature is not available in the Observation
+// If the Temperature is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (t Temperature) Value() float64 {
 	if t.na {

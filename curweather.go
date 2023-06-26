@@ -50,6 +50,8 @@ type APICurrentWeatherData struct {
 	PressureQFE *APIFloat `json:"pressure,omitempty"`
 	// SnowAmount represents the the amount of snow in kg/m3
 	SnowAmount *APIFloat `json:"snowAmount,omitempty"`
+	// SnowHeight represents the the height of snow in m
+	SnowHeight *APIFloat `json:"snowHeight,omitempty"`
 	// Temperature represents the temperature in °C
 	Temperature *APIFloat `json:"temp,omitempty"`
 	// WindDirection represents the direction from which the wind
@@ -249,7 +251,7 @@ func (cw CurrentWeather) PressureQFE() Pressure {
 	return v
 }
 
-// SnowAmount returns the temperature data point as Density.
+// SnowAmount returns the amount of snow data point as Density.
 // If the data point is not available in the CurrentWeather it will return
 // Density in which the "not available" field will be true.
 func (cw CurrentWeather) SnowAmount() Density {
@@ -264,6 +266,25 @@ func (cw CurrentWeather) SnowAmount() Density {
 	}
 	if cw.Data.SnowAmount.Source != nil {
 		v.s = StringToSource(*cw.Data.SnowAmount.Source)
+	}
+	return v
+}
+
+// SnowHeight returns the snow height data point as Height.
+// If the data point is not available in the CurrentWeather it will return
+// Height in which the "not available" field will be true.
+func (cw CurrentWeather) SnowHeight() Height {
+	if cw.Data.SnowHeight == nil {
+		return Height{na: true}
+	}
+	v := Height{
+		dt: cw.Data.SnowHeight.DateTime,
+		n:  FieldSnowHeight,
+		s:  SourceUnknown,
+		fv: cw.Data.SnowHeight.Value,
+	}
+	if cw.Data.SnowHeight.Source != nil {
+		v.s = StringToSource(*cw.Data.SnowHeight.Source)
 	}
 	return v
 }

@@ -38,7 +38,7 @@ func (p Pressure) Source() Source {
 }
 
 // Value returns the float64 value of an Pressure
-// If the Pressure is not available in the Observation
+// If the Pressure is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (p Pressure) Value() float64 {
 	if p.na {

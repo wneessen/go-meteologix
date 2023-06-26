@@ -38,7 +38,7 @@ func (d Density) Source() Source {
 }
 
 // Value returns the float64 value of an Density
-// If the Density is not available in the Observation
+// If the Density is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (d Density) Value() float64 {
 	if d.na {

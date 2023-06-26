@@ -27,7 +27,7 @@ func (r Radiation) DateTime() time.Time {
 }
 
 // Value returns the float64 value of an Radiation
-// If the Radiation is not available in the Observation
+// If the Radiation is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (r Radiation) Value() float64 {
 	if r.na {
