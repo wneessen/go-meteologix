@@ -64,31 +64,6 @@ type APICurrentWeatherData struct {
 	// WeatherSymbol is a text representation of the current weather
 	// conditions
 	WeatherSymbol *APIString `json:"weatherSymbol,omitempty"`
-	/*
-		// DewPointMean represents the mean dewpoint in °C
-		DewpointMean *APIFloat `json:"dewpointMean,omitempty"`
-		// GlobalRadiation10m represents the sum of global radiation over the last
-		// 10 minutes in kJ/m²
-		GlobalRadiation10m *APIFloat `json:"globalRadiation10m,omitempty"`
-		// GlobalRadiation1h represents the sum of global radiation over the last
-		// 1 hour in kJ/m²
-		GlobalRadiation1h *APIFloat `json:"globalRadiation1h,omitempty"`
-		// GlobalRadiation24h represents the sum of global radiation over the last
-		// 24 hour in kJ/m²
-		GlobalRadiation24h *APIFloat `json:"globalRadiation24h,omitempty"`
-		// TemperatureMax represents the maximum temperature in °C
-		TemperatureMax *APIFloat `json:"tempMax,omitempty"`
-		// TemperatureMean represents the mean temperature in °C
-		TemperatureMean *APIFloat `json:"tempMean,omitempty"`
-		// TemperatureMin represents the minimum temperature in °C
-		TemperatureMin *APIFloat `json:"tempMin,omitempty"`
-		// Temperature5cm represents the temperature 5cm above ground in °C
-		Temperature5cm *APIFloat `json:"temp5cm,omitempty"`
-		// Temperature5cm represents the minimum temperature 5cm above
-		// ground in °C
-		Temperature5cmMin *APIFloat `json:"temp5cmMin,omitempty"`
-
-	*/
 }
 
 // CurrentWeatherByCoordinates returns the CurrentWeather values for the given coordinates
