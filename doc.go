@@ -6,4 +6,4 @@
 package meteologix
 
 // VERSION represents the current version of the package
-const VERSION = "0.1.0"
+const VERSION = "0.1.1"
