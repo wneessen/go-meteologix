@@ -20,8 +20,8 @@ func (t Temperature) IsAvailable() bool {
 	return !t.na
 }
 
-// DateTime returns true if an Temperature value was
-// available at time of query
+// DateTime returns the time at which the temperature data was
+// generated or fetched
 func (t Temperature) DateTime() time.Time {
 	return t.dt
 }
