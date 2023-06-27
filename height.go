@@ -20,8 +20,7 @@ func (h Height) IsAvailable() bool {
 	return !h.na
 }
 
-// DateTime returns true if an Height value was
-// available at time of query
+// DateTime returns the timestamp associated with the Height value
 func (h Height) DateTime() time.Time {
 	return h.dt
 }
@@ -64,7 +63,7 @@ func (h Height) CentiMeter() float64 {
 	if h.na {
 		return math.NaN()
 	}
-	return h.fv / 100
+	return h.fv * 100
 }
 
 // CentiMeterString returns the Height type as formatted string in centimeters
@@ -77,7 +76,7 @@ func (h Height) MilliMeter() float64 {
 	if h.na {
 		return math.NaN()
 	}
-	return h.fv / 1000
+	return h.fv * 1000
 }
 
 // MilliMeterString returns the Height type as formatted string in millimeters
