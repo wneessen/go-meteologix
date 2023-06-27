@@ -20,8 +20,8 @@ func (r Radiation) IsAvailable() bool {
 	return !r.na
 }
 
-// DateTime returns true if an Radiation value was
-// available at time of query
+// DateTime returns the time.Time object representing the date and time
+// at which the Radiation value was queried
 func (r Radiation) DateTime() time.Time {
 	return r.dt
 }
