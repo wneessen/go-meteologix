@@ -148,7 +148,7 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 // If the data point is not available in the CurrentWeather it will return
 // Humidity in which the "not available" field will be true.
 func (cw CurrentWeather) HumidityRelative() Humidity {
-	if cw.Data.Dewpoint == nil {
+	if cw.Data.HumidityRelative == nil {
 		return Humidity{na: true}
 	}
 	v := Humidity{
