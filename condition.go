@@ -53,11 +53,21 @@ const (
 // ConditionMap is a map to associate a specific ConditionType to a nicely
 // formatted, human readable string
 var ConditionMap = map[ConditionType]string{
-	CondCloudy: "Cloudy", CondFog: "Fog", CondFreezingRain: "Freezing rain",
-	CondOvercast: "Overcast", CondPartlyCloudy: "Partly cloudy", CondRain: "Rain",
-	CondRainHeavy: "Heavy rain", CondShowers: "Showers", CondShowersHeavy: "Heavy showers",
-	CondSnow: "Snow", CondSnowHeavy: "Heavy snow", CondSnowRain: "Sleet",
-	CondSunshine: "Clear sky", CondThunderStorm: "Thunderstorm", CondUnknown: "Unknown",
+	CondCloudy:       "Cloudy",
+	CondFog:          "Fog",
+	CondFreezingRain: "Freezing rain",
+	CondOvercast:     "Overcast",
+	CondPartlyCloudy: "Partly cloudy",
+	CondRain:         "Rain",
+	CondRainHeavy:    "Heavy rain",
+	CondShowers:      "Showers",
+	CondShowersHeavy: "Heavy showers",
+	CondSnow:         "Snow",
+	CondSnowHeavy:    "Heavy snow",
+	CondSnowRain:     "Sleet",
+	CondSunshine:     "Clear sky",
+	CondThunderStorm: "Thunderstorm",
+	CondUnknown:      "Unknown",
 }
 
 // Condition is a type wrapper of an WeatherData for holding
