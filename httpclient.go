@@ -13,9 +13,9 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
-	"os"
 	"strings"
 	"time"
 )
@@ -51,10 +51,10 @@ func NewHTTPClient(c *Config) *HTTPClient {
 	tc := &tls.Config{
 		MinVersion: tls.VersionTLS12,
 	}
-	ht := http.Transport{TLSClientConfig: tc}
+	ht := &http.Transport{TLSClientConfig: tc}
 	hc := &http.Client{
 		Timeout:   HTTPClientTimeout,
-		Transport: &ht,
+		Transport: ht,
 	}
 	return &HTTPClient{c, hc}
 }
@@ -80,31 +80,28 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 
 	// User authentication (only required for Meteologix API calls)
 	if strings.HasPrefix(u, APIBaseURL) {
-		hc.setAuthHeader(hr)
+		hc.setAuthentication(hr)
 	}
 
 	sr, err := hc.Do(hr)
 	if err != nil {
 		return nil, err
 	}
-	defer func() {
-		if err = sr.Body.Close(); err != nil {
-			_, _ = fmt.Fprintln(os.Stderr, "failed to close HTTP request body", err)
+	if sr == nil {
+		return nil, errors.New("nil response received")
+	}
+	defer func(b io.ReadCloser) {
+		if err = b.Close(); err != nil {
+			log.Printf("failed to close HTTP request body: %s", err)
 		}
-	}()
+	}(sr.Body)
 
 	if !strings.HasPrefix(sr.Header.Get("Content-Type"), MIMETypeJSON) {
 		return nil, ErrNonJSONResponse
 	}
-	buf := &bytes.Buffer{}
-	bw := bufio.NewWriter(buf)
-	_, err = io.Copy(bw, sr.Body)
-	if err != nil {
-		return nil, fmt.Errorf("failed to copy HTTP response body to buffer: %w", err)
-	}
-	if sr.StatusCode != http.StatusOK {
-		var ae APIError
-		if err = json.NewDecoder(buf).Decode(&ae); err != nil {
+	if sr.StatusCode >= http.StatusBadRequest {
+		ae := new(APIError)
+		if err = json.NewDecoder(sr.Body).Decode(ae); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal error JSON: %w", err)
 		}
 		if ae.Code < 1 {
@@ -113,15 +110,25 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 		if ae.Details == "" {
 			ae.Details = sr.Status
 		}
-		return nil, ae
+		return nil, *ae
+	}
+
+	buf := &bytes.Buffer{}
+	bw := bufio.NewWriter(buf)
+	_, err = io.Copy(bw, sr.Body)
+	if err != nil {
+		return nil, fmt.Errorf("failed to copy HTTP response body to buffer: %w", err)
+	}
+	if err = bw.Flush(); err != nil {
+		return nil, fmt.Errorf("failed to flush buffer: %w", err)
 	}
 	return buf.Bytes(), nil
 }
 
-// setAuthHeader sets the corresponding user authentication header. If an API Key is set, this
+// setAuthentication sets the corresponding user authentication header. If an API Key is set, this
 // will be preferred, alternatively a username/authPass combination for HTTP Basic auth can
 // be used
-func (hc *HTTPClient) setAuthHeader(hr *http.Request) {
+func (hc *HTTPClient) setAuthentication(hr *http.Request) {
 	if hc.apiKey != "" {
 		hr.Header.Set("X-API-Key", hc.Config.apiKey)
 		return
