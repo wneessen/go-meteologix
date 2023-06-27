@@ -46,7 +46,8 @@ func TestClient_StationSearchByLocation_Fail(t *testing.T) {
 		t.Errorf("StationSearchByLocation was supposed to fail but didn't")
 	}
 	if err != nil && !errors.As(err, &APIError{}) {
-		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't")
+		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't: %s",
+			err)
 	}
 	c = New(WithAPIKey("invalid"))
 	_, err = c.StationSearchByLocation("Cologne, Germany")
@@ -55,7 +56,8 @@ func TestClient_StationSearchByLocation_Fail(t *testing.T) {
 		return
 	}
 	if err != nil && !errors.As(err, &APIError{}) {
-		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't")
+		t.Errorf("StationSearchByLocation was supposed to throw a APIError but didn't: %s",
+			err)
 	}
 }
 
