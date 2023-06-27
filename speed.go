@@ -29,8 +29,7 @@ func (s Speed) IsAvailable() bool {
 	return !s.na
 }
 
-// DateTime returns true if an Speed value was
-// available at time of query
+// DateTime returns the DateTime when the Speed was checked
 func (s Speed) DateTime() time.Time {
 	return s.dt
 }
