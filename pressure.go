@@ -20,8 +20,7 @@ func (p Pressure) IsAvailable() bool {
 	return !p.na
 }
 
-// DateTime returns true if an Pressure value was
-// available at time of query
+// DateTime returns the date and time of the Pressure reading
 func (p Pressure) DateTime() time.Time {
 	return p.dt
 }
