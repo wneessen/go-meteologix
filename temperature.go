@@ -20,14 +20,14 @@ func (t Temperature) IsAvailable() bool {
 	return !t.na
 }
 
-// DateTime returns true if an Temperature value was
-// available at time of query
+// DateTime returns the time at which the temperature data was
+// generated or fetched
 func (t Temperature) DateTime() time.Time {
 	return t.dt
 }
 
 // Value returns the float64 value of an Temperature
-// If the Temperature is not available in the Observation
+// If the Temperature is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (t Temperature) Value() float64 {
 	if t.na {

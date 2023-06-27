@@ -20,8 +20,8 @@ func (h Humidity) IsAvailable() bool {
 	return !h.na
 }
 
-// DateTime returns true if an Humidity value was
-// available at time of query
+// DateTime returns the timestamp of when the humidity
+// measurement was taken.
 func (h Humidity) DateTime() time.Time {
 	return h.dt
 }
@@ -38,8 +38,8 @@ func (h Humidity) Source() Source {
 }
 
 // Value returns the float64 value of an Humidity
-// If the Humidity is not available in the Observation
-// Vaule will return math.NaN instead.
+// If the Humidity is not available in the WeatherData
+// Value will return math.NaN instead.
 func (h Humidity) Value() float64 {
 	if h.na {
 		return math.NaN()

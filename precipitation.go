@@ -20,8 +20,7 @@ func (p Precipitation) IsAvailable() bool {
 	return !p.na
 }
 
-// DateTime returns true if an Precipitation value was
-// available at time of query
+// DateTime returns the DateTime when the Precipitation value was recorded
 func (p Precipitation) DateTime() time.Time {
 	return p.dt
 }
@@ -38,7 +37,7 @@ func (p Precipitation) Source() Source {
 }
 
 // Value returns the float64 value of an Precipitation
-// If the Precipitation is not available in the Observation
+// If the Precipitation is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (p Precipitation) Value() float64 {
 	if p.na {

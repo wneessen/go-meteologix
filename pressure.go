@@ -20,8 +20,7 @@ func (p Pressure) IsAvailable() bool {
 	return !p.na
 }
 
-// DateTime returns true if an Pressure value was
-// available at time of query
+// DateTime returns the date and time of the Pressure reading
 func (p Pressure) DateTime() time.Time {
 	return p.dt
 }
@@ -38,7 +37,7 @@ func (p Pressure) Source() Source {
 }
 
 // Value returns the float64 value of an Pressure
-// If the Pressure is not available in the Observation
+// If the Pressure is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (p Pressure) Value() float64 {
 	if p.na {

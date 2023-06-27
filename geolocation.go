@@ -43,7 +43,7 @@ type GeoLocation struct {
 // This method makes use of the OSM Nominatim API
 func (c *Client) GetGeoLocationByName(ci string) (GeoLocation, error) {
 	ga, err := c.GetGeoLocationsByName(ci)
-	if len(ga) < 1 {
+	if err != nil || len(ga) < 1 {
 		return GeoLocation{}, err
 	}
 	return ga[0], nil

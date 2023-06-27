@@ -626,6 +626,103 @@ func TestClient_CurrentWeatherByLocation_SnowAmount(t *testing.T) {
 	}
 }
 
+func TestClient_CurrentWeatherByLocation_SnowHeight(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather height
+		h *Height
+	}{
+		{"Ehrenfeld, Germany", &Height{
+			dt: time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
+			s:  SourceAnalysis,
+			fv: 1.23,
+		}},
+		{"Berlin, Germany", &Height{
+			dt: time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
+			s:  SourceAnalysis,
+			fv: 0.003,
+		}},
+		{"Neermoor, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			cw, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.h != nil && tc.h.String() != cw.SnowHeight().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"string: %s, got: %s", tc.h.String(), cw.SnowHeight())
+			}
+			if tc.h != nil && tc.h.Value() != cw.SnowHeight().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"float: %f, got: %f", tc.h.Value(), cw.SnowHeight().Value())
+			}
+			if tc.h != nil && tc.h.MeterString() != cw.SnowHeight().MeterString() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"string: %s, got: %s", tc.h.MeterString(), cw.SnowHeight().MeterString())
+			}
+			if tc.h != nil && tc.h.Meter() != cw.SnowHeight().Meter() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"float: %f, got: %f", tc.h.Meter(), cw.SnowHeight().Meter())
+			}
+			if tc.h != nil && tc.h.CentiMeterString() != cw.SnowHeight().CentiMeterString() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"string: %s, got: %s", tc.h.CentiMeterString(), cw.SnowHeight().CentiMeterString())
+			}
+			if tc.h != nil && tc.h.CentiMeter() != cw.SnowHeight().CentiMeter() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"float: %f, got: %f", tc.h.CentiMeter(), cw.SnowHeight().CentiMeter())
+			}
+			if tc.h != nil && tc.h.MilliMeterString() != cw.SnowHeight().MilliMeterString() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"string: %s, got: %s", tc.h.MilliMeterString(), cw.SnowHeight().MilliMeterString())
+			}
+			if tc.h != nil && tc.h.MilliMeter() != cw.SnowHeight().MilliMeter() {
+				t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+					"float: %f, got: %f", tc.h.MilliMeter(), cw.SnowHeight().MilliMeter())
+			}
+			if tc.h != nil && cw.SnowHeight().Source() != tc.h.s {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.h.s, cw.SnowHeight().Source())
+			}
+			if tc.h != nil && tc.h.dt.Unix() != cw.SnowHeight().DateTime().Unix() {
+				t.Errorf("CurrentWeatherByLocation failed, expected datetime: %s, got: %s",
+					tc.h.dt.Format(time.RFC3339), cw.SnowHeight().DateTime().Format(time.RFC3339))
+			}
+			if tc.h == nil {
+				if cw.SnowHeight().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+						"to have no data, but got: %s", cw.SnowHeight())
+				}
+				if !math.IsNaN(cw.SnowHeight().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+						"to return NaN, but got: %s", cw.SnowHeight().String())
+				}
+				if !math.IsNaN(cw.SnowHeight().Meter()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+						"to return NaN, but got: %f", cw.SnowHeight().Meter())
+				}
+				if !math.IsNaN(cw.SnowHeight().CentiMeter()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+						"to return NaN, but got: %f", cw.SnowHeight().CentiMeter())
+				}
+				if !math.IsNaN(cw.SnowHeight().MilliMeter()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected snow height "+
+						"to return NaN, but got: %f", cw.SnowHeight().MilliMeter())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 	tt := []struct {
 		// Location name

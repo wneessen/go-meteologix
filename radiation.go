@@ -20,14 +20,14 @@ func (r Radiation) IsAvailable() bool {
 	return !r.na
 }
 
-// DateTime returns true if an Radiation value was
-// available at time of query
+// DateTime returns the time.Time object representing the date and time
+// at which the Radiation value was queried
 func (r Radiation) DateTime() time.Time {
 	return r.dt
 }
 
 // Value returns the float64 value of an Radiation
-// If the Radiation is not available in the Observation
+// If the Radiation is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (r Radiation) Value() float64 {
 	if r.na {

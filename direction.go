@@ -12,10 +12,10 @@ import (
 )
 
 const (
-	// DirectionMinAngel is the minimum angel for a direction
-	DirectionMinAngel = 0
-	// DirectionMaxAngel is the maximum angel for a direction
-	DirectionMaxAngel = 360
+	// DirectionMinAngle is the minimum angel for a direction
+	DirectionMinAngle = 0
+	// DirectionMaxAngle is the maximum angel for a direction
+	DirectionMaxAngle = 360
 )
 
 // WindDirAbbrMap is a map to associate a wind direction degree value with
@@ -62,7 +62,7 @@ func (d Direction) DateTime() time.Time {
 }
 
 // Value returns the float64 value of an Direction in degrees
-// If the Direction is not available in the Observation
+// If the Direction is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (d Direction) Value() float64 {
 	if d.na {
@@ -84,7 +84,7 @@ func (d Direction) Source() Source {
 
 // Direction returns the abbreviation string for a given Direction type
 func (d Direction) Direction() string {
-	if d.fv < DirectionMinAngel || d.fv > DirectionMaxAngel {
+	if d.fv < DirectionMinAngle || d.fv > DirectionMaxAngle {
 		return ErrUnsupportedDirection
 	}
 	if ds, ok := WindDirAbbrMap[d.fv]; ok {
@@ -95,7 +95,7 @@ func (d Direction) Direction() string {
 
 // DirectionFull returns the full string for a given Direction type
 func (d Direction) DirectionFull() string {
-	if d.fv < DirectionMinAngel || d.fv > DirectionMaxAngel {
+	if d.fv < DirectionMinAngle || d.fv > DirectionMaxAngle {
 		return ErrUnsupportedDirection
 	}
 	if ds, ok := WindDirFullMap[d.fv]; ok {
@@ -125,8 +125,8 @@ func findDirection(v float64, m map[float64]string) string {
 			break
 		}
 	}
-	sr := math.Mod(v, sv)
-	er := math.Mod(ev, v)
+	sr := v - sv
+	er := ev - v
 	if er > sr {
 		return m[sv]
 	}

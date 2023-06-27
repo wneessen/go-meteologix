@@ -46,6 +46,8 @@ const (
 	FieldPressureQFE
 	// FieldSnowAmount represents the SnowAmount data point
 	FieldSnowAmount
+	// FieldSnowHeight represents the SnowHeight data point
+	FieldSnowHeight
 	// FieldSunrise represents the Sunrise data point
 	FieldSunrise
 	// FieldSunset represents the Sunset data point
