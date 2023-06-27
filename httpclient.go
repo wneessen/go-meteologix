@@ -49,11 +49,13 @@ type APIError struct {
 // NewHTTPClient returns a new HTTP client
 func NewHTTPClient(c *Config) *HTTPClient {
 	tc := &tls.Config{
-		MaxVersion: tls.VersionTLS12,
 		MinVersion: tls.VersionTLS12,
 	}
 	ht := http.Transport{TLSClientConfig: tc}
-	hc := &http.Client{Transport: &ht}
+	hc := &http.Client{
+		Timeout:   HTTPClientTimeout,
+		Transport: &ht,
+	}
 	return &HTTPClient{c, hc}
 }
 
@@ -100,9 +102,9 @@ func (hc *HTTPClient) GetWithTimeout(u string, t time.Duration) ([]byte, error) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to copy HTTP response body to buffer: %w", err)
 	}
-	if sr.StatusCode >= 400 {
+	if sr.StatusCode != http.StatusOK {
 		var ae APIError
-		if err = json.Unmarshal(buf.Bytes(), &ae); err != nil {
+		if err = json.NewDecoder(buf).Decode(&ae); err != nil {
 			return nil, fmt.Errorf("failed to unmarshal error JSON: %w", err)
 		}
 		if ae.Code < 1 {
