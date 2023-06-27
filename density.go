@@ -10,8 +10,8 @@ import (
 	"time"
 )
 
-// Density is a type wrapper of an WeatherData for holding density
-// values in WeatherData
+// Density is a type wrapper of WeatherData for holding density
+// values in kg/m³ in WeatherData
 type Density WeatherData
 
 // IsAvailable returns true if an Density value was
@@ -20,8 +20,7 @@ func (d Density) IsAvailable() bool {
 	return !d.na
 }
 
-// DateTime returns true if an Density value was
-// available at time of query
+// DateTime returns the DateTime of the queried Density value
 func (d Density) DateTime() time.Time {
 	return d.dt
 }
