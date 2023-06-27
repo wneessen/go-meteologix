@@ -18,14 +18,40 @@ import (
 const DefaultRadius int = 10
 
 const (
-	// PrecisionSuperHigh represents data of < ~4km resolution
+	// PrecisionSuperHigh represents the precision level of data corresponding
+	// to a resolution of less than or approximately equal to 4 kilometers.
+	// This is the highest level of precision, usually associated with highly
+	// detailed measurements or observations.
 	PrecisionSuperHigh Precision = iota
-	// PrecisionHigh represents data of >= ~4km but < ~10km resolution
+	// PrecisionHigh represents the precision level of data corresponding to a
+	// resolution between 4 kilometers and 10 kilometers. This is a high precision
+	// level, suitable for most operational needs that require a balance between
+	// detail and processing requirements.
 	PrecisionHigh
-	// PrecisionStandard represents data of >= ~10km resolution
+	// PrecisionStandard represents the precision level of data corresponding to
+	// a resolution of 10 kilometers or more. This is the standard level of
+	// precision, generally used for large-scale analysis and modeling.
 	PrecisionStandard
-	// PrecisionUnknown is weather station of unknown precision
+	// PrecisionUnknown is used when the precision level of a weather station
+	// is unknown. This constant can be used as a placeholder when the resolution
+	// data is not available.
 	PrecisionUnknown
+)
+
+// Precision levels defined as strings to allow for clear, consistent
+// use throughout the application.
+const (
+	// PrecisionStringSuperHigh represents the super high precision level string.
+	PrecisionStringSuperHigh = "SUPER_HIGH"
+
+	// PrecisionStringHigh represents the high precision level string.
+	PrecisionStringHigh = "HIGH"
+
+	// PrecisionStringStandard represents the standard precision level string.
+	PrecisionStringStandard = "STANDARD"
+
+	// PrecisionStringUnknown represents an unknown precision level string.
+	PrecisionStringUnknown = "UNKNOWN"
 )
 
 var (
@@ -156,12 +182,12 @@ func (c *Client) StationSearchByCoordinatesWithinRadius(la, lo float64, ra int) 
 func (p *Precision) UnmarshalJSON(s []byte) error {
 	v := string(s)
 	v = strings.ReplaceAll(v, `"`, ``)
-	switch strings.ToLower(v) {
-	case "super_high":
+	switch strings.ToUpper(v) {
+	case PrecisionStringSuperHigh:
 		*p = PrecisionSuperHigh
-	case "high":
+	case PrecisionStringHigh:
 		*p = PrecisionHigh
-	case "standard":
+	case PrecisionStringStandard:
 		*p = PrecisionStandard
 	default:
 		*p = PrecisionUnknown
@@ -173,14 +199,14 @@ func (p *Precision) UnmarshalJSON(s []byte) error {
 func (p *Precision) String() string {
 	switch *p {
 	case PrecisionSuperHigh:
-		return "SUPER_HIGH"
+		return PrecisionStringSuperHigh
 	case PrecisionHigh:
-		return "HIGH"
+		return PrecisionStringHigh
 	case PrecisionStandard:
-		return "STANDARD"
+		return PrecisionStringStandard
 	case PrecisionUnknown:
-		return "UNKNOWN"
+		return PrecisionStringUnknown
 	default:
-		return "UNKNOWN"
+		return PrecisionStringUnknown
 	}
 }
