@@ -140,7 +140,7 @@ func (a *AstronomicalInfo) Sunset() DateTime {
 // available in the AstronomicalInfo it will return DateTime in
 // which the "not available" field will be true.
 func (a *AstronomicalInfo) SunsetByDateString(ds string) DateTime {
-	t, err := time.Parse("2006-01-02", ds)
+	t, err := time.Parse(DateFormat, ds)
 	if err != nil {
 		return DateTime{na: true}
 	}
@@ -206,7 +206,7 @@ func (a *AstronomicalInfo) Sunrise() DateTime {
 // available in the AstronomicalInfo it will return DateTime in
 // which the "not available" field will be true.
 func (a *AstronomicalInfo) SunriseByDateString(ds string) DateTime {
-	t, err := time.Parse("2006-01-02", ds)
+	t, err := time.Parse(DateFormat, ds)
 	if err != nil {
 		return DateTime{na: true}
 	}
