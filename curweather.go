@@ -30,6 +30,9 @@ type CurrentWeather struct {
 // all values are represented as pointer type returning nil if the data point in question
 // is not returned for the requested Station.
 type APICurrentWeatherData struct {
+	// CloudCoverage represents the current effective cloud coverage
+	// in % (e.g. low clouds have more priority than high clouds)
+	CloudCoverage *APIFloat `json:"cloudCoverage,omitempty"`
 	// Dewpoint represents the dewpoint in °C
 	Dewpoint *APIFloat `json:"dewpoint,omitempty"`
 	// HumidityRelative represents the relative humidity in percent
