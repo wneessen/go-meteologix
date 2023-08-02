@@ -46,6 +46,8 @@ type Config struct {
 	authPass string
 	// authUser holds the (optional) username for the API user authentication
 	authUser string
+	// bearerToken holds the (optional) bearer token for the API authentication
+	bearerToken string
 	// userAgent represents an alternative User-Agent HTTP header string
 	userAgent string
 }
@@ -94,6 +96,17 @@ func WithAPIKey(k string) Option {
 	}
 	return func(co *Config) {
 		co.apiKey = k
+	}
+}
+
+// WithBearerToken uses a bearer token for the client authentication of the
+// HTTP client
+func WithBearerToken(t string) Option {
+	if t == "" {
+		return nil
+	}
+	return func(co *Config) {
+		co.bearerToken = t
 	}
 }
 

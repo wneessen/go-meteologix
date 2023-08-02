@@ -133,6 +133,10 @@ func (hc *HTTPClient) setAuthentication(hr *http.Request) {
 		hr.Header.Set("X-API-Key", hc.Config.apiKey)
 		return
 	}
+	if hc.bearerToken != "" {
+		hr.Header.Set("Authorization", "Bearer"+hc.bearerToken)
+		return
+	}
 	if hc.authUser != "" && hc.authPass != "" {
 		hr.SetBasicAuth(url.QueryEscape(hc.authUser), url.QueryEscape(hc.authPass))
 	}
