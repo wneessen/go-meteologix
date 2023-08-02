@@ -66,6 +66,28 @@ func TestNew_WithAPIKey(t *testing.T) {
 	}
 }
 
+func TestNew_WithBearerToken(t *testing.T) {
+	e := "BEARER-TOKEN"
+	c := New(WithBearerToken(e))
+	if c == nil {
+		t.Errorf("NewWithBearerToken failed, expected Client, got nil")
+		return
+	}
+	if c.config.bearerToken != e {
+		t.Errorf("NewWithBearerToken failed, expected token value: %s, got: %s", e,
+			c.config.bearerToken)
+	}
+	c = New(WithBearerToken(""))
+	if c == nil {
+		t.Errorf("NewWithBearerToken failed, expected Client, got nil")
+		return
+	}
+	if c.config.bearerToken != "" {
+		t.Errorf("NewWithBearerToken failed, expected empty token, got: %s",
+			c.config.bearerToken)
+	}
+}
+
 func TestNew_WithUsername(t *testing.T) {
 	e := "username"
 	c := New(WithUsername(e))
