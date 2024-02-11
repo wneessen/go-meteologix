@@ -22,7 +22,7 @@ const (
 
 // DefaultUserAgent is the default User-Agent presented by the HTTPClient
 var DefaultUserAgent = fmt.Sprintf("go-meteologix/fv%s (%s; %s; "+
-	"+https://github.com/wneessen/go-meteologix)", VERSION, runtime.GOOS,
+	"+https://src.neessen.cloud/wneessen/go-meteologix)", VERSION, runtime.GOOS,
 	runtime.Version())
 
 // Client represents the Meteologix API Client
