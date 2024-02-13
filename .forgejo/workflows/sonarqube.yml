@@ -30,6 +30,10 @@ jobs:
         run: |
           go test -v -shuffle=on -race --coverprofile=./cov.out ./...
 
+      - name: Install jq
+        run: |
+          sudo apt-get -y install jq; which jq
+
       - uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
