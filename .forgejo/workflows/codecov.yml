@@ -10,7 +10,7 @@ on:
     paths:
       - '**.go'
       - 'go.*'
-      - '.github/**'
+      - '.forgejo/**'
       - 'codecov.yml'
   pull_request:
     branches:
@@ -18,7 +18,7 @@ on:
     paths:
       - '**.go'
       - 'go.*'
-      - '.github/**'
+      - '.forgejo/**'
       - 'codecov.yml'
 env:
   API_KEY: ${{ secrets.API_KEY }}
