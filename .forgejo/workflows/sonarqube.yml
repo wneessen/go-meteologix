@@ -32,7 +32,7 @@ jobs:
 
       - name: Install jq
         run: |
-          apt-get -y install jq; which jq
+          apt-get update; apt-get -y install jq; which jq
 
       - uses: sonarsource/sonarqube-scan-action@master
         env:
