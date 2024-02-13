@@ -35,6 +35,9 @@ jobs:
     - name: Run Tests
       run: |
         go test -v -shuffle=on -race --coverprofile=coverage.coverprofile --covermode=atomic ./...
+    - name: Install jq
+      run: |
+        sudo apt-get -y install jq; which jq
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       runs-on: ubuntu-latest
