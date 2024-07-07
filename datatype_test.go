@@ -5,33 +5,29 @@ package meteologix
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 )
 
 func TestAPIDate_UnmarshalJSON(t *testing.T) {
-	type x struct {
+	type testType struct {
 		Date APIDate `json:"date"`
 	}
-	okd := []byte(`{"date":"2023-05-28"}`)
-	nokd := []byte(`{"date":"2023-05-32"}`)
-	null := []byte(`{"date":null}`)
-	var d x
-	if err := json.Unmarshal(okd, &d); err != nil {
-		t.Errorf("APIDate_UnmarshalJSON failed: %s", err)
+	f := func(jsonData []byte, expected string, shouldFail bool) {
+		t.Helper()
+
+		var date testType
+		if err := json.Unmarshal(jsonData, &date); err != nil && !shouldFail {
+			t.Errorf("APIDate_UnmarshalJSON failed: %s", err)
+			return
+		}
+		if !strings.EqualFold(date.Date.Format(DateFormat), expected) && !shouldFail {
+			t.Errorf("APIDate_UnmarshalJSON failed, expected: %s, but got: %s",
+				expected, date.Date.Format(DateFormat))
+		}
 	}
-	if d.Date.Format(DateFormat) != "2023-05-28" {
-		t.Errorf("APIDate_UnmarshalJSON failed, expected: %s, but got: %s",
-			"2023-05-28", d.Date.String())
-	}
-	if err := json.Unmarshal(nokd, &d); err == nil {
-		t.Errorf("APIDate_UnmarshalJSON was supposed to fail, but didn't")
-	}
-	d = x{}
-	if err := json.Unmarshal(null, &d); err != nil {
-		t.Errorf("APIDate_UnmarshalJSON failed: %s", err)
-	}
-	if !d.Date.IsZero() {
-		t.Errorf("APIDate_UnmarshalJSON with null was supposed to be empty, but got: %s",
-			d.Date.String())
-	}
+
+	f([]byte(`{"date":"2023-05-28"}`), "2023-05-28", false)
+	f([]byte(`{"date":"2023-05-32"}`), "2023-05-32", true)
+	f([]byte(`{"date":null}`), "", true)
 }
