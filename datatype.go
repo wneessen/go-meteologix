@@ -6,7 +6,6 @@ package meteologix
 
 import (
 	"fmt"
-	"strings"
 	"time"
 )
 
@@ -139,17 +138,16 @@ type Fieldname int
 
 // UnmarshalJSON interprets the API datestamp and converts it into a
 // time.Time type
-func (a *APIDate) UnmarshalJSON(s []byte) error {
-	d := string(s)
-	d = strings.ReplaceAll(d, `"`, ``)
-	if d == "null" {
+func (a *APIDate) UnmarshalJSON(data []byte) error {
+	date := string(data)
+	if date == "null" {
 		return nil
 	}
-
-	pd, err := time.Parse(DateFormat, d)
+	date = date[1 : len(date)-1]
+	parsedDate, err := time.Parse(DateFormat, date)
 	if err != nil {
 		return fmt.Errorf("failed to parse JSON string as APIDate string: %w", err)
 	}
-	a.Time = pd
+	a.Time = parsedDate
 	return nil
 }
