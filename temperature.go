@@ -23,7 +23,7 @@ func (t Temperature) IsAvailable() bool {
 // DateTime returns the time at which the temperature data was
 // generated or fetched
 func (t Temperature) DateTime() time.Time {
-	return t.dt
+	return t.dateTime
 }
 
 // Value returns the float64 value of an Temperature

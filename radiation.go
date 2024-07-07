@@ -23,7 +23,7 @@ func (r Radiation) IsAvailable() bool {
 // DateTime returns the time.Time object representing the date and time
 // at which the Radiation value was queried
 func (r Radiation) DateTime() time.Time {
-	return r.dt
+	return r.dateTime
 }
 
 // Value returns the float64 value of an Radiation

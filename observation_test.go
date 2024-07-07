@@ -138,15 +138,15 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 		dp *Temperature
 	}{
 		{"K-Botanischer Garten", "199942", &Temperature{
-			dt:       time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
 			floatVal: 10.1,
 		}},
 		{"K-Stammheim", "H744", &Temperature{
-			dt:       time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
 			floatVal: 9.7,
 		}},
 		{"All data fields", "all", &Temperature{
-			dt:       time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
 			floatVal: 6.5,
 		}},
 		{"No data fields", "none", nil},
@@ -172,9 +172,9 @@ func TestClient_ObservationLatestByStationID_Dewpoint(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected dewpoint "+
 					"float: %f, got: %f", tc.dp.Value(), o.Dewpoint().Value())
 			}
-			if tc.dp != nil && tc.dp.dt.Unix() != o.Dewpoint().DateTime().Unix() {
+			if tc.dp != nil && tc.dp.dateTime.Unix() != o.Dewpoint().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.dp.dt.Format(time.RFC3339), o.Dewpoint().DateTime().Format(time.RFC3339))
+					tc.dp.dateTime.Format(time.RFC3339), o.Dewpoint().DateTime().Format(time.RFC3339))
 			}
 			if tc.dp == nil {
 				if o.Dewpoint().IsAvailable() {
@@ -248,15 +248,15 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 		h *Humidity
 	}{
 		{"K-Botanischer Garten", "199942", &Humidity{
-			dt:       time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
 			floatVal: 80,
 		}},
 		{"K-Stammheim", "H744", &Humidity{
-			dt:       time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
 			floatVal: 73,
 		}},
 		{"All data fields", "all", &Humidity{
-			dt:       time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
 			floatVal: 72,
 		}},
 		{"No data fields", "none", nil},
@@ -281,9 +281,9 @@ func TestClient_ObservationLatestByStationID_HumidityRealtive(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected humidity "+
 					"float: %f, got: %f", tc.h.Value(), o.HumidityRelative().Value())
 			}
-			if tc.h != nil && tc.h.dt.Unix() != o.HumidityRelative().DateTime().Unix() {
+			if tc.h != nil && tc.h.dateTime.Unix() != o.HumidityRelative().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.h.dt.Format(time.RFC3339), o.HumidityRelative().DateTime().Format(time.RFC3339))
+					tc.h.dateTime.Format(time.RFC3339), o.HumidityRelative().DateTime().Format(time.RFC3339))
 			}
 			if o.HumidityRelative().Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
@@ -313,15 +313,15 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 		p *Precipitation
 	}{
 		{"K-Botanischer Garten", "199942", &Precipitation{
-			dt:       time.Date(2023, 0o5, 15, 18, 0, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 18, 0, 0, 0, time.UTC),
 			floatVal: 0,
 		}},
 		{"K-Stammheim", "H744", &Precipitation{
-			dt:       time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 19, 30, 0, 0, time.UTC),
 			floatVal: 0,
 		}},
 		{"All data fields", "all", &Precipitation{
-			dt:       time.Date(2023, 0o5, 17, 7, 30, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 17, 7, 30, 0, 0, time.UTC),
 			floatVal: 0.1,
 		}},
 		{"No data fields", "none", nil},
@@ -347,9 +347,9 @@ func TestClient_ObservationLatestByStationID_PrecipitationCurrent(t *testing.T) 
 				t.Errorf("ObservationLatestByStationID failed, expected precipitation "+
 					"float: %f, got: %f", tc.p.Value(), o.Precipitation(TimespanCurrent).Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.Precipitation(TimespanCurrent).DateTime().Unix() {
+			if tc.p != nil && tc.p.dateTime.Unix() != o.Precipitation(TimespanCurrent).DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339),
+					tc.p.dateTime.Format(time.RFC3339),
 					o.Precipitation(TimespanCurrent).DateTime().Format(time.RFC3339))
 			}
 			if o.Precipitation(TimespanCurrent).Source() != SourceObservation {
@@ -841,12 +841,12 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 		p *Pressure
 	}{
 		{"K-Botanischer Garten", "199942", &Pressure{
-			dt:       time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
 			floatVal: 1015.5,
 		}},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Pressure{
-			dt:       time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
 			floatVal: 1026.3,
 		}},
 		{"No data fields", "none", nil},
@@ -871,9 +871,9 @@ func TestClient_ObservationLatestByStationID_PressureMSL(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected pressure MSL "+
 					"float: %f, got: %f", tc.p.Value(), o.PressureMSL().Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.PressureMSL().DateTime().Unix() {
+			if tc.p != nil && tc.p.dateTime.Unix() != o.PressureMSL().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.PressureMSL().DateTime().Format(time.RFC3339))
+					tc.p.dateTime.Format(time.RFC3339), o.PressureMSL().DateTime().Format(time.RFC3339))
 			}
 			if o.PressureMSL().Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
@@ -973,12 +973,12 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 		p *Radiation
 	}{
 		{"K-Botanischer Garten", "199942", &Radiation{
-			dt:       time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 15, 20, 10, 0, 0, time.UTC),
 			floatVal: 0,
 		}},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Radiation{
-			dt:       time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 17, 7, 40, 0, 0, time.UTC),
 			floatVal: 62,
 		}},
 		{"No data fields", "none", nil},
@@ -1004,9 +1004,9 @@ func TestClient_ObservationLatestByStationID_GlobalRadiation10m(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected glob. radiation "+
 					"float: %f, got: %f", tc.p.Value(), o.GlobalRadiation(Timespan10Min).Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.GlobalRadiation(Timespan10Min).DateTime().Unix() {
+			if tc.p != nil && tc.p.dateTime.Unix() != o.GlobalRadiation(Timespan10Min).DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.GlobalRadiation(Timespan10Min).DateTime().Format(time.RFC3339))
+					tc.p.dateTime.Format(time.RFC3339), o.GlobalRadiation(Timespan10Min).DateTime().Format(time.RFC3339))
 			}
 			if o.GlobalRadiation(Timespan10Min).Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
@@ -1136,7 +1136,7 @@ func TestClient_ObservationLatestByStationID_WindDirection(t *testing.T) {
 		{"K-Botanischer Garten", "199942", nil},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Direction{
-			dt:       time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
 			floatVal: 90,
 		}},
 		{"No data fields", "none", nil},
@@ -1161,9 +1161,9 @@ func TestClient_ObservationLatestByStationID_WindDirection(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected wind direction "+
 					"float: %f, got: %f", tc.p.Value(), o.WindDirection().Value())
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.WindDirection().DateTime().Unix() {
+			if tc.p != nil && tc.p.dateTime.Unix() != o.WindDirection().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.WindDirection().DateTime().Format(time.RFC3339))
+					tc.p.dateTime.Format(time.RFC3339), o.WindDirection().DateTime().Format(time.RFC3339))
 			}
 			if o.WindDirection().Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",
@@ -1195,7 +1195,7 @@ func TestClient_ObservationLatestByStationID_WindSpeed(t *testing.T) {
 		{"K-Botanischer Garten", "199942", nil},
 		{"K-Stammheim", "H744", nil},
 		{"All data fields", "all", &Speed{
-			dt:       time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 0o5, 21, 11, 30, 0, 0, time.UTC),
 			floatVal: 7.716666666,
 		}},
 		{"No data fields", "none", nil},
@@ -1220,9 +1220,9 @@ func TestClient_ObservationLatestByStationID_WindSpeed(t *testing.T) {
 				t.Errorf("ObservationLatestByStationID failed, expected windspeed "+
 					"float: %f, got: %f, %+v", tc.p.Value(), o.WindSpeed().Value(), o.Data.WindSpeed)
 			}
-			if tc.p != nil && tc.p.dt.Unix() != o.WindSpeed().DateTime().Unix() {
+			if tc.p != nil && tc.p.dateTime.Unix() != o.WindSpeed().DateTime().Unix() {
 				t.Errorf("ObservationLatestByStationID failed, expected datetime: %s, got: %s",
-					tc.p.dt.Format(time.RFC3339), o.WindSpeed().DateTime().Format(time.RFC3339))
+					tc.p.dateTime.Format(time.RFC3339), o.WindSpeed().DateTime().Format(time.RFC3339))
 			}
 			if o.WindSpeed().Source() != SourceObservation {
 				t.Errorf("ObservationLatestByStationID failed, expected observation source, but got: %s",

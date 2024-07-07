@@ -115,12 +115,12 @@ func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
 		t *Temperature
 	}{
 		{"Ehrenfeld, Germany", &Temperature{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceObservation,
 			floatVal: 11.5,
 		}},
 		{"Berlin, Germany", &Temperature{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 11.0,
 		}},
@@ -172,12 +172,12 @@ func TestClient_CurrentWeatherByLocation_HumidityRelative(t *testing.T) {
 		h *Humidity
 	}{
 		{"Ehrenfeld, Germany", &Humidity{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceObservation,
 			floatVal: 82,
 		}},
 		{"Berlin, Germany", &Humidity{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 64,
 		}},
@@ -357,12 +357,12 @@ func TestClient_CurrentWeatherByLocation_Precipitation1h(t *testing.T) {
 		p *Precipitation
 	}{
 		{"Ehrenfeld, Germany", &Precipitation{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceObservation,
 			floatVal: 0,
 		}},
 		{"Berlin, Germany", &Precipitation{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 0.0092,
 		}},
@@ -463,12 +463,12 @@ func TestClient_CurrentWeatherByLocation_PressureMSL(t *testing.T) {
 		p *Pressure
 	}{
 		{"Ehrenfeld, Germany", &Pressure{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 1018.9,
 		}},
 		{"Berlin, Germany", &Pressure{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 1011.5,
 		}},
@@ -520,7 +520,7 @@ func TestClient_CurrentWeatherByLocation_PressureQFE(t *testing.T) {
 		p *Pressure
 	}{
 		{"Ehrenfeld, Germany", &Pressure{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 1011.7,
 		}},
@@ -573,12 +573,12 @@ func TestClient_CurrentWeatherByLocation_SnowAmount(t *testing.T) {
 		d *Density
 	}{
 		{"Ehrenfeld, Germany", &Density{
-			dt:       time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
 			source:   SourceAnalysis,
 			floatVal: 0,
 		}},
 		{"Berlin, Germany", &Density{
-			dt:       time.Date(2023, 5, 23, 8, 0, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 5, 23, 8, 0, 0, 0, time.UTC),
 			source:   SourceAnalysis,
 			floatVal: 21.1,
 		}},
@@ -608,9 +608,9 @@ func TestClient_CurrentWeatherByLocation_SnowAmount(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
 					tc.d.source, cw.SnowAmount().Source())
 			}
-			if tc.d != nil && tc.d.dt.Unix() != cw.SnowAmount().DateTime().Unix() {
+			if tc.d != nil && tc.d.dateTime.Unix() != cw.SnowAmount().DateTime().Unix() {
 				t.Errorf("CurrentWeatherByLocation failed, expected datetime: %s, got: %s",
-					tc.d.dt.Format(time.RFC3339), cw.SnowAmount().DateTime().Format(time.RFC3339))
+					tc.d.dateTime.Format(time.RFC3339), cw.SnowAmount().DateTime().Format(time.RFC3339))
 			}
 			if tc.d == nil {
 				if cw.SnowAmount().IsAvailable() {
@@ -634,12 +634,12 @@ func TestClient_CurrentWeatherByLocation_SnowHeight(t *testing.T) {
 		h *Height
 	}{
 		{"Ehrenfeld, Germany", &Height{
-			dt:       time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
 			source:   SourceAnalysis,
 			floatVal: 1.23,
 		}},
 		{"Berlin, Germany", &Height{
-			dt:       time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
+			dateTime: time.Date(2023, 5, 23, 6, 0, 0, 0, time.UTC),
 			source:   SourceAnalysis,
 			floatVal: 0.003,
 		}},
@@ -693,9 +693,9 @@ func TestClient_CurrentWeatherByLocation_SnowHeight(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
 					tc.h.source, cw.SnowHeight().Source())
 			}
-			if tc.h != nil && tc.h.dt.Unix() != cw.SnowHeight().DateTime().Unix() {
+			if tc.h != nil && tc.h.dateTime.Unix() != cw.SnowHeight().DateTime().Unix() {
 				t.Errorf("CurrentWeatherByLocation failed, expected datetime: %s, got: %s",
-					tc.h.dt.Format(time.RFC3339), cw.SnowHeight().DateTime().Format(time.RFC3339))
+					tc.h.dateTime.Format(time.RFC3339), cw.SnowHeight().DateTime().Format(time.RFC3339))
 			}
 			if tc.h == nil {
 				if cw.SnowHeight().IsAvailable() {
@@ -731,12 +731,12 @@ func TestClient_CurrentWeatherByLocation_Temperature(t *testing.T) {
 		t *Temperature
 	}{
 		{"Ehrenfeld, Germany", &Temperature{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceObservation,
 			floatVal: 14.6,
 		}},
 		{"Berlin, Germany", &Temperature{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 17.8,
 		}},
@@ -788,14 +788,14 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 		gs *Condition
 	}{
 		{"Ehrenfeld, Germany", &Condition{
-			dt:     time.Date(2023, 5, 23, 7, 30, 0, 0, time.UTC),
-			source: SourceAnalysis,
-			sv:     "overcast",
+			dateTime:  time.Date(2023, 5, 23, 7, 30, 0, 0, time.UTC),
+			source:    SourceAnalysis,
+			stringVal: "overcast",
 		}},
 		{"Berlin, Germany", &Condition{
-			dt:     time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
-			source: SourceAnalysis,
-			sv:     "cloudy",
+			dateTime:  time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
+			source:    SourceAnalysis,
+			stringVal: "cloudy",
 		}},
 		{"Neermoor, Germany", nil},
 	}
@@ -827,9 +827,9 @@ func TestClient_CurrentWeatherByLocation_WeatherSymbol(t *testing.T) {
 				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
 					tc.gs.source, cw.WeatherSymbol().Source())
 			}
-			if tc.gs != nil && tc.gs.dt.Unix() != cw.WeatherSymbol().DateTime().Unix() {
+			if tc.gs != nil && tc.gs.dateTime.Unix() != cw.WeatherSymbol().DateTime().Unix() {
 				t.Errorf("CurrentWeatherByLocation failed, expected datetime: %s, got: %s",
-					tc.gs.dt.Format(time.RFC3339), cw.WeatherSymbol().DateTime().Format(time.RFC3339))
+					tc.gs.dateTime.Format(time.RFC3339), cw.WeatherSymbol().DateTime().Format(time.RFC3339))
 			}
 			if tc.gs == nil {
 				if cw.WeatherSymbol().IsAvailable() {
@@ -857,12 +857,12 @@ func TestClient_CurrentWeatherByLocation_WindDirection(t *testing.T) {
 		df string
 	}{
 		{"Ehrenfeld, Germany", &Direction{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 302,
 		}, "NWbW", "Northwest by West"},
 		{"Berlin, Germany", &Direction{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 286,
 		}, "WbN", "West by North"},
@@ -922,12 +922,12 @@ func TestClient_CurrentWeatherByLocation_WindGust(t *testing.T) {
 		s *Speed
 	}{
 		{"Ehrenfeld, Germany", &Speed{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 7.770000,
 		}},
 		{"Berlin, Germany", &Speed{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 5.570000,
 		}},
@@ -979,12 +979,12 @@ func TestClient_CurrentWeatherByLocation_WindSpeed(t *testing.T) {
 		s *Speed
 	}{
 		{"Ehrenfeld, Germany", &Speed{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 3.94,
 		}},
 		{"Berlin, Germany", &Speed{
-			dt:       time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
 			source:   SourceAnalysis,
 			floatVal: 3.19,
 		}},

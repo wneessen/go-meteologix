@@ -22,7 +22,7 @@ func (p Precipitation) IsAvailable() bool {
 
 // DateTime returns the DateTime when the Precipitation value was recorded
 func (p Precipitation) DateTime() time.Time {
-	return p.dt
+	return p.dateTime
 }
 
 // String satisfies the fmt.Stringer interface for the Precipitation type

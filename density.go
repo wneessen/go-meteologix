@@ -22,7 +22,7 @@ func (d Density) IsAvailable() bool {
 
 // DateTime returns the DateTime of the queried Density value
 func (d Density) DateTime() time.Time {
-	return d.dt
+	return d.dateTime
 }
 
 // String satisfies the fmt.Stringer interface for the Density type

@@ -123,7 +123,7 @@ func (o Observation) Dewpoint() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.Dewpoint.DateTime,
+		dateTime: o.Data.Dewpoint.DateTime,
 		name:     FieldDewpoint,
 		source:   SourceObservation,
 		floatVal: o.Data.Dewpoint.Value,
@@ -139,7 +139,7 @@ func (o Observation) DewpointMean() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.DewpointMean.DateTime,
+		dateTime: o.Data.DewpointMean.DateTime,
 		name:     FieldDewpointMean,
 		source:   SourceObservation,
 		floatVal: o.Data.DewpointMean.Value,
@@ -155,7 +155,7 @@ func (o Observation) Temperature() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.Temperature.DateTime,
+		dateTime: o.Data.Temperature.DateTime,
 		name:     FieldTemperature,
 		source:   SourceObservation,
 		floatVal: o.Data.Temperature.Value,
@@ -172,7 +172,7 @@ func (o Observation) TemperatureAtGround() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.Temperature5cm.DateTime,
+		dateTime: o.Data.Temperature5cm.DateTime,
 		name:     FieldTemperatureAtGround,
 		source:   SourceObservation,
 		floatVal: o.Data.Temperature5cm.Value,
@@ -189,7 +189,7 @@ func (o Observation) TemperatureMax() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.TemperatureMax.DateTime,
+		dateTime: o.Data.TemperatureMax.DateTime,
 		name:     FieldTemperatureMax,
 		source:   SourceObservation,
 		floatVal: o.Data.TemperatureMax.Value,
@@ -206,7 +206,7 @@ func (o Observation) TemperatureMin() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.TemperatureMin.DateTime,
+		dateTime: o.Data.TemperatureMin.DateTime,
 		name:     FieldTemperatureMin,
 		source:   SourceObservation,
 		floatVal: o.Data.TemperatureMin.Value,
@@ -223,7 +223,7 @@ func (o Observation) TemperatureAtGroundMin() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.Temperature5cmMin.DateTime,
+		dateTime: o.Data.Temperature5cmMin.DateTime,
 		name:     FieldTemperatureAtGroundMin,
 		source:   SourceObservation,
 		floatVal: o.Data.Temperature5cmMin.Value,
@@ -239,7 +239,7 @@ func (o Observation) TemperatureMean() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt:       o.Data.TemperatureMean.DateTime,
+		dateTime: o.Data.TemperatureMean.DateTime,
 		name:     FieldTemperatureMean,
 		source:   SourceObservation,
 		floatVal: o.Data.TemperatureMean.Value,
@@ -255,7 +255,7 @@ func (o Observation) HumidityRelative() Humidity {
 		return Humidity{notAvailable: true}
 	}
 	return Humidity{
-		dt:       o.Data.HumidityRelative.DateTime,
+		dateTime: o.Data.HumidityRelative.DateTime,
 		name:     FieldHumidityRelative,
 		source:   SourceObservation,
 		floatVal: o.Data.HumidityRelative.Value,
@@ -272,7 +272,7 @@ func (o Observation) PressureMSL() Pressure {
 		return Pressure{notAvailable: true}
 	}
 	return Pressure{
-		dt:       o.Data.PressureMSL.DateTime,
+		dateTime: o.Data.PressureMSL.DateTime,
 		name:     FieldPressureMSL,
 		source:   SourceObservation,
 		floatVal: o.Data.PressureMSL.Value,
@@ -289,7 +289,7 @@ func (o Observation) PressureQFE() Pressure {
 		return Pressure{notAvailable: true}
 	}
 	return Pressure{
-		dt:       o.Data.PressureQFE.DateTime,
+		dateTime: o.Data.PressureQFE.DateTime,
 		name:     FieldPressureQFE,
 		source:   SourceObservation,
 		floatVal: o.Data.PressureQFE.Value,
@@ -325,7 +325,7 @@ func (o Observation) Precipitation(ts Timespan) Precipitation {
 		return Precipitation{notAvailable: true}
 	}
 	return Precipitation{
-		dt:       df.DateTime,
+		dateTime: df.DateTime,
 		name:     fn,
 		source:   SourceObservation,
 		floatVal: df.Value,
@@ -358,7 +358,7 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 		return Radiation{notAvailable: true}
 	}
 	return Radiation{
-		dt:       df.DateTime,
+		dateTime: df.DateTime,
 		name:     fn,
 		source:   SourceObservation,
 		floatVal: df.Value,
@@ -374,7 +374,7 @@ func (o Observation) WindDirection() Direction {
 		return Direction{notAvailable: true}
 	}
 	return Direction{
-		dt:       o.Data.WindDirection.DateTime,
+		dateTime: o.Data.WindDirection.DateTime,
 		name:     FieldWindDirection,
 		source:   SourceObservation,
 		floatVal: o.Data.WindDirection.Value,
@@ -389,7 +389,7 @@ func (o Observation) WindSpeed() Speed {
 		return Speed{notAvailable: true}
 	}
 	return Speed{
-		dt:       o.Data.WindSpeed.DateTime,
+		dateTime: o.Data.WindSpeed.DateTime,
 		name:     FieldWindSpeed,
 		source:   SourceObservation,
 		floatVal: o.Data.WindSpeed.Value * 0.5144444444,

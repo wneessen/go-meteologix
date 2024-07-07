@@ -23,7 +23,7 @@ func (h Humidity) IsAvailable() bool {
 // DateTime returns the timestamp of when the humidity
 // measurement was taken.
 func (h Humidity) DateTime() time.Time {
-	return h.dt
+	return h.dateTime
 }
 
 // String satisfies the fmt.Stringer interface for the Humidity type

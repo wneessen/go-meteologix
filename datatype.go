@@ -124,13 +124,13 @@ type Timespan int
 // specific receiver methods
 type WeatherData struct {
 	// bv bool
-	dt           time.Time
-	dv           time.Time
+	dateTime     time.Time
+	dateTimeVal  time.Time
 	floatVal     float64
 	name         Fieldname
 	notAvailable bool
 	source       Source
-	sv           string
+	stringVal    string
 }
 
 // Fieldname is a type wrapper for an int for field names

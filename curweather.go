@@ -108,7 +108,7 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	v := Temperature{
-		dt:       cw.Data.Dewpoint.DateTime,
+		dateTime: cw.Data.Dewpoint.DateTime,
 		name:     FieldDewpoint,
 		source:   SourceUnknown,
 		floatVal: cw.Data.Dewpoint.Value,
@@ -127,7 +127,7 @@ func (cw CurrentWeather) HumidityRelative() Humidity {
 		return Humidity{notAvailable: true}
 	}
 	v := Humidity{
-		dt:       cw.Data.HumidityRelative.DateTime,
+		dateTime: cw.Data.HumidityRelative.DateTime,
 		name:     FieldHumidityRelative,
 		source:   SourceUnknown,
 		floatVal: cw.Data.HumidityRelative.Value,
@@ -177,7 +177,7 @@ func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
 		return Precipitation{notAvailable: true}
 	}
 	v := Precipitation{
-		dt:       df.DateTime,
+		dateTime: df.DateTime,
 		name:     fn,
 		source:   SourceUnknown,
 		floatVal: df.Value,
@@ -196,7 +196,7 @@ func (cw CurrentWeather) PressureMSL() Pressure {
 		return Pressure{notAvailable: true}
 	}
 	v := Pressure{
-		dt:       cw.Data.PressureMSL.DateTime,
+		dateTime: cw.Data.PressureMSL.DateTime,
 		name:     FieldPressureMSL,
 		source:   SourceUnknown,
 		floatVal: cw.Data.PressureMSL.Value,
@@ -215,7 +215,7 @@ func (cw CurrentWeather) PressureQFE() Pressure {
 		return Pressure{notAvailable: true}
 	}
 	v := Pressure{
-		dt:       cw.Data.PressureQFE.DateTime,
+		dateTime: cw.Data.PressureQFE.DateTime,
 		name:     FieldPressureQFE,
 		source:   SourceUnknown,
 		floatVal: cw.Data.PressureQFE.Value,
@@ -234,7 +234,7 @@ func (cw CurrentWeather) SnowAmount() Density {
 		return Density{notAvailable: true}
 	}
 	v := Density{
-		dt:       cw.Data.SnowAmount.DateTime,
+		dateTime: cw.Data.SnowAmount.DateTime,
 		name:     FieldSnowAmount,
 		source:   SourceUnknown,
 		floatVal: cw.Data.SnowAmount.Value,
@@ -253,7 +253,7 @@ func (cw CurrentWeather) SnowHeight() Height {
 		return Height{notAvailable: true}
 	}
 	v := Height{
-		dt:       cw.Data.SnowHeight.DateTime,
+		dateTime: cw.Data.SnowHeight.DateTime,
 		name:     FieldSnowHeight,
 		source:   SourceUnknown,
 		floatVal: cw.Data.SnowHeight.Value,
@@ -272,7 +272,7 @@ func (cw CurrentWeather) Temperature() Temperature {
 		return Temperature{notAvailable: true}
 	}
 	v := Temperature{
-		dt:       cw.Data.Temperature.DateTime,
+		dateTime: cw.Data.Temperature.DateTime,
 		name:     FieldTemperature,
 		source:   SourceUnknown,
 		floatVal: cw.Data.Temperature.Value,
@@ -292,10 +292,10 @@ func (cw CurrentWeather) WeatherSymbol() Condition {
 		return Condition{notAvailable: true}
 	}
 	v := Condition{
-		dt:     cw.Data.WeatherSymbol.DateTime,
-		name:   FieldWeatherSymbol,
-		source: SourceUnknown,
-		sv:     cw.Data.WeatherSymbol.Value,
+		dateTime:  cw.Data.WeatherSymbol.DateTime,
+		name:      FieldWeatherSymbol,
+		source:    SourceUnknown,
+		stringVal: cw.Data.WeatherSymbol.Value,
 	}
 	if cw.Data.WeatherSymbol.Source != nil {
 		v.source = StringToSource(*cw.Data.WeatherSymbol.Source)
@@ -311,7 +311,7 @@ func (cw CurrentWeather) WindDirection() Direction {
 		return Direction{notAvailable: true}
 	}
 	v := Direction{
-		dt:       cw.Data.WindDirection.DateTime,
+		dateTime: cw.Data.WindDirection.DateTime,
 		name:     FieldWindDirection,
 		source:   SourceUnknown,
 		floatVal: cw.Data.WindDirection.Value,
@@ -330,7 +330,7 @@ func (cw CurrentWeather) WindGust() Speed {
 		return Speed{notAvailable: true}
 	}
 	v := Speed{
-		dt:       cw.Data.WindGust.DateTime,
+		dateTime: cw.Data.WindGust.DateTime,
 		name:     FieldWindGust,
 		source:   SourceUnknown,
 		floatVal: cw.Data.WindGust.Value,
@@ -349,7 +349,7 @@ func (cw CurrentWeather) WindSpeed() Speed {
 		return Speed{notAvailable: true}
 	}
 	v := Speed{
-		dt:       cw.Data.WindSpeed.DateTime,
+		dateTime: cw.Data.WindSpeed.DateTime,
 		name:     FieldWindSpeed,
 		source:   SourceUnknown,
 		floatVal: cw.Data.WindSpeed.Value,

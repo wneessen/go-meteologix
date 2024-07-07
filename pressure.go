@@ -22,7 +22,7 @@ func (p Pressure) IsAvailable() bool {
 
 // DateTime returns the date and time of the Pressure reading
 func (p Pressure) DateTime() time.Time {
-	return p.dt
+	return p.dateTime
 }
 
 // String satisfies the fmt.Stringer interface for the Pressure type

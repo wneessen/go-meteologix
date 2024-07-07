@@ -22,7 +22,7 @@ func (h Height) IsAvailable() bool {
 
 // DateTime returns the timestamp associated with the Height value
 func (h Height) DateTime() time.Time {
-	return h.dt
+	return h.dateTime
 }
 
 // String satisfies the fmt.Stringer interface for the Height type

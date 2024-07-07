@@ -58,7 +58,7 @@ func (d Direction) IsAvailable() bool {
 // DateTime returns true if an Direction value was
 // available at time of query
 func (d Direction) DateTime() time.Time {
-	return d.dt
+	return d.dateTime
 }
 
 // Value returns the float64 value of an Direction in degrees

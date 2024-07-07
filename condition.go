@@ -85,7 +85,7 @@ func (c Condition) IsAvailable() bool {
 
 // DateTime returns the timestamp of a Condition value as time.Time
 func (c Condition) DateTime() time.Time {
-	return c.dt
+	return c.dateTime
 }
 
 // Value returns the raw value of a Condition as unformatted string
@@ -96,7 +96,7 @@ func (c Condition) Value() string {
 	if c.notAvailable {
 		return DataUnavailable
 	}
-	return c.sv
+	return c.stringVal
 }
 
 // Condition returns the actual value of that Condition as ConditionType.
@@ -106,8 +106,8 @@ func (c Condition) Condition() ConditionType {
 	if c.notAvailable {
 		return CondUnknown
 	}
-	if _, ok := ConditionMap[ConditionType(c.sv)]; ok {
-		return ConditionType(c.sv)
+	if _, ok := ConditionMap[ConditionType(c.stringVal)]; ok {
+		return ConditionType(c.stringVal)
 	}
 	return CondUnknown
 }

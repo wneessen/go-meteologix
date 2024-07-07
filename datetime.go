@@ -20,7 +20,7 @@ func (dt DateTime) IsAvailable() bool {
 
 // DateTime returns the timestamp for that specific DateTime type
 func (dt DateTime) DateTime() time.Time {
-	return dt.dt
+	return dt.dateTime
 }
 
 // Value returns the time.Time value of an DateTime value
@@ -30,7 +30,7 @@ func (dt DateTime) Value() time.Time {
 	if dt.notAvailable {
 		return time.Time{}
 	}
-	return dt.dv
+	return dt.dateTimeVal
 }
 
 // String satisfies the fmt.Stringer interface for the DateTime type

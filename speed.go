@@ -31,7 +31,7 @@ func (s Speed) IsAvailable() bool {
 
 // DateTime returns the DateTime when the Speed was checked
 func (s Speed) DateTime() time.Time {
-	return s.dt
+	return s.dateTime
 }
 
 // Value returns the float64 value of an Speed in meters
