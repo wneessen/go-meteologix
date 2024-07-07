@@ -33,7 +33,7 @@ func (h Height) String() string {
 // Source returns the Source of Height
 // If the Source is not available it will return SourceUnknown
 func (h Height) Source() Source {
-	return h.s
+	return h.source
 }
 
 // Value returns the float64 value of an Height

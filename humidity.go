@@ -34,7 +34,7 @@ func (h Humidity) String() string {
 // Source returns the Source of Humidity
 // If the Source is not available it will return SourceUnknown
 func (h Humidity) Source() Source {
-	return h.s
+	return h.source
 }
 
 // Value returns the float64 value of an Humidity

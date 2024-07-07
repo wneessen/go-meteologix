@@ -79,7 +79,7 @@ func (d Direction) String() string {
 // Source returns the Source of a Direction
 // If the Source is not available it will return SourceUnknown
 func (d Direction) Source() Source {
-	return d.s
+	return d.source
 }
 
 // Direction returns the abbreviation string for a given Direction type

@@ -39,7 +39,7 @@ func (t Temperature) Value() float64 {
 // Source returns the Source of an Temperature
 // If the Source is not available it will return SourceUnknown
 func (t Temperature) Source() Source {
-	return t.s
+	return t.source
 }
 
 // String satisfies the fmt.Stringer interface for the Temperature type

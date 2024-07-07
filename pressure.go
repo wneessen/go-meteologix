@@ -33,7 +33,7 @@ func (p Pressure) String() string {
 // Source returns the Source of Pressure
 // If the Source is not available it will return SourceUnknown
 func (p Pressure) Source() Source {
-	return p.s
+	return p.source
 }
 
 // Value returns the float64 value of an Pressure

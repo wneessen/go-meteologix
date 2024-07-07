@@ -125,7 +125,7 @@ func (o Observation) Dewpoint() Temperature {
 	return Temperature{
 		dt:       o.Data.Dewpoint.DateTime,
 		name:     FieldDewpoint,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.Dewpoint.Value,
 	}
 }
@@ -141,7 +141,7 @@ func (o Observation) DewpointMean() Temperature {
 	return Temperature{
 		dt:       o.Data.DewpointMean.DateTime,
 		name:     FieldDewpointMean,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.DewpointMean.Value,
 	}
 }
@@ -157,7 +157,7 @@ func (o Observation) Temperature() Temperature {
 	return Temperature{
 		dt:       o.Data.Temperature.DateTime,
 		name:     FieldTemperature,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.Temperature.Value,
 	}
 }
@@ -174,7 +174,7 @@ func (o Observation) TemperatureAtGround() Temperature {
 	return Temperature{
 		dt:       o.Data.Temperature5cm.DateTime,
 		name:     FieldTemperatureAtGround,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.Temperature5cm.Value,
 	}
 }
@@ -191,7 +191,7 @@ func (o Observation) TemperatureMax() Temperature {
 	return Temperature{
 		dt:       o.Data.TemperatureMax.DateTime,
 		name:     FieldTemperatureMax,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.TemperatureMax.Value,
 	}
 }
@@ -208,7 +208,7 @@ func (o Observation) TemperatureMin() Temperature {
 	return Temperature{
 		dt:       o.Data.TemperatureMin.DateTime,
 		name:     FieldTemperatureMin,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.TemperatureMin.Value,
 	}
 }
@@ -225,7 +225,7 @@ func (o Observation) TemperatureAtGroundMin() Temperature {
 	return Temperature{
 		dt:       o.Data.Temperature5cmMin.DateTime,
 		name:     FieldTemperatureAtGroundMin,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.Temperature5cmMin.Value,
 	}
 }
@@ -241,7 +241,7 @@ func (o Observation) TemperatureMean() Temperature {
 	return Temperature{
 		dt:       o.Data.TemperatureMean.DateTime,
 		name:     FieldTemperatureMean,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.TemperatureMean.Value,
 	}
 }
@@ -257,7 +257,7 @@ func (o Observation) HumidityRelative() Humidity {
 	return Humidity{
 		dt:       o.Data.HumidityRelative.DateTime,
 		name:     FieldHumidityRelative,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.HumidityRelative.Value,
 	}
 }
@@ -274,7 +274,7 @@ func (o Observation) PressureMSL() Pressure {
 	return Pressure{
 		dt:       o.Data.PressureMSL.DateTime,
 		name:     FieldPressureMSL,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.PressureMSL.Value,
 	}
 }
@@ -291,7 +291,7 @@ func (o Observation) PressureQFE() Pressure {
 	return Pressure{
 		dt:       o.Data.PressureQFE.DateTime,
 		name:     FieldPressureQFE,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.PressureQFE.Value,
 	}
 }
@@ -327,7 +327,7 @@ func (o Observation) Precipitation(ts Timespan) Precipitation {
 	return Precipitation{
 		dt:       df.DateTime,
 		name:     fn,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: df.Value,
 	}
 }
@@ -360,7 +360,7 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 	return Radiation{
 		dt:       df.DateTime,
 		name:     fn,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: df.Value,
 	}
 }
@@ -376,7 +376,7 @@ func (o Observation) WindDirection() Direction {
 	return Direction{
 		dt:       o.Data.WindDirection.DateTime,
 		name:     FieldWindDirection,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.WindDirection.Value,
 	}
 }
@@ -391,7 +391,7 @@ func (o Observation) WindSpeed() Speed {
 	return Speed{
 		dt:       o.Data.WindSpeed.DateTime,
 		name:     FieldWindSpeed,
-		s:        SourceObservation,
+		source:   SourceObservation,
 		floatVal: o.Data.WindSpeed.Value * 0.5144444444,
 	}
 }

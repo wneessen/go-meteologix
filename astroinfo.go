@@ -118,10 +118,10 @@ func (a *AstronomicalInfo) SunsetByTime(t time.Time) DateTime {
 		return DateTime{notAvailable: true}
 	}
 	return DateTime{
-		dt:   cdd.DateTime.Time,
-		name: FieldSunset,
-		s:    SourceForecast,
-		dv:   *cdd.Sunset,
+		dt:     cdd.DateTime.Time,
+		name:   FieldSunset,
+		source: SourceForecast,
+		dv:     *cdd.Sunset,
 	}
 }
 
@@ -184,10 +184,10 @@ func (a *AstronomicalInfo) SunriseByTime(t time.Time) DateTime {
 		return DateTime{notAvailable: true}
 	}
 	return DateTime{
-		dt:   cdd.DateTime.Time,
-		name: FieldSunrise,
-		s:    SourceForecast,
-		dv:   *cdd.Sunrise,
+		dt:     cdd.DateTime.Time,
+		name:   FieldSunrise,
+		source: SourceForecast,
+		dv:     *cdd.Sunrise,
 	}
 }
 

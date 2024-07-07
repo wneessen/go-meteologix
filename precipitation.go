@@ -33,7 +33,7 @@ func (p Precipitation) String() string {
 // Source returns the Source of Precipitation
 // If the Source is not available it will return SourceUnknown
 func (p Precipitation) Source() Source {
-	return p.s
+	return p.source
 }
 
 // Value returns the float64 value of an Precipitation

@@ -33,7 +33,7 @@ func (d Density) String() string {
 // Source returns the Source of Density
 // If the Source is not available it will return SourceUnknown
 func (d Density) Source() Source {
-	return d.s
+	return d.source
 }
 
 // Value returns the float64 value of an Density

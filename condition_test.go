@@ -11,18 +11,18 @@ import (
 
 func TestCondition_Condition(t *testing.T) {
 	tc := Condition{
-		dt: time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
-		s:  SourceAnalysis,
-		sv: "cloudy",
+		dt:     time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
+		source: SourceAnalysis,
+		sv:     "cloudy",
 	}
 	if tc.Condition() != CondCloudy {
 		t.Errorf("Condition failed, expected: %s, got: %s", CondCloudy.String(),
 			tc.Condition().String())
 	}
 	tc = Condition{
-		dt: time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
-		s:  SourceAnalysis,
-		sv: "non-existing",
+		dt:     time.Date(2023, 5, 23, 8, 50, 0, 0, time.UTC),
+		source: SourceAnalysis,
+		sv:     "non-existing",
 	}
 	if tc.Condition() != CondUnknown {
 		t.Errorf("Condition failed, expected: %s, got: %s", CondUnknown.String(),

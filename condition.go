@@ -121,7 +121,7 @@ func (c Condition) String() string {
 // Source returns the Source of a Condition
 // If the Source is not available it will return SourceUnknown
 func (c Condition) Source() Source {
-	return c.s
+	return c.source
 }
 
 // String returns a human readable, formatted string for a ConditionType and

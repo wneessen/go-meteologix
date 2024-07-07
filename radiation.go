@@ -44,5 +44,5 @@ func (r Radiation) String() string {
 // Source returns the Source of Pressure
 // If the Source is not available it will return SourceUnknown
 func (r Radiation) Source() Source {
-	return r.s
+	return r.source
 }

@@ -129,7 +129,7 @@ type WeatherData struct {
 	floatVal     float64
 	name         Fieldname
 	notAvailable bool
-	s            Source
+	source       Source
 	sv           string
 }
 

@@ -53,7 +53,7 @@ func (s Speed) String() string {
 // Source returns the Source of Speed
 // If the Source is not available it will return SourceUnknown
 func (s Speed) Source() Source {
-	return s.s
+	return s.source
 }
 
 // KMH returns the Speed value in km/h
