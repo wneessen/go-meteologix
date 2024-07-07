@@ -120,13 +120,13 @@ func (c *Client) ObservationLatestByLocation(l string) (Observation, Station, er
 // true.
 func (o Observation) Dewpoint() Temperature {
 	if o.Data.Dewpoint == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Dewpoint.DateTime,
-		n:  FieldDewpoint,
-		s:  SourceObservation,
-		fv: o.Data.Dewpoint.Value,
+		dt:       o.Data.Dewpoint.DateTime,
+		name:     FieldDewpoint,
+		s:        SourceObservation,
+		floatVal: o.Data.Dewpoint.Value,
 	}
 }
 
@@ -136,13 +136,13 @@ func (o Observation) Dewpoint() Temperature {
 // true.
 func (o Observation) DewpointMean() Temperature {
 	if o.Data.DewpointMean == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.DewpointMean.DateTime,
-		n:  FieldDewpointMean,
-		s:  SourceObservation,
-		fv: o.Data.DewpointMean.Value,
+		dt:       o.Data.DewpointMean.DateTime,
+		name:     FieldDewpointMean,
+		s:        SourceObservation,
+		floatVal: o.Data.DewpointMean.Value,
 	}
 }
 
@@ -152,13 +152,13 @@ func (o Observation) DewpointMean() Temperature {
 // true.
 func (o Observation) Temperature() Temperature {
 	if o.Data.Temperature == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Temperature.DateTime,
-		n:  FieldTemperature,
-		s:  SourceObservation,
-		fv: o.Data.Temperature.Value,
+		dt:       o.Data.Temperature.DateTime,
+		name:     FieldTemperature,
+		s:        SourceObservation,
+		floatVal: o.Data.Temperature.Value,
 	}
 }
 
@@ -169,13 +169,13 @@ func (o Observation) Temperature() Temperature {
 // true.
 func (o Observation) TemperatureAtGround() Temperature {
 	if o.Data.Temperature5cm == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Temperature5cm.DateTime,
-		n:  FieldTemperatureAtGround,
-		s:  SourceObservation,
-		fv: o.Data.Temperature5cm.Value,
+		dt:       o.Data.Temperature5cm.DateTime,
+		name:     FieldTemperatureAtGround,
+		s:        SourceObservation,
+		floatVal: o.Data.Temperature5cm.Value,
 	}
 }
 
@@ -186,13 +186,13 @@ func (o Observation) TemperatureAtGround() Temperature {
 // true.
 func (o Observation) TemperatureMax() Temperature {
 	if o.Data.TemperatureMax == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.TemperatureMax.DateTime,
-		n:  FieldTemperatureMax,
-		s:  SourceObservation,
-		fv: o.Data.TemperatureMax.Value,
+		dt:       o.Data.TemperatureMax.DateTime,
+		name:     FieldTemperatureMax,
+		s:        SourceObservation,
+		floatVal: o.Data.TemperatureMax.Value,
 	}
 }
 
@@ -203,13 +203,13 @@ func (o Observation) TemperatureMax() Temperature {
 // true.
 func (o Observation) TemperatureMin() Temperature {
 	if o.Data.TemperatureMin == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.TemperatureMin.DateTime,
-		n:  FieldTemperatureMin,
-		s:  SourceObservation,
-		fv: o.Data.TemperatureMin.Value,
+		dt:       o.Data.TemperatureMin.DateTime,
+		name:     FieldTemperatureMin,
+		s:        SourceObservation,
+		floatVal: o.Data.TemperatureMin.Value,
 	}
 }
 
@@ -220,13 +220,13 @@ func (o Observation) TemperatureMin() Temperature {
 // true.
 func (o Observation) TemperatureAtGroundMin() Temperature {
 	if o.Data.Temperature5cmMin == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Temperature5cmMin.DateTime,
-		n:  FieldTemperatureAtGroundMin,
-		s:  SourceObservation,
-		fv: o.Data.Temperature5cmMin.Value,
+		dt:       o.Data.Temperature5cmMin.DateTime,
+		name:     FieldTemperatureAtGroundMin,
+		s:        SourceObservation,
+		floatVal: o.Data.Temperature5cmMin.Value,
 	}
 }
 
@@ -236,13 +236,13 @@ func (o Observation) TemperatureAtGroundMin() Temperature {
 // true.
 func (o Observation) TemperatureMean() Temperature {
 	if o.Data.TemperatureMean == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.TemperatureMean.DateTime,
-		n:  FieldTemperatureMean,
-		s:  SourceObservation,
-		fv: o.Data.TemperatureMean.Value,
+		dt:       o.Data.TemperatureMean.DateTime,
+		name:     FieldTemperatureMean,
+		s:        SourceObservation,
+		floatVal: o.Data.TemperatureMean.Value,
 	}
 }
 
@@ -252,13 +252,13 @@ func (o Observation) TemperatureMean() Temperature {
 // true.
 func (o Observation) HumidityRelative() Humidity {
 	if o.Data.HumidityRelative == nil {
-		return Humidity{na: true}
+		return Humidity{notAvailable: true}
 	}
 	return Humidity{
-		dt: o.Data.HumidityRelative.DateTime,
-		n:  FieldHumidityRelative,
-		s:  SourceObservation,
-		fv: o.Data.HumidityRelative.Value,
+		dt:       o.Data.HumidityRelative.DateTime,
+		name:     FieldHumidityRelative,
+		s:        SourceObservation,
+		floatVal: o.Data.HumidityRelative.Value,
 	}
 }
 
@@ -269,13 +269,13 @@ func (o Observation) HumidityRelative() Humidity {
 // true.
 func (o Observation) PressureMSL() Pressure {
 	if o.Data.PressureMSL == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
 	return Pressure{
-		dt: o.Data.PressureMSL.DateTime,
-		n:  FieldPressureMSL,
-		s:  SourceObservation,
-		fv: o.Data.PressureMSL.Value,
+		dt:       o.Data.PressureMSL.DateTime,
+		name:     FieldPressureMSL,
+		s:        SourceObservation,
+		floatVal: o.Data.PressureMSL.Value,
 	}
 }
 
@@ -286,13 +286,13 @@ func (o Observation) PressureMSL() Pressure {
 // true.
 func (o Observation) PressureQFE() Pressure {
 	if o.Data.PressureQFE == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
 	return Pressure{
-		dt: o.Data.PressureQFE.DateTime,
-		n:  FieldPressureQFE,
-		s:  SourceObservation,
-		fv: o.Data.PressureQFE.Value,
+		dt:       o.Data.PressureQFE.DateTime,
+		name:     FieldPressureQFE,
+		s:        SourceObservation,
+		floatVal: o.Data.PressureQFE.Value,
 	}
 }
 
@@ -318,17 +318,17 @@ func (o Observation) Precipitation(ts Timespan) Precipitation {
 		df = o.Data.Precipitation24h
 		fn = FieldPrecipitation24h
 	default:
-		return Precipitation{na: true}
+		return Precipitation{notAvailable: true}
 	}
 
 	if df == nil {
-		return Precipitation{na: true}
+		return Precipitation{notAvailable: true}
 	}
 	return Precipitation{
-		dt: df.DateTime,
-		n:  fn,
-		s:  SourceObservation,
-		fv: df.Value,
+		dt:       df.DateTime,
+		name:     fn,
+		s:        SourceObservation,
+		floatVal: df.Value,
 	}
 }
 
@@ -351,17 +351,17 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 		df = o.Data.GlobalRadiation24h
 		fn = FieldGlobalRadiation24h
 	default:
-		return Radiation{na: true}
+		return Radiation{notAvailable: true}
 	}
 
 	if df == nil {
-		return Radiation{na: true}
+		return Radiation{notAvailable: true}
 	}
 	return Radiation{
-		dt: df.DateTime,
-		n:  fn,
-		s:  SourceObservation,
-		fv: df.Value,
+		dt:       df.DateTime,
+		name:     fn,
+		s:        SourceObservation,
+		floatVal: df.Value,
 	}
 }
 
@@ -371,13 +371,13 @@ func (o Observation) GlobalRadiation(ts Timespan) Radiation {
 // Direction in which the "not available" field will be true.
 func (o Observation) WindDirection() Direction {
 	if o.Data.WindDirection == nil {
-		return Direction{na: true}
+		return Direction{notAvailable: true}
 	}
 	return Direction{
-		dt: o.Data.WindDirection.DateTime,
-		n:  FieldWindDirection,
-		s:  SourceObservation,
-		fv: o.Data.WindDirection.Value,
+		dt:       o.Data.WindDirection.DateTime,
+		name:     FieldWindDirection,
+		s:        SourceObservation,
+		floatVal: o.Data.WindDirection.Value,
 	}
 }
 
@@ -386,12 +386,12 @@ func (o Observation) WindDirection() Direction {
 // Speed in which the "not available" field will be true.
 func (o Observation) WindSpeed() Speed {
 	if o.Data.WindSpeed == nil {
-		return Speed{na: true}
+		return Speed{notAvailable: true}
 	}
 	return Speed{
-		dt: o.Data.WindSpeed.DateTime,
-		n:  FieldWindSpeed,
-		s:  SourceObservation,
-		fv: o.Data.WindSpeed.Value * 0.5144444444,
+		dt:       o.Data.WindSpeed.DateTime,
+		name:     FieldWindSpeed,
+		s:        SourceObservation,
+		floatVal: o.Data.WindSpeed.Value * 0.5144444444,
 	}
 }

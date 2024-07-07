@@ -52,7 +52,7 @@ type Direction WeatherData
 // IsAvailable returns true if an Direction value was
 // available at time of query
 func (d Direction) IsAvailable() bool {
-	return !d.na
+	return !d.notAvailable
 }
 
 // DateTime returns true if an Direction value was
@@ -65,15 +65,15 @@ func (d Direction) DateTime() time.Time {
 // If the Direction is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (d Direction) Value() float64 {
-	if d.na {
+	if d.notAvailable {
 		return math.NaN()
 	}
-	return d.fv
+	return d.floatVal
 }
 
 // String satisfies the fmt.Stringer interface for the Direction type
 func (d Direction) String() string {
-	return fmt.Sprintf("%.0f°", d.fv)
+	return fmt.Sprintf("%.0f°", d.floatVal)
 }
 
 // Source returns the Source of a Direction
@@ -84,24 +84,24 @@ func (d Direction) Source() Source {
 
 // Direction returns the abbreviation string for a given Direction type
 func (d Direction) Direction() string {
-	if d.fv < DirectionMinAngle || d.fv > DirectionMaxAngle {
+	if d.floatVal < DirectionMinAngle || d.floatVal > DirectionMaxAngle {
 		return ErrUnsupportedDirection
 	}
-	if ds, ok := WindDirAbbrMap[d.fv]; ok {
+	if ds, ok := WindDirAbbrMap[d.floatVal]; ok {
 		return ds
 	}
-	return findDirection(d.fv, WindDirAbbrMap)
+	return findDirection(d.floatVal, WindDirAbbrMap)
 }
 
 // DirectionFull returns the full string for a given Direction type
 func (d Direction) DirectionFull() string {
-	if d.fv < DirectionMinAngle || d.fv > DirectionMaxAngle {
+	if d.floatVal < DirectionMinAngle || d.floatVal > DirectionMaxAngle {
 		return ErrUnsupportedDirection
 	}
-	if ds, ok := WindDirFullMap[d.fv]; ok {
+	if ds, ok := WindDirFullMap[d.floatVal]; ok {
 		return ds
 	}
-	return findDirection(d.fv, WindDirFullMap)
+	return findDirection(d.floatVal, WindDirFullMap)
 }
 
 // findDirection takes a Direction and tries to estimate the nearest

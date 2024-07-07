@@ -17,7 +17,7 @@ type Height WeatherData
 // IsAvailable returns true if an Height value was
 // available at time of query
 func (h Height) IsAvailable() bool {
-	return !h.na
+	return !h.notAvailable
 }
 
 // DateTime returns the timestamp associated with the Height value
@@ -27,7 +27,7 @@ func (h Height) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Height type
 func (h Height) String() string {
-	return fmt.Sprintf("%.3fm", h.fv)
+	return fmt.Sprintf("%.3fm", h.floatVal)
 }
 
 // Source returns the Source of Height
@@ -40,10 +40,10 @@ func (h Height) Source() Source {
 // If the Height is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (h Height) Value() float64 {
-	if h.na {
+	if h.notAvailable {
 		return math.NaN()
 	}
-	return h.fv
+	return h.floatVal
 }
 
 // Meter returns the Height type value as float64 in meters.
@@ -60,10 +60,10 @@ func (h Height) MeterString() string {
 
 // CentiMeter returns the Height type value as float64 in centimeters.
 func (h Height) CentiMeter() float64 {
-	if h.na {
+	if h.notAvailable {
 		return math.NaN()
 	}
-	return h.fv * 100
+	return h.floatVal * 100
 }
 
 // CentiMeterString returns the Height type as formatted string in centimeters
@@ -73,10 +73,10 @@ func (h Height) CentiMeterString() string {
 
 // MilliMeter returns the Height type value as float64 in milliimeters.
 func (h Height) MilliMeter() float64 {
-	if h.na {
+	if h.notAvailable {
 		return math.NaN()
 	}
-	return h.fv * 1000
+	return h.floatVal * 1000
 }
 
 // MilliMeterString returns the Height type as formatted string in millimeters

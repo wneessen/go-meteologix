@@ -17,7 +17,7 @@ type Temperature WeatherData
 // IsAvailable returns true if an Temperature value was
 // available at time of query
 func (t Temperature) IsAvailable() bool {
-	return !t.na
+	return !t.notAvailable
 }
 
 // DateTime returns the time at which the temperature data was
@@ -30,10 +30,10 @@ func (t Temperature) DateTime() time.Time {
 // If the Temperature is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (t Temperature) Value() float64 {
-	if t.na {
+	if t.notAvailable {
 		return math.NaN()
 	}
-	return t.fv
+	return t.floatVal
 }
 
 // Source returns the Source of an Temperature
@@ -44,12 +44,12 @@ func (t Temperature) Source() Source {
 
 // String satisfies the fmt.Stringer interface for the Temperature type
 func (t Temperature) String() string {
-	return fmt.Sprintf("%.1f°C", t.fv)
+	return fmt.Sprintf("%.1f°C", t.floatVal)
 }
 
 // Celsius returns the Temperature value in Celsius
 func (t Temperature) Celsius() float64 {
-	return t.fv
+	return t.floatVal
 }
 
 // CelsiusString returns the Temperature value as Celsius
@@ -62,7 +62,7 @@ func (t Temperature) CelsiusString() string {
 
 // Fahrenheit returns the Temperature value in Fahrenheit
 func (t Temperature) Fahrenheit() float64 {
-	return t.fv*9/5 + 32
+	return t.floatVal*9/5 + 32
 }
 
 // FahrenheitString returns the Temperature value as Fahrenheit

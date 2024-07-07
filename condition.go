@@ -80,7 +80,7 @@ type ConditionType string
 // IsAvailable returns true if a Condition value was available
 // at time of query
 func (c Condition) IsAvailable() bool {
-	return !c.na
+	return !c.notAvailable
 }
 
 // DateTime returns the timestamp of a Condition value as time.Time
@@ -93,7 +93,7 @@ func (c Condition) DateTime() time.Time {
 // If the Condition is not available in the WeatherData, Value will
 // return DataUnavailable instead.
 func (c Condition) Value() string {
-	if c.na {
+	if c.notAvailable {
 		return DataUnavailable
 	}
 	return c.sv
@@ -103,7 +103,7 @@ func (c Condition) Value() string {
 // If the value is not available or not supported it will return a
 // CondUnknown
 func (c Condition) Condition() ConditionType {
-	if c.na {
+	if c.notAvailable {
 		return CondUnknown
 	}
 	if _, ok := ConditionMap[ConditionType(c.sv)]; ok {

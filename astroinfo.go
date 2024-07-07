@@ -105,7 +105,7 @@ func (c *Client) AstronomicalInfoByLocation(lo string) (AstronomicalInfo, error)
 // "not available" value.
 func (a *AstronomicalInfo) SunsetByTime(t time.Time) DateTime {
 	if len(a.DailyData) < 1 {
-		return DateTime{na: true}
+		return DateTime{notAvailable: true}
 	}
 	var cdd APIAstronomicalDailyData
 	for i := range a.DailyData {
@@ -115,13 +115,13 @@ func (a *AstronomicalInfo) SunsetByTime(t time.Time) DateTime {
 		cdd = a.DailyData[i]
 	}
 	if cdd.DateTime.IsZero() {
-		return DateTime{na: true}
+		return DateTime{notAvailable: true}
 	}
 	return DateTime{
-		dt: cdd.DateTime.Time,
-		n:  FieldSunset,
-		s:  SourceForecast,
-		dv: *cdd.Sunset,
+		dt:   cdd.DateTime.Time,
+		name: FieldSunset,
+		s:    SourceForecast,
+		dv:   *cdd.Sunset,
 	}
 }
 
@@ -141,7 +141,7 @@ func (a *AstronomicalInfo) Sunset() DateTime {
 func (a *AstronomicalInfo) SunsetByDateString(ds string) DateTime {
 	t, err := time.Parse(DateFormat, ds)
 	if err != nil {
-		return DateTime{na: true}
+		return DateTime{notAvailable: true}
 	}
 	return a.SunsetByTime(t)
 }
@@ -171,7 +171,7 @@ func (a *AstronomicalInfo) SunsetAll() []DateTime {
 // "not available" value.
 func (a *AstronomicalInfo) SunriseByTime(t time.Time) DateTime {
 	if len(a.DailyData) < 1 {
-		return DateTime{na: true}
+		return DateTime{notAvailable: true}
 	}
 	var cdd APIAstronomicalDailyData
 	for i := range a.DailyData {
@@ -181,13 +181,13 @@ func (a *AstronomicalInfo) SunriseByTime(t time.Time) DateTime {
 		cdd = a.DailyData[i]
 	}
 	if cdd.DateTime.IsZero() {
-		return DateTime{na: true}
+		return DateTime{notAvailable: true}
 	}
 	return DateTime{
-		dt: cdd.DateTime.Time,
-		n:  FieldSunrise,
-		s:  SourceForecast,
-		dv: *cdd.Sunrise,
+		dt:   cdd.DateTime.Time,
+		name: FieldSunrise,
+		s:    SourceForecast,
+		dv:   *cdd.Sunrise,
 	}
 }
 
@@ -207,7 +207,7 @@ func (a *AstronomicalInfo) Sunrise() DateTime {
 func (a *AstronomicalInfo) SunriseByDateString(ds string) DateTime {
 	t, err := time.Parse(DateFormat, ds)
 	if err != nil {
-		return DateTime{na: true}
+		return DateTime{notAvailable: true}
 	}
 	return a.SunriseByTime(t)
 }

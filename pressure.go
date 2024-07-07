@@ -17,7 +17,7 @@ type Pressure WeatherData
 // IsAvailable returns true if an Pressure value was
 // available at time of query
 func (p Pressure) IsAvailable() bool {
-	return !p.na
+	return !p.notAvailable
 }
 
 // DateTime returns the date and time of the Pressure reading
@@ -27,7 +27,7 @@ func (p Pressure) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Pressure type
 func (p Pressure) String() string {
-	return fmt.Sprintf("%.1fhPa", p.fv)
+	return fmt.Sprintf("%.1fhPa", p.floatVal)
 }
 
 // Source returns the Source of Pressure
@@ -40,8 +40,8 @@ func (p Pressure) Source() Source {
 // If the Pressure is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (p Pressure) Value() float64 {
-	if p.na {
+	if p.notAvailable {
 		return math.NaN()
 	}
-	return p.fv
+	return p.floatVal
 }

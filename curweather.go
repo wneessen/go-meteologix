@@ -105,13 +105,13 @@ func (c *Client) CurrentWeatherByLocation(lo string) (CurrentWeather, error) {
 // Temperature in which the "not available" field will be true.
 func (cw CurrentWeather) Dewpoint() Temperature {
 	if cw.Data.Dewpoint == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	v := Temperature{
-		dt: cw.Data.Dewpoint.DateTime,
-		n:  FieldDewpoint,
-		s:  SourceUnknown,
-		fv: cw.Data.Dewpoint.Value,
+		dt:       cw.Data.Dewpoint.DateTime,
+		name:     FieldDewpoint,
+		s:        SourceUnknown,
+		floatVal: cw.Data.Dewpoint.Value,
 	}
 	if cw.Data.Dewpoint.Source != nil {
 		v.s = StringToSource(*cw.Data.Dewpoint.Source)
@@ -124,13 +124,13 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 // Humidity in which the "not available" field will be true.
 func (cw CurrentWeather) HumidityRelative() Humidity {
 	if cw.Data.HumidityRelative == nil {
-		return Humidity{na: true}
+		return Humidity{notAvailable: true}
 	}
 	v := Humidity{
-		dt: cw.Data.HumidityRelative.DateTime,
-		n:  FieldHumidityRelative,
-		s:  SourceUnknown,
-		fv: cw.Data.HumidityRelative.Value,
+		dt:       cw.Data.HumidityRelative.DateTime,
+		name:     FieldHumidityRelative,
+		s:        SourceUnknown,
+		floatVal: cw.Data.HumidityRelative.Value,
 	}
 	if cw.Data.HumidityRelative.Source != nil {
 		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
@@ -170,17 +170,17 @@ func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
 		df = cw.Data.Precipitation24h
 		fn = FieldPrecipitation24h
 	default:
-		return Precipitation{na: true}
+		return Precipitation{notAvailable: true}
 	}
 
 	if df == nil {
-		return Precipitation{na: true}
+		return Precipitation{notAvailable: true}
 	}
 	v := Precipitation{
-		dt: df.DateTime,
-		n:  fn,
-		s:  SourceUnknown,
-		fv: df.Value,
+		dt:       df.DateTime,
+		name:     fn,
+		s:        SourceUnknown,
+		floatVal: df.Value,
 	}
 	if df.Source != nil {
 		v.s = StringToSource(*df.Source)
@@ -193,13 +193,13 @@ func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
 // Pressure in which the "not available" field will be true.
 func (cw CurrentWeather) PressureMSL() Pressure {
 	if cw.Data.PressureMSL == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
 	v := Pressure{
-		dt: cw.Data.PressureMSL.DateTime,
-		n:  FieldPressureMSL,
-		s:  SourceUnknown,
-		fv: cw.Data.PressureMSL.Value,
+		dt:       cw.Data.PressureMSL.DateTime,
+		name:     FieldPressureMSL,
+		s:        SourceUnknown,
+		floatVal: cw.Data.PressureMSL.Value,
 	}
 	if cw.Data.PressureMSL.Source != nil {
 		v.s = StringToSource(*cw.Data.PressureMSL.Source)
@@ -212,13 +212,13 @@ func (cw CurrentWeather) PressureMSL() Pressure {
 // Pressure in which the "not available" field will be true.
 func (cw CurrentWeather) PressureQFE() Pressure {
 	if cw.Data.PressureQFE == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
 	v := Pressure{
-		dt: cw.Data.PressureQFE.DateTime,
-		n:  FieldPressureQFE,
-		s:  SourceUnknown,
-		fv: cw.Data.PressureQFE.Value,
+		dt:       cw.Data.PressureQFE.DateTime,
+		name:     FieldPressureQFE,
+		s:        SourceUnknown,
+		floatVal: cw.Data.PressureQFE.Value,
 	}
 	if cw.Data.PressureQFE.Source != nil {
 		v.s = StringToSource(*cw.Data.PressureQFE.Source)
@@ -231,13 +231,13 @@ func (cw CurrentWeather) PressureQFE() Pressure {
 // Density in which the "not available" field will be true.
 func (cw CurrentWeather) SnowAmount() Density {
 	if cw.Data.SnowAmount == nil {
-		return Density{na: true}
+		return Density{notAvailable: true}
 	}
 	v := Density{
-		dt: cw.Data.SnowAmount.DateTime,
-		n:  FieldSnowAmount,
-		s:  SourceUnknown,
-		fv: cw.Data.SnowAmount.Value,
+		dt:       cw.Data.SnowAmount.DateTime,
+		name:     FieldSnowAmount,
+		s:        SourceUnknown,
+		floatVal: cw.Data.SnowAmount.Value,
 	}
 	if cw.Data.SnowAmount.Source != nil {
 		v.s = StringToSource(*cw.Data.SnowAmount.Source)
@@ -250,13 +250,13 @@ func (cw CurrentWeather) SnowAmount() Density {
 // Height in which the "not available" field will be true.
 func (cw CurrentWeather) SnowHeight() Height {
 	if cw.Data.SnowHeight == nil {
-		return Height{na: true}
+		return Height{notAvailable: true}
 	}
 	v := Height{
-		dt: cw.Data.SnowHeight.DateTime,
-		n:  FieldSnowHeight,
-		s:  SourceUnknown,
-		fv: cw.Data.SnowHeight.Value,
+		dt:       cw.Data.SnowHeight.DateTime,
+		name:     FieldSnowHeight,
+		s:        SourceUnknown,
+		floatVal: cw.Data.SnowHeight.Value,
 	}
 	if cw.Data.SnowHeight.Source != nil {
 		v.s = StringToSource(*cw.Data.SnowHeight.Source)
@@ -269,13 +269,13 @@ func (cw CurrentWeather) SnowHeight() Height {
 // Temperature in which the "not available" field will be true.
 func (cw CurrentWeather) Temperature() Temperature {
 	if cw.Data.Temperature == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	v := Temperature{
-		dt: cw.Data.Temperature.DateTime,
-		n:  FieldTemperature,
-		s:  SourceUnknown,
-		fv: cw.Data.Temperature.Value,
+		dt:       cw.Data.Temperature.DateTime,
+		name:     FieldTemperature,
+		s:        SourceUnknown,
+		floatVal: cw.Data.Temperature.Value,
 	}
 	if cw.Data.Temperature.Source != nil {
 		v.s = StringToSource(*cw.Data.Temperature.Source)
@@ -289,13 +289,13 @@ func (cw CurrentWeather) Temperature() Temperature {
 // Condition in which the "not available" field will be true.
 func (cw CurrentWeather) WeatherSymbol() Condition {
 	if cw.Data.WeatherSymbol == nil {
-		return Condition{na: true}
+		return Condition{notAvailable: true}
 	}
 	v := Condition{
-		dt: cw.Data.WeatherSymbol.DateTime,
-		n:  FieldWeatherSymbol,
-		s:  SourceUnknown,
-		sv: cw.Data.WeatherSymbol.Value,
+		dt:   cw.Data.WeatherSymbol.DateTime,
+		name: FieldWeatherSymbol,
+		s:    SourceUnknown,
+		sv:   cw.Data.WeatherSymbol.Value,
 	}
 	if cw.Data.WeatherSymbol.Source != nil {
 		v.s = StringToSource(*cw.Data.WeatherSymbol.Source)
@@ -308,13 +308,13 @@ func (cw CurrentWeather) WeatherSymbol() Condition {
 // Direction in which the "not available" field will be true.
 func (cw CurrentWeather) WindDirection() Direction {
 	if cw.Data.WindDirection == nil {
-		return Direction{na: true}
+		return Direction{notAvailable: true}
 	}
 	v := Direction{
-		dt: cw.Data.WindDirection.DateTime,
-		n:  FieldWindDirection,
-		s:  SourceUnknown,
-		fv: cw.Data.WindDirection.Value,
+		dt:       cw.Data.WindDirection.DateTime,
+		name:     FieldWindDirection,
+		s:        SourceUnknown,
+		floatVal: cw.Data.WindDirection.Value,
 	}
 	if cw.Data.WindDirection.Source != nil {
 		v.s = StringToSource(*cw.Data.WindDirection.Source)
@@ -327,13 +327,13 @@ func (cw CurrentWeather) WindDirection() Direction {
 // Speed in which the "not available" field will be true.
 func (cw CurrentWeather) WindGust() Speed {
 	if cw.Data.WindGust == nil {
-		return Speed{na: true}
+		return Speed{notAvailable: true}
 	}
 	v := Speed{
-		dt: cw.Data.WindGust.DateTime,
-		n:  FieldWindGust,
-		s:  SourceUnknown,
-		fv: cw.Data.WindGust.Value,
+		dt:       cw.Data.WindGust.DateTime,
+		name:     FieldWindGust,
+		s:        SourceUnknown,
+		floatVal: cw.Data.WindGust.Value,
 	}
 	if cw.Data.WindGust.Source != nil {
 		v.s = StringToSource(*cw.Data.WindGust.Source)
@@ -346,13 +346,13 @@ func (cw CurrentWeather) WindGust() Speed {
 // Speed in which the "not available" field will be true.
 func (cw CurrentWeather) WindSpeed() Speed {
 	if cw.Data.WindSpeed == nil {
-		return Speed{na: true}
+		return Speed{notAvailable: true}
 	}
 	v := Speed{
-		dt: cw.Data.WindSpeed.DateTime,
-		n:  FieldWindSpeed,
-		s:  SourceUnknown,
-		fv: cw.Data.WindSpeed.Value,
+		dt:       cw.Data.WindSpeed.DateTime,
+		name:     FieldWindSpeed,
+		s:        SourceUnknown,
+		floatVal: cw.Data.WindSpeed.Value,
 	}
 	if cw.Data.WindSpeed.Source != nil {
 		v.s = StringToSource(*cw.Data.WindSpeed.Source)

@@ -17,7 +17,7 @@ type Humidity WeatherData
 // IsAvailable returns true if an Humidity value was
 // available at time of query
 func (h Humidity) IsAvailable() bool {
-	return !h.na
+	return !h.notAvailable
 }
 
 // DateTime returns the timestamp of when the humidity
@@ -28,7 +28,7 @@ func (h Humidity) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Humidity type
 func (h Humidity) String() string {
-	return fmt.Sprintf("%.1f%%", h.fv)
+	return fmt.Sprintf("%.1f%%", h.floatVal)
 }
 
 // Source returns the Source of Humidity
@@ -41,8 +41,8 @@ func (h Humidity) Source() Source {
 // If the Humidity is not available in the WeatherData
 // Value will return math.NaN instead.
 func (h Humidity) Value() float64 {
-	if h.na {
+	if h.notAvailable {
 		return math.NaN()
 	}
-	return h.fv
+	return h.floatVal
 }

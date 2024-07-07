@@ -26,7 +26,7 @@ type Speed WeatherData
 // IsAvailable returns true if an Speed value was
 // available at time of query
 func (s Speed) IsAvailable() bool {
-	return !s.na
+	return !s.notAvailable
 }
 
 // DateTime returns the DateTime when the Speed was checked
@@ -39,15 +39,15 @@ func (s Speed) DateTime() time.Time {
 // If the Speed is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (s Speed) Value() float64 {
-	if s.na {
+	if s.notAvailable {
 		return math.NaN()
 	}
-	return s.fv
+	return s.floatVal
 }
 
 // String satisfies the fmt.Stringer interface for the Speed type
 func (s Speed) String() string {
-	return fmt.Sprintf("%.1fm/s", s.fv)
+	return fmt.Sprintf("%.1fm/s", s.floatVal)
 }
 
 // Source returns the Source of Speed
@@ -58,7 +58,7 @@ func (s Speed) Source() Source {
 
 // KMH returns the Speed value in km/h
 func (s Speed) KMH() float64 {
-	return s.fv * MultiplierKPH
+	return s.floatVal * MultiplierKPH
 }
 
 // KMHString returns the Speed value as formatted string in km/h
@@ -68,7 +68,7 @@ func (s Speed) KMHString() string {
 
 // Knots returns the Speed value in kn
 func (s Speed) Knots() float64 {
-	return s.fv * MultiplierKnots
+	return s.floatVal * MultiplierKnots
 }
 
 // KnotsString returns the Speed value as formatted string in kn
@@ -78,7 +78,7 @@ func (s Speed) KnotsString() string {
 
 // MPH returns the Speed value in mi/h
 func (s Speed) MPH() float64 {
-	return s.fv * MultiplierMPH
+	return s.floatVal * MultiplierMPH
 }
 
 // MPHString returns the Speed value as formatted string in mi/h

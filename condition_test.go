@@ -28,7 +28,7 @@ func TestCondition_Condition(t *testing.T) {
 		t.Errorf("Condition failed, expected: %s, got: %s", CondUnknown.String(),
 			tc.Condition().String())
 	}
-	tc = Condition{na: true}
+	tc = Condition{notAvailable: true}
 	if tc.Condition() != CondUnknown {
 		t.Errorf("Condition failed, expected: %s, got: %s", CondUnknown.String(),
 			tc.Condition().String())

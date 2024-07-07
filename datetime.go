@@ -15,7 +15,7 @@ type DateTime WeatherData
 // IsAvailable returns true if an Direction value was
 // available at time of query
 func (dt DateTime) IsAvailable() bool {
-	return !dt.na
+	return !dt.notAvailable
 }
 
 // DateTime returns the timestamp for that specific DateTime type
@@ -27,7 +27,7 @@ func (dt DateTime) DateTime() time.Time {
 // If the DateTime is not available in the WeatherData
 // Value will return time.Time with a zero value instead.
 func (dt DateTime) Value() time.Time {
-	if dt.na {
+	if dt.notAvailable {
 		return time.Time{}
 	}
 	return dt.dv

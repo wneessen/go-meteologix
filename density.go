@@ -17,7 +17,7 @@ type Density WeatherData
 // IsAvailable returns true if an Density value was
 // available at time of query
 func (d Density) IsAvailable() bool {
-	return !d.na
+	return !d.notAvailable
 }
 
 // DateTime returns the DateTime of the queried Density value
@@ -27,7 +27,7 @@ func (d Density) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Density type
 func (d Density) String() string {
-	return fmt.Sprintf("%.1fkg/m³", d.fv)
+	return fmt.Sprintf("%.1fkg/m³", d.floatVal)
 }
 
 // Source returns the Source of Density
@@ -40,8 +40,8 @@ func (d Density) Source() Source {
 // If the Density is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (d Density) Value() float64 {
-	if d.na {
+	if d.notAvailable {
 		return math.NaN()
 	}
-	return d.fv
+	return d.floatVal
 }

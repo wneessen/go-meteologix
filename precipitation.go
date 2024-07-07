@@ -17,7 +17,7 @@ type Precipitation WeatherData
 // IsAvailable returns true if an Precipitation value was
 // available at time of query
 func (p Precipitation) IsAvailable() bool {
-	return !p.na
+	return !p.notAvailable
 }
 
 // DateTime returns the DateTime when the Precipitation value was recorded
@@ -27,7 +27,7 @@ func (p Precipitation) DateTime() time.Time {
 
 // String satisfies the fmt.Stringer interface for the Precipitation type
 func (p Precipitation) String() string {
-	return fmt.Sprintf("%.1fmm", p.fv)
+	return fmt.Sprintf("%.1fmm", p.floatVal)
 }
 
 // Source returns the Source of Precipitation
@@ -40,8 +40,8 @@ func (p Precipitation) Source() Source {
 // If the Precipitation is not available in the WeatherData
 // Vaule will return math.NaN instead.
 func (p Precipitation) Value() float64 {
-	if p.na {
+	if p.notAvailable {
 		return math.NaN()
 	}
-	return p.fv
+	return p.floatVal
 }
