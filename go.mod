@@ -2,6 +2,6 @@
 //
 // SPDX-License-Identifier: MIT
 
-module src.neessen.cloud/wneessen/go-meteologix
+module github.com/wneessen/go-meteologix
 
 go 1.20

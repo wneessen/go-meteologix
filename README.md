@@ -6,11 +6,11 @@ SPDX-License-Identifier: CC0-1.0
 
 # go-meteologix - Go packages for accessing Meteologix/Kachelmann Wetter/WeatherUS data
 
-[![GoDoc](https://godoc.org/src.neessen.cloud/wneessen/go-mail?status.svg)](https://pkg.go.dev/src.neessen.cloud/wneessen/go-meteologix)
+[![GoDoc](https://godoc.org/github.com/wneessen/go-mail?status.svg)](https://pkg.go.dev/github.com/wneessen/go-meteologix)
 [![codecov](https://codecov.io/gh/wneessen/go-meteologix/branch/main/graph/badge.svg?token=W4QI1RMR4L)](https://codecov.io/gh/wneessen/go-meteologix)
-[![Go Report Card](https://goreportcard.com/badge/src.neessen.cloud/wneessen/go-meteologix)](https://goreportcard.com/report/src.neessen.cloud/wneessen/go-meteologix)
+[![Go Report Card](https://goreportcard.com/badge/github.com/wneessen/go-meteologix)](https://goreportcard.com/report/github.com/wneessen/go-meteologix)
 [![#go-meteologix on Discord](https://img.shields.io/badge/Discord-%23go–meteologix-blue.svg)](https://discord.gg/TvNMuDh4pK)
-[![REUSE status](https://api.reuse.software/badge/src.neessen.cloud/wneessen/go-meteologix)](https://api.reuse.software/info/src.neessen.cloud/wneessen/go-meteologix)
+[![REUSE status](https://api.reuse.software/badge/github.com/wneessen/go-meteologix)](https://api.reuse.software/info/github.com/wneessen/go-meteologix)
 <a href="https://ko-fi.com/D1D24V9IX"><img src="https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbed8a4ae2b88347c06c923_BuyMeACoffee_blue.png" height="20" alt="buy ma a coffee"></a>
 
 <p align="center"><img src="./assets/gopher43.svg" width="250" alt="go-meteologx logo"/></p>
@@ -32,7 +32,7 @@ For Geolocation lookups, the package makes use of the
 ## Usage
 
 The library is fully documented using the execellent GoDoc functionality. Check out 
-the [full reference on pkg.go.dev](https://pkg.go.dev/src.neessen.cloud/wneessen/go-hibp) for 
+the [full reference on pkg.go.dev](https://pkg.go.dev/github.com/wneessen/go-hibp) for 
 details.
 
 ## Examples
@@ -48,7 +48,7 @@ import (
 	"fmt"
 	"os"
 
-	"src.neessen.cloud/wneessen/go-meteologix"
+	"github.com/wneessen/go-meteologix"
 )
 
 func main() {
@@ -76,7 +76,7 @@ import (
 	"fmt"
 	"os"
 
-	"src.neessen.cloud/wneessen/go-meteologix"
+	"github.com/wneessen/go-meteologix"
 )
 
 func main() {
@@ -106,7 +106,7 @@ import (
 	"math"
 	"os"
 
-	"src.neessen.cloud/wneessen/go-meteologix"
+	"github.com/wneessen/go-meteologix"
 )
 
 func main() {
@@ -139,7 +139,7 @@ import (
 	"fmt"
 	"os"
 
-	"src.neessen.cloud/wneessen/go-meteologix"
+	"github.com/wneessen/go-meteologix"
 )
 
 func main() {
@@ -158,7 +158,7 @@ func main() {
 ```
 
 ## Authors/Contributors
-go-meteologix was authored and developed by [Winni Neessen](https://src.neessen.cloud/wneessen/).
+go-meteologix was authored and developed by [Winni Neessen](https://github.com/wneessen/).
 
 Big thanks to the following people, for contributing to the go-meteologix project
 (either in form of code, reviewing code, writing documenation or contributing in any other form):
@@ -167,5 +167,5 @@ Big thanks to the following people, for contributing to the go-meteologix projec
 ## Mirror
 
 Please note that the repository on Github is just a mirror of
-[https://src.neessen.cloud/wneessen/go-meteologix](https://src.neessen.cloud/wneessen/go-meteologix) 
+[https://github.com/wneessen/go-meteologix](https://github.com/wneessen/go-meteologix) 
 for ease of access and reachability.
