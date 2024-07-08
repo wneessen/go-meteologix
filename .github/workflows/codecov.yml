@@ -24,7 +24,6 @@ env:
   API_KEY: ${{ secrets.API_KEY }}
 jobs:
   run:
-    runs-on: docker
     steps:
     - name: Checkout Code
       uses: actions/checkout@master

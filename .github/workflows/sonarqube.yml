@@ -15,7 +15,6 @@ env:
 jobs:
   build:
     name: Build
-    runs-on: docker
     steps:
       - uses: actions/checkout@v2
         with:
