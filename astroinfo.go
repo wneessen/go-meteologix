@@ -70,9 +70,9 @@ func (c *Client) AstronomicalInfoByCoordinates(latitude, longitude float64) (Ast
 	var astroInfo AstronomicalInfo
 	latitudeFormat := strconv.FormatFloat(latitude, 'f', -1, 64)
 	longitudeFormat := strconv.FormatFloat(longitude, 'f', -1, 64)
-	url := fmt.Sprintf("%s/tools/astronomy/%s/%s", c.config.apiURL, latitudeFormat, longitudeFormat)
+	apiURL := fmt.Sprintf("%s/tools/astronomy/%s/%s", c.config.apiURL, latitudeFormat, longitudeFormat)
 
-	response, err := c.httpClient.Get(url)
+	response, err := c.httpClient.Get(apiURL)
 	if err != nil {
 		return astroInfo, fmt.Errorf("API request failed: %w", err)
 	}
