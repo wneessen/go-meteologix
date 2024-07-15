@@ -70,15 +70,14 @@ var ConditionMap = map[ConditionType]string{
 	CondUnknown:      "Unknown",
 }
 
-// Condition is a type wrapper of an WeatherData for holding
-// a specific weather Condition value in the WeatherData
+// Condition is a type wrapper of an WeatherData for holding a specific weather Condition value
+// in the WeatherData
 type Condition WeatherData
 
 // ConditionType is a type wrapper for a string type
 type ConditionType string
 
-// IsAvailable returns true if a Condition value was available
-// at time of query
+// IsAvailable returns true if a Condition value was available at time of query
 func (c Condition) IsAvailable() bool {
 	return !c.notAvailable
 }
@@ -88,10 +87,10 @@ func (c Condition) DateTime() time.Time {
 	return c.dateTime
 }
 
-// Value returns the raw value of a Condition as unformatted string
-// as returned by the API
-// If the Condition is not available in the WeatherData, Value will
-// return DataUnavailable instead.
+// Value returns the raw value of a Condition as unformatted string as returned by the API
+//
+// If the Condition is not available in the WeatherData, Value will return DataUnavailable
+// instead.
 func (c Condition) Value() string {
 	if c.notAvailable {
 		return DataUnavailable
@@ -100,8 +99,8 @@ func (c Condition) Value() string {
 }
 
 // Condition returns the actual value of that Condition as ConditionType.
-// If the value is not available or not supported it will return a
-// CondUnknown
+//
+// If the value is not available or not supported it will return a CondUnknown
 func (c Condition) Condition() ConditionType {
 	if c.notAvailable {
 		return CondUnknown
@@ -112,20 +111,21 @@ func (c Condition) Condition() ConditionType {
 	return CondUnknown
 }
 
-// String returns the formatted, human readable string for a given
-// Condition type and satisfies the fmt.Stringer interface
+// String returns the formatted, human readable string for a given Condition type and satisfies
+// the fmt.Stringer interface
 func (c Condition) String() string {
 	return c.Condition().String()
 }
 
 // Source returns the Source of a Condition
+//
 // If the Source is not available it will return SourceUnknown
 func (c Condition) Source() Source {
 	return c.source
 }
 
-// String returns a human readable, formatted string for a ConditionType and
-// satisfies the fmt.Stringer interface.
+// String returns a human readable, formatted string for a ConditionType and satisfies the
+// fmt.Stringer interface.
 func (ct ConditionType) String() string {
 	if cs, ok := ConditionMap[ct]; ok {
 		return cs
