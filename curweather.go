@@ -108,16 +108,16 @@ func (cw CurrentWeather) Dewpoint() Temperature {
 	if cw.Data.Dewpoint == nil {
 		return Temperature{notAvailable: true}
 	}
-	v := Temperature{
+	temperature := Temperature{
 		dateTime: cw.Data.Dewpoint.DateTime,
 		name:     FieldDewpoint,
 		source:   SourceUnknown,
 		floatVal: cw.Data.Dewpoint.Value,
 	}
 	if cw.Data.Dewpoint.Source != nil {
-		v.source = StringToSource(*cw.Data.Dewpoint.Source)
+		temperature.source = StringToSource(*cw.Data.Dewpoint.Source)
 	}
-	return v
+	return temperature
 }
 
 // HumidityRelative returns the relative humidity data point as Humidity.
@@ -128,16 +128,16 @@ func (cw CurrentWeather) HumidityRelative() Humidity {
 	if cw.Data.HumidityRelative == nil {
 		return Humidity{notAvailable: true}
 	}
-	v := Humidity{
+	humidity := Humidity{
 		dateTime: cw.Data.HumidityRelative.DateTime,
 		name:     FieldHumidityRelative,
 		source:   SourceUnknown,
 		floatVal: cw.Data.HumidityRelative.Value,
 	}
 	if cw.Data.HumidityRelative.Source != nil {
-		v.source = StringToSource(*cw.Data.HumidityRelative.Source)
+		humidity.source = StringToSource(*cw.Data.HumidityRelative.Source)
 	}
-	return v
+	return humidity
 }
 
 // IsDay returns true if it is day time at the current location.
