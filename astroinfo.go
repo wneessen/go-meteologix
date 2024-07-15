@@ -93,14 +93,13 @@ func (c *Client) AstronomicalInfoByLocation(location string) (AstronomicalInfo, 
 	return c.AstronomicalInfoByCoordinates(geoLocation.Latitude, geoLocation.Longitude)
 }
 
-// SunsetByTime returns the date and time of the sunset on the give
-// time as DateTime type.
-// If the data point is not available in the AstronomicalInfo it will
-// return DateTime in which the "not available" field will be true.
+// SunsetByTime returns the date and time of the sunset on the given time as DateTime type.
 //
-// Please keep in mind that the API only returns 14 days in the future.
-// Any date given that exceeds that time, wil always return a
-// "not available" value.
+// If the data point is not available in the AstronomicalInfo it will return DateTime in
+// which the "not available" field will be true.
+//
+// Please keep in mind that the API only returns 14 days in the future. Any date given
+// that exceeds that time, wil always return a "not available" value.
 func (a *AstronomicalInfo) SunsetByTime(timeVal time.Time) DateTime {
 	if len(a.DailyData) < 1 {
 		return DateTime{notAvailable: true}
@@ -123,19 +122,20 @@ func (a *AstronomicalInfo) SunsetByTime(timeVal time.Time) DateTime {
 	}
 }
 
-// Sunset returns the date and time of the sunset on the current date
-// as DateTime type.
-// If the data point is not available in the AstronomicalInfo it will
-// return DateTime in which the "not available" field will be true.
+// Sunset returns the date and time of the sunset on the current date as DateTime type.
+//
+// If the data point is not available in the AstronomicalInfo it will return DateTime
+// in which the "not available" field will be true.
 func (a *AstronomicalInfo) Sunset() DateTime {
 	return a.SunsetByTime(time.Now())
 }
 
-// SunsetByDateString returns the date and time of the sunset at a
-// given date string as DateTime type. Expected format is 2006-01-02.
-// If the date wasn't able to be parsed or if the data point is not
-// available in the AstronomicalInfo it will return DateTime in
-// which the "not available" field will be true.
+// SunsetByDateString returns the date and time of the sunset at a given date string as
+// DateTime type. Expected Go format template is: 2006-01-02.
+//
+// If the date wasn't able to be parsed or if the data point is not available in the
+// AstronomicalInfo it will return DateTime in which the "not available" field will be
+// true.
 func (a *AstronomicalInfo) SunsetByDateString(date string) DateTime {
 	timeVal, err := time.Parse(DateFormat, date)
 	if err != nil {
@@ -144,9 +144,10 @@ func (a *AstronomicalInfo) SunsetByDateString(date string) DateTime {
 	return a.SunsetByTime(timeVal)
 }
 
-// SunsetAll returns a slice of all sunset data points in the given
-// AstronomicalInfo instance as DateTime types. If no sunset data
-// is available it will return an empty slice
+// SunsetAll returns a slice of all sunset data points in the given AstronomicalInfo instance
+// as DateTime types.
+//
+// If no sunset data is available an empty slice is returned
 func (a *AstronomicalInfo) SunsetAll() []DateTime {
 	var sunsets []DateTime
 	for _, dayData := range a.DailyData {
@@ -159,14 +160,13 @@ func (a *AstronomicalInfo) SunsetAll() []DateTime {
 	return sunsets
 }
 
-// SunriseByTime returns the date and time of the sunrise on the give
-// time as DateTime type.
-// If the data point is not available in the AstronomicalInfo it will
-// return DateTime in which the "not available" field will be true.
+// SunriseByTime returns the date and time of the sunrise on the give  time as DateTime type.
 //
-// Please keep in mind that the API only returns 14 days in the future.
-// Any date given that exceeds that time, wil always return a
-// "not available" value.
+// If the data point is not available in the AstronomicalInfo it will return DateTime in
+// which the "not available" field will be true.
+//
+// Please keep in mind that the API only returns 14 days in the future. Any date given that
+// exceeds that time, wil always return a "not available" value.
 func (a *AstronomicalInfo) SunriseByTime(timeVal time.Time) DateTime {
 	if len(a.DailyData) < 1 {
 		return DateTime{notAvailable: true}
@@ -189,19 +189,20 @@ func (a *AstronomicalInfo) SunriseByTime(timeVal time.Time) DateTime {
 	}
 }
 
-// Sunrise returns the date and time of the sunrise on the current date
-// as DateTime type.
-// If the data point is not available in the AstronomicalInfo it will
-// return DateTime in which the "not available" field will be true.
+// Sunrise returns the date and time of the sunrise on the current date as DateTime type.
+//
+// If the data point is not available in the AstronomicalInfo it will return DateTime in
+// which the "not available" field will be true.
 func (a *AstronomicalInfo) Sunrise() DateTime {
 	return a.SunriseByTime(time.Now())
 }
 
-// SunriseByDateString returns the date and time of the sunrise at a
-// given date string as DateTime type. Expected format is 2006-01-02.
-// If the date wasn't able to be parsed or if the data point is not
-// available in the AstronomicalInfo it will return DateTime in
-// which the "not available" field will be true.
+// SunriseByDateString returns the date and time of the sunrise at a given date string as
+// DateTime type. Expected Go format template is: 2006-01-02.
+//
+// If the date wasn't able to be parsed or if the data point is not available in the
+// AstronomicalInfo it will return DateTime in which the "not available" field will be
+// true.
 func (a *AstronomicalInfo) SunriseByDateString(date string) DateTime {
 	timeVal, err := time.Parse(DateFormat, date)
 	if err != nil {
@@ -210,9 +211,10 @@ func (a *AstronomicalInfo) SunriseByDateString(date string) DateTime {
 	return a.SunriseByTime(timeVal)
 }
 
-// SunriseAll returns a slice of all sunrise data points in the given
-// AstronomicalInfo instance as DateTime types. If no sunrise data
-// is available it will return an empty slice
+// SunriseAll returns a slice of all sunrise data points in the given AstronomicalInfo instance
+// as DateTime types.
+//
+// If no sunrise data is available it will return an empty slice
 func (a *AstronomicalInfo) SunriseAll() []DateTime {
 	var sunrises []DateTime
 	for _, dayData := range a.DailyData {
