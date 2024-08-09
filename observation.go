@@ -293,74 +293,74 @@ func (o Observation) PressureQFE() Pressure {
 //
 // If the data point is not available in the Observation it will return Precipitation in which the
 // "not available" field will be true.
-func (o Observation) Precipitation(ts Timespan) Precipitation {
-	var df *APIFloat
-	var fn Fieldname
-	switch ts {
+func (o Observation) Precipitation(timespan Timespan) Precipitation {
+	var apiFloat *APIFloat
+	var fieldname Fieldname
+	switch timespan {
 	case TimespanCurrent:
-		df = o.Data.Precipitation
-		fn = FieldPrecipitation
+		apiFloat = o.Data.Precipitation
+		fieldname = FieldPrecipitation
 	case Timespan10Min:
-		df = o.Data.Precipitation10m
-		fn = FieldPrecipitation10m
+		apiFloat = o.Data.Precipitation10m
+		fieldname = FieldPrecipitation10m
 	case Timespan1Hour:
-		df = o.Data.Precipitation1h
-		fn = FieldPrecipitation1h
+		apiFloat = o.Data.Precipitation1h
+		fieldname = FieldPrecipitation1h
 	case Timespan24Hours:
-		df = o.Data.Precipitation24h
-		fn = FieldPrecipitation24h
+		apiFloat = o.Data.Precipitation24h
+		fieldname = FieldPrecipitation24h
 	default:
 		return Precipitation{notAvailable: true}
 	}
 
-	if df == nil {
+	if apiFloat == nil {
 		return Precipitation{notAvailable: true}
 	}
 	return Precipitation{
-		dateTime: df.DateTime,
-		name:     fn,
+		dateTime: apiFloat.DateTime,
+		name:     fieldname,
 		source:   SourceObservation,
-		floatVal: df.Value,
+		floatVal: apiFloat.Value,
 	}
 }
 
-// GlobalRadiation returns the current amount of global radiation as
-// Radiation
-// If the data point is not available in the Observation it will return
-// Radiation in which the "not available" field will be
-// true.
-func (o Observation) GlobalRadiation(ts Timespan) Radiation {
-	var df *APIFloat
-	var fn Fieldname
-	switch ts {
+// GlobalRadiation returns the current amount of global radiation as Radiation
+//
+// If the data point is not available in the Observation it will return Radiation in which the
+// "not available" field will be true.
+func (o Observation) GlobalRadiation(timespan Timespan) Radiation {
+	var apiFloat *APIFloat
+	var fieldname Fieldname
+	switch timespan {
 	case Timespan10Min:
-		df = o.Data.GlobalRadiation10m
-		fn = FieldGlobalRadiation10m
+		apiFloat = o.Data.GlobalRadiation10m
+		fieldname = FieldGlobalRadiation10m
 	case Timespan1Hour:
-		df = o.Data.GlobalRadiation1h
-		fn = FieldGlobalRadiation1h
+		apiFloat = o.Data.GlobalRadiation1h
+		fieldname = FieldGlobalRadiation1h
 	case Timespan24Hours:
-		df = o.Data.GlobalRadiation24h
-		fn = FieldGlobalRadiation24h
+		apiFloat = o.Data.GlobalRadiation24h
+		fieldname = FieldGlobalRadiation24h
 	default:
 		return Radiation{notAvailable: true}
 	}
 
-	if df == nil {
+	if apiFloat == nil {
 		return Radiation{notAvailable: true}
 	}
 	return Radiation{
-		dateTime: df.DateTime,
-		name:     fn,
+		dateTime: apiFloat.DateTime,
+		name:     fieldname,
 		source:   SourceObservation,
-		floatVal: df.Value,
+		floatVal: apiFloat.Value,
 	}
 }
 
-// WindDirection returns the current direction from which the wind
-// originates in degree (0=N, 90=E, 180=S, 270=W) as Direction.
-// If the data point is not available in the Observation it will return
-// Direction in which the "not available" field will be true.
+// WindDirection returns the current direction from which the wind originates in degree
+// (0=N, 90=E, 180=S, 270=W) as Direction.
+//
+// If the data point is not available in the Observation it will return Direction in which the
+// "not available" field will be true.
 func (o Observation) WindDirection() Direction {
 	if o.Data.WindDirection == nil {
 		return Direction{notAvailable: true}
@@ -374,8 +374,9 @@ func (o Observation) WindDirection() Direction {
 }
 
 // WindSpeed returns the current windspeed data point as Speed.
-// If the data point is not available in the Observation it will return
-// Speed in which the "not available" field will be true.
+//
+// If the data point is not available in the Observation it will return Speed in which the
+// "not available" field will be true.
 func (o Observation) WindSpeed() Speed {
 	if o.Data.WindSpeed == nil {
 		return Speed{notAvailable: true}
