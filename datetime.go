@@ -23,7 +23,7 @@ func (dt DateTime) DateTime() time.Time {
 
 // Value returns the time.Time value of an DateTime value
 //
-// If the DateTime is not available in the WeatherData Value will return time.Time with a
+// If the DateTime is not available in the WeatherData value will return time.Time with a
 // zero value instead.
 func (dt DateTime) Value() time.Time {
 	if dt.notAvailable {
