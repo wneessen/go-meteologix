@@ -21,7 +21,7 @@ const (
 )
 
 // DefaultUserAgent is the default User-Agent presented by the HTTPClient
-var DefaultUserAgent = fmt.Sprintf("go-meteologix/fv%s (%s; %s; "+
+var DefaultUserAgent = fmt.Sprintf("go-meteologix/v%s (%s; %s; "+
 	"+https://github.com/wneessen/go-meteologix)", VERSION, runtime.GOOS,
 	runtime.Version())
 
@@ -56,23 +56,23 @@ type Config struct {
 type Option func(*Config)
 
 // New returns a new Meteologix API Client
-func New(o ...Option) *Client {
-	co := &Config{}
-	co.apiURL = APIBaseURL
-	co.acceptLang = DefaultAcceptLang
-	co.userAgent = DefaultUserAgent
+func New(options ...Option) *Client {
+	config := &Config{}
+	config.apiURL = APIBaseURL
+	config.acceptLang = DefaultAcceptLang
+	config.userAgent = DefaultUserAgent
 
 	// Set/override Config options
-	for _, opt := range o {
-		if opt == nil {
+	for _, option := range options {
+		if option == nil {
 			continue
 		}
-		opt(co)
+		option(config)
 	}
 
 	return &Client{
-		config:     co,
-		httpClient: NewHTTPClient(co),
+		config:     config,
+		httpClient: NewHTTPClient(config),
 	}
 }
 
@@ -80,69 +80,69 @@ func New(o ...Option) *Client {
 //
 // The provided string needs to conform the HTTP Accept-Language header format
 // See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
-func WithAcceptLanguage(l string) Option {
-	if l == "" {
+func WithAcceptLanguage(language string) Option {
+	if language == "" {
 		return nil
 	}
-	return func(co *Config) {
-		co.acceptLang = l
+	return func(config *Config) {
+		config.acceptLang = language
 	}
 }
 
 // WithAPIKey sets the API Key for user authentication of the HTTP client
-func WithAPIKey(k string) Option {
-	if k == "" {
+func WithAPIKey(key string) Option {
+	if key == "" {
 		return nil
 	}
-	return func(co *Config) {
-		co.apiKey = k
+	return func(config *Config) {
+		config.apiKey = key
 	}
 }
 
 // WithBearerToken uses a bearer token for the client authentication of the
 // HTTP client
-func WithBearerToken(t string) Option {
-	if t == "" {
+func WithBearerToken(token string) Option {
+	if token == "" {
 		return nil
 	}
-	return func(co *Config) {
-		co.bearerToken = t
+	return func(config *Config) {
+		config.bearerToken = token
 	}
 }
 
 // WithPassword sets the HTTP Basic auth authPass for the HTTP client
-func WithPassword(p string) Option {
-	if p == "" {
+func WithPassword(password string) Option {
+	if password == "" {
 		return nil
 	}
-	return func(co *Config) {
-		co.authPass = p
+	return func(config *Config) {
+		config.authPass = password
 	}
 }
 
 // WithUserAgent sets a custom user agent string for the HTTP client
-func WithUserAgent(a string) Option {
-	if a == "" {
+func WithUserAgent(userAgent string) Option {
+	if userAgent == "" {
 		return nil
 	}
-	return func(co *Config) {
-		co.userAgent = a
+	return func(config *Config) {
+		config.userAgent = userAgent
 	}
 }
 
 // WithUsername sets the HTTP Basic auth username for the HTTP client
-func WithUsername(u string) Option {
-	if u == "" {
+func WithUsername(username string) Option {
+	if username == "" {
 		return nil
 	}
-	return func(co *Config) {
-		co.authUser = u
+	return func(config *Config) {
+		config.authUser = username
 	}
 }
 
 // withMockAPI sets the API URL to our mock API for testing
 func withMockAPI() Option {
-	return func(co *Config) {
-		co.apiURL = APIMockURL
+	return func(config *Config) {
+		config.apiURL = APIMockURL
 	}
 }

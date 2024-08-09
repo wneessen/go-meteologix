@@ -8,32 +8,32 @@ import (
 	"time"
 )
 
-// DateTime is a type wrapper of an WeatherData for holding datetime
-// values in WeatherData
+// DateTime is a type wrapper of an WeatherData for holding datetime values in WeatherData
 type DateTime WeatherData
 
-// IsAvailable returns true if an Direction value was
-// available at time of query
+// IsAvailable returns true if an Direction value was available at time of query
 func (dt DateTime) IsAvailable() bool {
-	return !dt.na
+	return !dt.notAvailable
 }
 
 // DateTime returns the timestamp for that specific DateTime type
 func (dt DateTime) DateTime() time.Time {
-	return dt.dt
+	return dt.dateTime
 }
 
 // Value returns the time.Time value of an DateTime value
-// If the DateTime is not available in the WeatherData
-// Value will return time.Time with a zero value instead.
+//
+// If the DateTime is not available in the WeatherData value will return time.Time with a
+// zero value instead.
 func (dt DateTime) Value() time.Time {
-	if dt.na {
+	if dt.notAvailable {
 		return time.Time{}
 	}
-	return dt.dv
+	return dt.dateTimeVal
 }
 
 // String satisfies the fmt.Stringer interface for the DateTime type
+//
 // The date will returned as time.RFC3339 format
 func (dt DateTime) String() string {
 	return dt.Value().Format(time.RFC3339)

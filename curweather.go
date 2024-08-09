@@ -23,12 +23,12 @@ type CurrentWeather struct {
 	UnitSystem string `json:"systemOfUnits"`
 }
 
-// APICurrentWeatherData holds the different data points of the CurrentWeather as
-// returned by the current weather API endpoints.
+// APICurrentWeatherData holds the different data points of the CurrentWeather as returned by the
+// current weather API endpoints.
 //
-// Please keep in mind that different Station types return different values, therefore
-// all values are represented as pointer type returning nil if the data point in question
-// is not returned for the requested Station.
+// Please keep in mind that different Station types return different values, therefore all values
+// are represented as pointer type returning nil if the data point in question is not returned for
+// the requested Station.
 type APICurrentWeatherData struct {
 	// Dewpoint represents the dewpoint in °C
 	Dewpoint *APIFloat `json:"dewpoint,omitempty"`
@@ -67,78 +67,80 @@ type APICurrentWeatherData struct {
 }
 
 // CurrentWeatherByCoordinates returns the CurrentWeather values for the given coordinates
-func (c *Client) CurrentWeatherByCoordinates(la, lo float64) (CurrentWeather, error) {
-	var cw CurrentWeather
-	lat := strconv.FormatFloat(la, 'f', -1, 64)
-	lon := strconv.FormatFloat(lo, 'f', -1, 64)
-	u, err := url.Parse(fmt.Sprintf("%s/current/%s/%s", c.config.apiURL, lat, lon))
+func (c *Client) CurrentWeatherByCoordinates(latitude, longitude float64) (CurrentWeather, error) {
+	var currentWeather CurrentWeather
+	latitudeFormat := strconv.FormatFloat(latitude, 'f', -1, 64)
+	longitudeFormat := strconv.FormatFloat(longitude, 'f', -1, 64)
+	apiURL, err := url.Parse(fmt.Sprintf("%s/current/%s/%s", c.config.apiURL, latitudeFormat, longitudeFormat))
 	if err != nil {
-		return cw, fmt.Errorf("failed to parse current weather URL: %w", err)
+		return currentWeather, fmt.Errorf("failed to parse current weather URL: %w", err)
 	}
-	uq := u.Query()
-	uq.Add("units", "metric")
-	u.RawQuery = uq.Encode()
+	queryString := apiURL.Query()
+	queryString.Add("units", "metric")
+	apiURL.RawQuery = queryString.Encode()
 
-	r, err := c.httpClient.Get(u.String())
+	response, err := c.httpClient.Get(apiURL.String())
 	if err != nil {
-		return cw, fmt.Errorf("API request failed: %w", err)
+		return currentWeather, fmt.Errorf("API request failed: %w", err)
 	}
 
-	if err := json.Unmarshal(r, &cw); err != nil {
-		return cw, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
+	if err := json.Unmarshal(response, &currentWeather); err != nil {
+		return currentWeather, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
 	}
 
-	return cw, nil
+	return currentWeather, nil
 }
 
 // CurrentWeatherByLocation returns the CurrentWeather values for the given location
-func (c *Client) CurrentWeatherByLocation(lo string) (CurrentWeather, error) {
-	gl, err := c.GetGeoLocationByName(lo)
+func (c *Client) CurrentWeatherByLocation(location string) (CurrentWeather, error) {
+	geoLocation, err := c.GetGeoLocationByName(location)
 	if err != nil {
 		return CurrentWeather{}, fmt.Errorf("failed too look up geolocation: %w", err)
 	}
-	return c.CurrentWeatherByCoordinates(gl.Latitude, gl.Longitude)
+	return c.CurrentWeatherByCoordinates(geoLocation.Latitude, geoLocation.Longitude)
 }
 
 // Dewpoint returns the dewpoint data point as Temperature.
-// If the data point is not available in the CurrentWeather it will return
-// Temperature in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Temperature in which
+// the "not available" field will be true.
 func (cw CurrentWeather) Dewpoint() Temperature {
 	if cw.Data.Dewpoint == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
-	v := Temperature{
-		dt: cw.Data.Dewpoint.DateTime,
-		n:  FieldDewpoint,
-		s:  SourceUnknown,
-		fv: cw.Data.Dewpoint.Value,
+	temperature := Temperature{
+		dateTime: cw.Data.Dewpoint.DateTime,
+		name:     FieldDewpoint,
+		source:   SourceUnknown,
+		floatVal: cw.Data.Dewpoint.Value,
 	}
 	if cw.Data.Dewpoint.Source != nil {
-		v.s = StringToSource(*cw.Data.Dewpoint.Source)
+		temperature.source = StringToSource(*cw.Data.Dewpoint.Source)
 	}
-	return v
+	return temperature
 }
 
 // HumidityRelative returns the relative humidity data point as Humidity.
-// If the data point is not available in the CurrentWeather it will return
-// Humidity in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Humidity in which
+// the "not available" field will be true.
 func (cw CurrentWeather) HumidityRelative() Humidity {
 	if cw.Data.HumidityRelative == nil {
-		return Humidity{na: true}
+		return Humidity{notAvailable: true}
 	}
-	v := Humidity{
-		dt: cw.Data.HumidityRelative.DateTime,
-		n:  FieldHumidityRelative,
-		s:  SourceUnknown,
-		fv: cw.Data.HumidityRelative.Value,
+	humidity := Humidity{
+		dateTime: cw.Data.HumidityRelative.DateTime,
+		name:     FieldHumidityRelative,
+		source:   SourceUnknown,
+		floatVal: cw.Data.HumidityRelative.Value,
 	}
 	if cw.Data.HumidityRelative.Source != nil {
-		v.s = StringToSource(*cw.Data.HumidityRelative.Source)
+		humidity.source = StringToSource(*cw.Data.HumidityRelative.Source)
 	}
-	return v
+	return humidity
 }
 
-// IsDay returns true if it is currently day at queried location
+// IsDay returns true if it is day time at the current location.
 func (cw CurrentWeather) IsDay() bool {
 	if cw.Data.IsDay == nil {
 		return false
@@ -153,209 +155,217 @@ func (cw CurrentWeather) IsDay() bool {
 // At this point of development, it looks like currently only the 1 Hour value
 // is returned by the endpoint, so expect non-availability for any other Timespan
 // at this point.
-func (cw CurrentWeather) Precipitation(ts Timespan) Precipitation {
-	var df *APIFloat
-	var fn Fieldname
-	switch ts {
+func (cw CurrentWeather) Precipitation(timeSpan Timespan) Precipitation {
+	var apiFloat *APIFloat
+	var fieldName Fieldname
+	switch timeSpan {
 	case TimespanCurrent:
-		df = cw.Data.Precipitation
-		fn = FieldPrecipitation
+		apiFloat = cw.Data.Precipitation
+		fieldName = FieldPrecipitation
 	case Timespan10Min:
-		df = cw.Data.Precipitation10m
-		fn = FieldPrecipitation10m
+		apiFloat = cw.Data.Precipitation10m
+		fieldName = FieldPrecipitation10m
 	case Timespan1Hour:
-		df = cw.Data.Precipitation1h
-		fn = FieldPrecipitation1h
+		apiFloat = cw.Data.Precipitation1h
+		fieldName = FieldPrecipitation1h
 	case Timespan24Hours:
-		df = cw.Data.Precipitation24h
-		fn = FieldPrecipitation24h
+		apiFloat = cw.Data.Precipitation24h
+		fieldName = FieldPrecipitation24h
 	default:
-		return Precipitation{na: true}
+		return Precipitation{notAvailable: true}
 	}
 
-	if df == nil {
-		return Precipitation{na: true}
+	if apiFloat == nil {
+		return Precipitation{notAvailable: true}
 	}
-	v := Precipitation{
-		dt: df.DateTime,
-		n:  fn,
-		s:  SourceUnknown,
-		fv: df.Value,
+	precipitation := Precipitation{
+		dateTime: apiFloat.DateTime,
+		name:     fieldName,
+		source:   SourceUnknown,
+		floatVal: apiFloat.Value,
 	}
-	if df.Source != nil {
-		v.s = StringToSource(*df.Source)
+	if apiFloat.Source != nil {
+		precipitation.source = StringToSource(*apiFloat.Source)
 	}
-	return v
+	return precipitation
 }
 
 // PressureMSL returns the pressure at mean sea level data point as Pressure.
-// If the data point is not available in the CurrentWeather it will return
-// Pressure in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Pressure in which
+// the "not available" field will be true.
 func (cw CurrentWeather) PressureMSL() Pressure {
 	if cw.Data.PressureMSL == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
-	v := Pressure{
-		dt: cw.Data.PressureMSL.DateTime,
-		n:  FieldPressureMSL,
-		s:  SourceUnknown,
-		fv: cw.Data.PressureMSL.Value,
+	pressure := Pressure{
+		dateTime: cw.Data.PressureMSL.DateTime,
+		name:     FieldPressureMSL,
+		source:   SourceUnknown,
+		floatVal: cw.Data.PressureMSL.Value,
 	}
 	if cw.Data.PressureMSL.Source != nil {
-		v.s = StringToSource(*cw.Data.PressureMSL.Source)
+		pressure.source = StringToSource(*cw.Data.PressureMSL.Source)
 	}
-	return v
+	return pressure
 }
 
 // PressureQFE returns the pressure at mean sea level data point as Pressure.
-// If the data point is not available in the CurrentWeather it will return
-// Pressure in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Pressure in which
+// the "not available" field will be true.
 func (cw CurrentWeather) PressureQFE() Pressure {
 	if cw.Data.PressureQFE == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
-	v := Pressure{
-		dt: cw.Data.PressureQFE.DateTime,
-		n:  FieldPressureQFE,
-		s:  SourceUnknown,
-		fv: cw.Data.PressureQFE.Value,
+	pressure := Pressure{
+		dateTime: cw.Data.PressureQFE.DateTime,
+		name:     FieldPressureQFE,
+		source:   SourceUnknown,
+		floatVal: cw.Data.PressureQFE.Value,
 	}
 	if cw.Data.PressureQFE.Source != nil {
-		v.s = StringToSource(*cw.Data.PressureQFE.Source)
+		pressure.source = StringToSource(*cw.Data.PressureQFE.Source)
 	}
-	return v
+	return pressure
 }
 
 // SnowAmount returns the amount of snow data point as Density.
-// If the data point is not available in the CurrentWeather it will return
-// Density in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Density in which
+// the "not available" field will be true.
 func (cw CurrentWeather) SnowAmount() Density {
 	if cw.Data.SnowAmount == nil {
-		return Density{na: true}
+		return Density{notAvailable: true}
 	}
-	v := Density{
-		dt: cw.Data.SnowAmount.DateTime,
-		n:  FieldSnowAmount,
-		s:  SourceUnknown,
-		fv: cw.Data.SnowAmount.Value,
+	density := Density{
+		dateTime: cw.Data.SnowAmount.DateTime,
+		name:     FieldSnowAmount,
+		source:   SourceUnknown,
+		floatVal: cw.Data.SnowAmount.Value,
 	}
 	if cw.Data.SnowAmount.Source != nil {
-		v.s = StringToSource(*cw.Data.SnowAmount.Source)
+		density.source = StringToSource(*cw.Data.SnowAmount.Source)
 	}
-	return v
+	return density
 }
 
 // SnowHeight returns the snow height data point as Height.
-// If the data point is not available in the CurrentWeather it will return
-// Height in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Height in which
+// the "not available" field will be true.
 func (cw CurrentWeather) SnowHeight() Height {
 	if cw.Data.SnowHeight == nil {
-		return Height{na: true}
+		return Height{notAvailable: true}
 	}
-	v := Height{
-		dt: cw.Data.SnowHeight.DateTime,
-		n:  FieldSnowHeight,
-		s:  SourceUnknown,
-		fv: cw.Data.SnowHeight.Value,
+	height := Height{
+		dateTime: cw.Data.SnowHeight.DateTime,
+		name:     FieldSnowHeight,
+		source:   SourceUnknown,
+		floatVal: cw.Data.SnowHeight.Value,
 	}
 	if cw.Data.SnowHeight.Source != nil {
-		v.s = StringToSource(*cw.Data.SnowHeight.Source)
+		height.source = StringToSource(*cw.Data.SnowHeight.Source)
 	}
-	return v
+	return height
 }
 
 // Temperature returns the temperature data point as Temperature.
-// If the data point is not available in the CurrentWeather it will return
-// Temperature in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Temperature in which
+// the "not available" field will be true.
 func (cw CurrentWeather) Temperature() Temperature {
 	if cw.Data.Temperature == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
-	v := Temperature{
-		dt: cw.Data.Temperature.DateTime,
-		n:  FieldTemperature,
-		s:  SourceUnknown,
-		fv: cw.Data.Temperature.Value,
+	temperature := Temperature{
+		dateTime: cw.Data.Temperature.DateTime,
+		name:     FieldTemperature,
+		source:   SourceUnknown,
+		floatVal: cw.Data.Temperature.Value,
 	}
 	if cw.Data.Temperature.Source != nil {
-		v.s = StringToSource(*cw.Data.Temperature.Source)
+		temperature.source = StringToSource(*cw.Data.Temperature.Source)
 	}
-	return v
+	return temperature
 }
 
-// WeatherSymbol returns a text representation of the current weather
-// as Condition.
-// If the data point is not available in the CurrentWeather it will return
-// Condition in which the "not available" field will be true.
+// WeatherSymbol returns a text representation of the current weather as Condition.
+//
+// If the data point is not available in the CurrentWeather it will return Condition in which
+// the "not available" field will be true.
 func (cw CurrentWeather) WeatherSymbol() Condition {
 	if cw.Data.WeatherSymbol == nil {
-		return Condition{na: true}
+		return Condition{notAvailable: true}
 	}
-	v := Condition{
-		dt: cw.Data.WeatherSymbol.DateTime,
-		n:  FieldWeatherSymbol,
-		s:  SourceUnknown,
-		sv: cw.Data.WeatherSymbol.Value,
+	condition := Condition{
+		dateTime:  cw.Data.WeatherSymbol.DateTime,
+		name:      FieldWeatherSymbol,
+		source:    SourceUnknown,
+		stringVal: cw.Data.WeatherSymbol.Value,
 	}
 	if cw.Data.WeatherSymbol.Source != nil {
-		v.s = StringToSource(*cw.Data.WeatherSymbol.Source)
+		condition.source = StringToSource(*cw.Data.WeatherSymbol.Source)
 	}
-	return v
+	return condition
 }
 
 // WindDirection returns the wind direction data point as Direction.
-// If the data point is not available in the CurrentWeather it will return
-// Direction in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Direction in which
+// the "not available" field will be true.
 func (cw CurrentWeather) WindDirection() Direction {
 	if cw.Data.WindDirection == nil {
-		return Direction{na: true}
+		return Direction{notAvailable: true}
 	}
-	v := Direction{
-		dt: cw.Data.WindDirection.DateTime,
-		n:  FieldWindDirection,
-		s:  SourceUnknown,
-		fv: cw.Data.WindDirection.Value,
+	direction := Direction{
+		dateTime: cw.Data.WindDirection.DateTime,
+		name:     FieldWindDirection,
+		source:   SourceUnknown,
+		floatVal: cw.Data.WindDirection.Value,
 	}
 	if cw.Data.WindDirection.Source != nil {
-		v.s = StringToSource(*cw.Data.WindDirection.Source)
+		direction.source = StringToSource(*cw.Data.WindDirection.Source)
 	}
-	return v
+	return direction
 }
 
 // WindGust returns the wind gust data point as Speed.
-// If the data point is not available in the CurrentWeather it will return
-// Speed in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Speed in which
+// the "not available" field will be true.
 func (cw CurrentWeather) WindGust() Speed {
 	if cw.Data.WindGust == nil {
-		return Speed{na: true}
+		return Speed{notAvailable: true}
 	}
-	v := Speed{
-		dt: cw.Data.WindGust.DateTime,
-		n:  FieldWindGust,
-		s:  SourceUnknown,
-		fv: cw.Data.WindGust.Value,
+	speed := Speed{
+		dateTime: cw.Data.WindGust.DateTime,
+		name:     FieldWindGust,
+		source:   SourceUnknown,
+		floatVal: cw.Data.WindGust.Value,
 	}
 	if cw.Data.WindGust.Source != nil {
-		v.s = StringToSource(*cw.Data.WindGust.Source)
+		speed.source = StringToSource(*cw.Data.WindGust.Source)
 	}
-	return v
+	return speed
 }
 
 // WindSpeed returns the average wind speed data point as Speed.
-// If the data point is not available in the CurrentWeather it will return
-// Speed in which the "not available" field will be true.
+//
+// If the data point is not available in the CurrentWeather it will return Speed in which
+// the "not available" field will be true.
 func (cw CurrentWeather) WindSpeed() Speed {
 	if cw.Data.WindSpeed == nil {
-		return Speed{na: true}
+		return Speed{notAvailable: true}
 	}
-	v := Speed{
-		dt: cw.Data.WindSpeed.DateTime,
-		n:  FieldWindSpeed,
-		s:  SourceUnknown,
-		fv: cw.Data.WindSpeed.Value,
+	speed := Speed{
+		dateTime: cw.Data.WindSpeed.DateTime,
+		name:     FieldWindSpeed,
+		source:   SourceUnknown,
+		floatVal: cw.Data.WindSpeed.Value,
 	}
 	if cw.Data.WindSpeed.Source != nil {
-		v.s = StringToSource(*cw.Data.WindSpeed.Source)
+		speed.source = StringToSource(*cw.Data.WindSpeed.Source)
 	}
-	return v
+	return speed
 }

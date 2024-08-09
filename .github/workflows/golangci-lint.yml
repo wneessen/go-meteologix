@@ -17,7 +17,7 @@ permissions:
 jobs:
   golangci:
     name: lint
-    runs-on: docker
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/setup-go@v4
         with:

@@ -10,38 +10,37 @@ import (
 	"time"
 )
 
-// Precipitation is a type wrapper of an WeatherData for holding precipitation
-// values in WeatherData
+// Precipitation is a type wrapper of an WeatherData for holding precipitation values in WeatherData
 type Precipitation WeatherData
 
-// IsAvailable returns true if an Precipitation value was
-// available at time of query
+// IsAvailable returns true if an Precipitation value was available at time of query
 func (p Precipitation) IsAvailable() bool {
-	return !p.na
+	return !p.notAvailable
 }
 
 // DateTime returns the DateTime when the Precipitation value was recorded
 func (p Precipitation) DateTime() time.Time {
-	return p.dt
+	return p.dateTime
 }
 
 // String satisfies the fmt.Stringer interface for the Precipitation type
 func (p Precipitation) String() string {
-	return fmt.Sprintf("%.1fmm", p.fv)
+	return fmt.Sprintf("%.1fmm", p.floatVal)
 }
 
 // Source returns the Source of Precipitation
+//
 // If the Source is not available it will return SourceUnknown
 func (p Precipitation) Source() Source {
-	return p.s
+	return p.source
 }
 
 // Value returns the float64 value of an Precipitation
-// If the Precipitation is not available in the WeatherData
-// Vaule will return math.NaN instead.
+//
+// If the Precipitation is not available in the WeatherData, Value will return math.NaN instead.
 func (p Precipitation) Value() float64 {
-	if p.na {
+	if p.notAvailable {
 		return math.NaN()
 	}
-	return p.fv
+	return p.floatVal
 }
