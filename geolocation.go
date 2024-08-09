@@ -54,44 +54,44 @@ func (c *Client) GetGeoLocationByName(ci string) (GeoLocation, error) {
 // importance as first entry
 //
 // This method makes use of the OSM Nominatim API
-func (c *Client) GetGeoLocationsByName(ci string) ([]GeoLocation, error) {
-	ga := make([]GeoLocation, 0)
+func (c *Client) GetGeoLocationsByName(city string) ([]GeoLocation, error) {
+	locations := make([]GeoLocation, 0)
 
-	u, err := url.Parse(OSMNominatimURL)
+	apiURL, err := url.Parse(OSMNominatimURL)
 	if err != nil {
-		return ga, fmt.Errorf("failed to parse OSM Nominatim URL: %w", err)
+		return locations, fmt.Errorf("failed to parse OSM Nominatim URL: %w", err)
 	}
-	uq := u.Query()
-	uq.Add("format", "json")
-	uq.Add("q", ci)
-	u.RawQuery = uq.Encode()
+	query := apiURL.Query()
+	query.Add("format", "json")
+	query.Add("q", city)
+	apiURL.RawQuery = query.Encode()
 
-	r, err := c.httpClient.Get(u.String())
+	response, err := c.httpClient.Get(apiURL.String())
 	if err != nil {
-		return ga, fmt.Errorf("OSM Nominatim API request failed: %w", err)
+		return locations, fmt.Errorf("OSM Nominatim API request failed: %w", err)
 	}
-	var la []GeoLocation
-	if err := json.Unmarshal(r, &la); err != nil {
-		return ga, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
+	var jsonLocations []GeoLocation
+	if err = json.Unmarshal(response, &jsonLocations); err != nil {
+		return locations, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
 	}
-	if len(la) < 1 {
-		return ga, ErrCityNotFound
+	if len(jsonLocations) < 1 {
+		return locations, ErrCityNotFound
 	}
 
-	for _, l := range la {
-		lat, err := strconv.ParseFloat(l.LatitudeString, 64)
+	for _, location := range jsonLocations {
+		latitude, err := strconv.ParseFloat(location.LatitudeString, 64)
 		if err != nil {
-			return ga, fmt.Errorf("failed to convert latitude string to float value: %w", err)
+			return locations, fmt.Errorf("failed to convert latitude string to float value: %w", err)
 		}
-		lon, err := strconv.ParseFloat(l.LongitudeString, 64)
+		longitude, err := strconv.ParseFloat(location.LongitudeString, 64)
 		if err != nil {
-			return ga, fmt.Errorf("failed to convert longitude string to float value: %w", err)
+			return locations, fmt.Errorf("failed to convert longitude string to float value: %w", err)
 		}
-		l.Latitude = lat
-		l.Longitude = lon
-		ga = append(ga, l)
+		location.Latitude = latitude
+		location.Longitude = longitude
+		locations = append(locations, location)
 	}
-	sort.SliceStable(ga, func(i, j int) bool { return ga[i].Importance > ga[j].Importance })
+	sort.SliceStable(locations, func(i, j int) bool { return locations[i].Importance > locations[j].Importance })
 
-	return ga, nil
+	return locations, nil
 }
