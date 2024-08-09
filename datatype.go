@@ -9,12 +9,11 @@ import (
 	"time"
 )
 
-// DataUnavailable is a constant string that is returned if a
-// data point is not available
+// DataUnavailable is a constant string that is returned if a data point is not available
 const DataUnavailable = "Data unavailable"
 
-// DateFormat is the parsing format that is used for datetime strings
-// that only hold the date but no time
+// DateFormat is the parsing format that is used for datetime strings that only hold
+// the date but no time
 const DateFormat = "2006-01-02"
 
 // Enum for different Fieldname values
@@ -85,30 +84,29 @@ const (
 	Timespan24Hours
 )
 
-// APIDate is type wrapper for datestamp (without time) returned by
-// the API endpoints
+// APIDate is type wrapper for datestamp (without time) returned by the API endpoints
 type APIDate struct {
 	time.Time
 }
 
-// APIBool is the JSON structure of the weather data that is
-// returned by the API endpoints in which the value is a boolean
+// APIBool is the JSON structure of the weather data that is returned by the API endpoints
+// in which the value is a boolean
 type APIBool struct {
 	DateTime time.Time `json:"dateTime"`
 	Source   *string   `json:"source,omitempty"`
 	Value    bool      `json:"value"`
 }
 
-// APIFloat is the JSON structure of the weather data that is
-// returned by the API endpoints in which the value is a float
+// APIFloat is the JSON structure of the weather data that is returned by the API endpoints
+// in which the value is a float
 type APIFloat struct {
 	DateTime time.Time `json:"dateTime"`
 	Source   *string   `json:"source,omitempty"`
 	Value    float64   `json:"value"`
 }
 
-// APIString is the JSON structure of the weather data that is
-// returned by the API endpoints in which the value is a string
+// APIString is the JSON structure of the weather data that is returned by the API endpoints
+// in which the value is a string
 type APIString struct {
 	DateTime time.Time `json:"dateTime"`
 	Source   *string   `json:"source,omitempty"`
@@ -118,9 +116,8 @@ type APIString struct {
 // Timespan is a type wrapper for an int type
 type Timespan int
 
-// WeatherData is a type that holds weather (Observation, Current
-// Weather) data and can be wrapped into other types to provide type
-// specific receiver methods
+// WeatherData is a type that holds weather (Observation, Current Weather) data and can be wrapped
+// into other types to provide type specific receiver methods
 type WeatherData struct {
 	// bv bool
 	dateTime     time.Time
@@ -132,12 +129,10 @@ type WeatherData struct {
 	stringVal    string
 }
 
-// Fieldname is a type wrapper for an int for field names
-// of an Observation
+// Fieldname is a type wrapper for an int for field names of an Observation
 type Fieldname int
 
-// UnmarshalJSON interprets the API datestamp and converts it into a
-// time.Time type
+// UnmarshalJSON interprets the API datestamp and converts it into a time.Time type
 func (a *APIDate) UnmarshalJSON(data []byte) error {
 	date := string(data)
 	if date == "null" {
