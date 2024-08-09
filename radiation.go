@@ -10,25 +10,23 @@ import (
 	"time"
 )
 
-// Radiation is a type wrapper of an WeatherData for holding radiation
-// values in WeatherData
+// Radiation is a type wrapper of an WeatherData for holding radiation values in WeatherData
 type Radiation WeatherData
 
-// IsAvailable returns true if an Radiation value was
-// available at time of query
+// IsAvailable returns true if an Radiation value was available at time of query
 func (r Radiation) IsAvailable() bool {
 	return !r.notAvailable
 }
 
-// DateTime returns the time.Time object representing the date and time
-// at which the Radiation value was queried
+// DateTime returns the time.Time object representing the date and time at which the Radiation
+// value was queried
 func (r Radiation) DateTime() time.Time {
 	return r.dateTime
 }
 
 // Value returns the float64 value of an Radiation
-// If the Radiation is not available in the WeatherData
-// Vaule will return math.NaN instead.
+//
+// If the Radiation is not available in the WeatherData, Value will return math.NaN instead.
 func (r Radiation) Value() float64 {
 	if r.notAvailable {
 		return math.NaN()
@@ -42,6 +40,7 @@ func (r Radiation) String() string {
 }
 
 // Source returns the Source of Pressure
+//
 // If the Source is not available it will return SourceUnknown
 func (r Radiation) Source() Source {
 	return r.source
