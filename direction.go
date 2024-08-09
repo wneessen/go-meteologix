@@ -18,8 +18,8 @@ const (
 	DirectionMaxAngle = 360
 )
 
-// WindDirAbbrMap is a map to associate a wind direction degree value with
-// the abbreviated direction string
+// WindDirAbbrMap is a map to associate a wind direction degree value with the abbreviated
+// direction string
 var WindDirAbbrMap = map[float64]string{
 	0: "N", 11.25: "NbE", 22.5: "NNE", 33.75: "NEbN", 45: "NE", 56.25: "NEbE",
 	67.5: "ENE", 78.75: "EbN", 90: "E", 101.25: "EbS", 112.5: "ESE", 123.75: "SEbE",
@@ -29,8 +29,8 @@ var WindDirAbbrMap = map[float64]string{
 	303.75: "NWbW", 315: "NW", 326.25: "NWbN", 337.5: "NNW", 348.75: "NbW",
 }
 
-// WindDirFullMap is a map to associate a wind direction degree value with
-// the full direction string
+// WindDirFullMap is a map to associate a wind direction degree value with the full direction
+// string
 var WindDirFullMap = map[float64]string{
 	0: "North", 11.25: "North by East", 22.5: "North-Northeast",
 	33.75: "Northeast by North", 45: "Northeast", 56.25: "Northeast by East",
@@ -45,25 +45,22 @@ var WindDirFullMap = map[float64]string{
 	337.5: "North-Northwest", 348.75: "North by West",
 }
 
-// Direction is a type wrapper of an WeatherData for holding directional
-// values in WeatherData
+// Direction is a type wrapper of an WeatherData for holding directional values in WeatherData
 type Direction WeatherData
 
-// IsAvailable returns true if an Direction value was
-// available at time of query
+// IsAvailable returns true if an Direction value was available at time of query
 func (d Direction) IsAvailable() bool {
 	return !d.notAvailable
 }
 
-// DateTime returns true if an Direction value was
-// available at time of query
+// DateTime returns true if an Direction value was available at time of query
 func (d Direction) DateTime() time.Time {
 	return d.dateTime
 }
 
 // Value returns the float64 value of an Direction in degrees
-// If the Direction is not available in the WeatherData
-// Vaule will return math.NaN instead.
+//
+// If the Direction is not available in the WeatherData, Value will return math.NaN instead.
 func (d Direction) Value() float64 {
 	if d.notAvailable {
 		return math.NaN()
@@ -77,6 +74,7 @@ func (d Direction) String() string {
 }
 
 // Source returns the Source of a Direction
+//
 // If the Source is not available it will return SourceUnknown
 func (d Direction) Source() Source {
 	return d.source
@@ -87,8 +85,8 @@ func (d Direction) Direction() string {
 	if d.floatVal < DirectionMinAngle || d.floatVal > DirectionMaxAngle {
 		return ErrUnsupportedDirection
 	}
-	if ds, ok := WindDirAbbrMap[d.floatVal]; ok {
-		return ds
+	if direction, ok := WindDirAbbrMap[d.floatVal]; ok {
+		return direction
 	}
 	return findDirection(d.floatVal, WindDirAbbrMap)
 }
@@ -98,37 +96,36 @@ func (d Direction) DirectionFull() string {
 	if d.floatVal < DirectionMinAngle || d.floatVal > DirectionMaxAngle {
 		return ErrUnsupportedDirection
 	}
-	if ds, ok := WindDirFullMap[d.floatVal]; ok {
-		return ds
+	if direction, ok := WindDirFullMap[d.floatVal]; ok {
+		return direction
 	}
 	return findDirection(d.floatVal, WindDirFullMap)
 }
 
-// findDirection takes a Direction and tries to estimate the nearest
-// direction string from a map
-func findDirection(v float64, m map[float64]string) string {
-	ks := make([]float64, 0, len(m))
-	for k := range m {
-		ks = append(ks, k)
+// findDirection takes a Direction and tries to estimate the nearest direction string from a map
+func findDirection(value float64, directionMap map[float64]string) string {
+	keys := make([]float64, 0, len(directionMap))
+	for key := range directionMap {
+		keys = append(keys, key)
 	}
-	sort.Float64s(ks)
+	sort.Float64s(keys)
 
-	sv := 0.0
-	ev := 0.0
-	for i := range ks {
-		if v > ks[i] {
-			sv = ks[i]
+	startVal := 0.0
+	endVal := 0.0
+	for i := range keys {
+		if value > keys[i] {
+			startVal = keys[i]
 			continue
 		}
-		if v < ks[i] {
-			ev = ks[i]
+		if value < keys[i] {
+			endVal = keys[i]
 			break
 		}
 	}
-	sr := v - sv
-	er := ev - v
-	if er > sr {
-		return m[sv]
+	startDiff := value - startVal
+	endDiff := endVal - value
+	if endDiff > startDiff {
+		return directionMap[startVal]
 	}
-	return m[ev]
+	return directionMap[endVal]
 }
