@@ -19,12 +19,10 @@ const (
 	MultiplierMPH = 2.236936
 )
 
-// Speed is a type wrapper of an WeatherData for holding speed
-// values in WeatherData
+// Speed is a type wrapper of an WeatherData for holding speed values in WeatherData
 type Speed WeatherData
 
-// IsAvailable returns true if an Speed value was
-// available at time of query
+// IsAvailable returns true if an Speed value was available at time of query
 func (s Speed) IsAvailable() bool {
 	return !s.notAvailable
 }
@@ -34,10 +32,9 @@ func (s Speed) DateTime() time.Time {
 	return s.dateTime
 }
 
-// Value returns the float64 value of an Speed in meters
-// per second.
-// If the Speed is not available in the WeatherData
-// Vaule will return math.NaN instead.
+// Value returns the float64 value of an Speed in meters per second.
+//
+// If the Speed is not available in the WeatherData, Value will return math.NaN instead.
 func (s Speed) Value() float64 {
 	if s.notAvailable {
 		return math.NaN()
