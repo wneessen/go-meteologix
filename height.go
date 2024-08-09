@@ -10,12 +10,11 @@ import (
 	"time"
 )
 
-// Height is a type wrapper of an WeatherData for holding height
-// values in WeatherData (based on meters a default unit)
+// Height is a type wrapper of an WeatherData for holding height values in WeatherData
+// (based on meters a default unit)
 type Height WeatherData
 
-// IsAvailable returns true if an Height value was
-// available at time of query
+// IsAvailable returns true if an Height value was available at time of query
 func (h Height) IsAvailable() bool {
 	return !h.notAvailable
 }
@@ -31,14 +30,15 @@ func (h Height) String() string {
 }
 
 // Source returns the Source of Height
+//
 // If the Source is not available it will return SourceUnknown
 func (h Height) Source() Source {
 	return h.source
 }
 
 // Value returns the float64 value of an Height
-// If the Height is not available in the WeatherData
-// Vaule will return math.NaN instead.
+//
+// If the Height is not available in the WeatherData, Value will return math.NaN instead.
 func (h Height) Value() float64 {
 	if h.notAvailable {
 		return math.NaN()
@@ -47,12 +47,14 @@ func (h Height) Value() float64 {
 }
 
 // Meter returns the Height type value as float64 in meters.
+//
 // This is an alias for the Value() method
 func (h Height) Meter() float64 {
 	return h.Value()
 }
 
 // MeterString returns the Height type as formatted string in meters
+//
 // This is an alias for the String() method
 func (h Height) MeterString() string {
 	return h.String()
