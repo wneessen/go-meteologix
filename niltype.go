@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Winni Neessen <wn@neessen.dev>
+//
+// SPDX-License-Identifier: MIT
+
 package meteologix
 
 import "encoding/json"

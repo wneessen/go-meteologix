@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2023 Winni Neessen <wn@neessen.dev>
+//
+// SPDX-License-Identifier: MIT
+
 package meteologix
 
 import (
@@ -32,7 +36,7 @@ type WeatherForecast struct {
 	// Altitude represents the altitude of the location that has been queried
 	Altitude int `json:"alt"`
 	// Data holds the different APICurrentWeatherData points
-	Data []APIWeatherForecastData `json:"data"`
+	//Data []APIWeatherForecastData `json:"data"`
 	// Latitude represents the GeoLocation latitude coordinates for the weather data
 	Latitude float64 `json:"lat"`
 	// Longitude represents the GeoLocation longitude coordinates for the weather data
@@ -88,10 +92,20 @@ func (c *Client) ForecastByCoordinates(latitude, longitude float64, timesteps Fo
 		return forecast, fmt.Errorf("API request failed: %w", err)
 	}
 
-	if err := json.Unmarshal(response, &forecast); err != nil {
+	if err = json.Unmarshal(response, &forecast); err != nil {
 		return forecast, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
 	}
 
+	type foo struct {
+		Data []APIWeatherForecastData `json:"data"`
+	}
+	var data foo
+	if err = json.Unmarshal(response, &data); err != nil {
+		return forecast, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
+	}
+
+	fmt.Printf("FOO: %+v\n", forecast)
+	fmt.Printf("BAR: %+v\n", data)
 	return forecast, nil
 }
 
