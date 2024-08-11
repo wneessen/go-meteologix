@@ -60,6 +60,10 @@ type APIWeatherForecastData struct {
 	DateTime time.Time `json:"dateTime"`
 	// IsDay is true when it is date and time of forecast is at daytime
 	IsDay bool `json:"isDay"`
+	// Dewpoint represents the predicted dewpoint (at current timestamp)
+	Dewpoint NilFloat64 `json:"dewpoint,omitempty"`
+	// PressureMSL represents barometric air pressure at mean sea level (at current timestamp)
+	PressureMSL NilFloat64 `json:"pressureMsl,omitempty"`
 	// Temperature represents the predicted temperature at 2m height (at current timestamp)
 	Temperature float64 `json:"temp"`
 }
