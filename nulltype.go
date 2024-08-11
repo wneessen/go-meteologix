@@ -13,9 +13,14 @@ func (f *Variable[T]) Get() T {
 	return f.value
 }
 
-// NotNull returns true when a Variable is not null
-func (f *Variable[T]) NotNull() bool {
+// NotNil returns true when a Variable is not nil
+func (f *Variable[T]) NotNil() bool {
 	return f.notNil
+}
+
+// IsNil returns true when a Variable is nil
+func (f *Variable[T]) IsNil() bool {
+	return !f.notNil
 }
 
 // Reset resets the value to the Variable to a zero value and sets it to be nil
