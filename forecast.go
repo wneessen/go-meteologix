@@ -32,7 +32,7 @@ type WeatherForecast struct {
 	// Altitude represents the altitude of the location that has been queried
 	Altitude int `json:"alt"`
 	// Data holds the different APICurrentWeatherData points
-	//Data APIWeatherForecastData `json:"data"`
+	Data []APIWeatherForecastData `json:"data"`
 	// Latitude represents the GeoLocation latitude coordinates for the weather data
 	Latitude float64 `json:"lat"`
 	// Longitude represents the GeoLocation longitude coordinates for the weather data
@@ -55,7 +55,14 @@ type ForecastDetails string
 
 // APIWeatherForecastData holds the different data points of the WeatherForecast as returned by the
 // weather forecast API endpoints.
-type APIWeatherForecastData struct{}
+type APIWeatherForecastData struct {
+	// DateTime represents the date and time for the forecast values
+	DateTime time.Time `json:"dateTime"`
+	// IsDay is true when it is date and time of forecast is at daytime
+	IsDay bool `json:"isDay"`
+	// Temperature represents the predicted temperature at 2m height (at current timestamp)
+	Temperature float64 `json:"temp"`
+}
 
 // ForecastByCoordinates returns the WeatherForecast values for the given coordinates
 func (c *Client) ForecastByCoordinates(latitude, longitude float64, timesteps ForecastTimeSteps,
