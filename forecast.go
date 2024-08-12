@@ -36,7 +36,7 @@ type WeatherForecast struct {
 	// Altitude represents the altitude of the location that has been queried
 	Altitude int `json:"alt"`
 	// Data holds the different APICurrentWeatherData points
-	//Data []APIWeatherForecastData `json:"data"`
+	Data []APIWeatherForecastData `json:"data"`
 	// Latitude represents the GeoLocation latitude coordinates for the weather data
 	Latitude float64 `json:"lat"`
 	// Longitude represents the GeoLocation longitude coordinates for the weather data
@@ -72,6 +72,14 @@ type APIWeatherForecastData struct {
 	Temperature float64 `json:"temp"`
 }
 
+type WeatherForecastDatapoint struct {
+	dateTime    time.Time
+	isDay       bool
+	dewpoint    NilFloat64
+	pressureMSL NilFloat64
+	temperature float64
+}
+
 // ForecastByCoordinates returns the WeatherForecast values for the given coordinates
 func (c *Client) ForecastByCoordinates(latitude, longitude float64, timesteps ForecastTimeSteps,
 	details ForecastDetails) (WeatherForecast, error) {
@@ -96,16 +104,6 @@ func (c *Client) ForecastByCoordinates(latitude, longitude float64, timesteps Fo
 		return forecast, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
 	}
 
-	type foo struct {
-		Data []APIWeatherForecastData `json:"data"`
-	}
-	var data foo
-	if err = json.Unmarshal(response, &data); err != nil {
-		return forecast, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
-	}
-
-	fmt.Printf("FOO: %+v\n", forecast)
-	fmt.Printf("BAR: %+v\n", data)
 	return forecast, nil
 }
 
@@ -117,4 +115,94 @@ func (c *Client) ForecastByLocation(location string, timesteps ForecastTimeSteps
 		return WeatherForecast{}, fmt.Errorf("failed too look up geolocation: %w", err)
 	}
 	return c.ForecastByCoordinates(geoLocation.Latitude, geoLocation.Longitude, timesteps, details)
+}
+
+func (wf WeatherForecast) At(timestamp time.Time) WeatherForecastDatapoint {
+	datapoint := findClosestForecast(wf.Data, timestamp)
+	if datapoint == nil {
+		return WeatherForecastDatapoint{}
+	}
+	return newWeatherForecastDataPoint(*datapoint)
+}
+
+func (wf WeatherForecast) All() []WeatherForecastDatapoint {
+	datapoints := make([]WeatherForecastDatapoint, 0)
+	for _, data := range wf.Data {
+		datapoint := newWeatherForecastDataPoint(data)
+		datapoints = append(datapoints, datapoint)
+	}
+	return datapoints
+}
+
+func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDatapoint {
+	return WeatherForecastDatapoint{
+		dateTime:    data.DateTime,
+		isDay:       data.IsDay,
+		dewpoint:    data.Dewpoint,
+		pressureMSL: data.PressureMSL,
+		temperature: data.Temperature,
+	}
+}
+
+func (dp WeatherForecastDatapoint) DateTime() time.Time {
+	return dp.dateTime
+}
+
+func (dp WeatherForecastDatapoint) Dewpoint() Temperature {
+	if dp.dewpoint.IsNil() {
+		return Temperature{notAvailable: true}
+	}
+	temperature := Temperature{
+		dateTime: dp.dateTime,
+		name:     FieldDewpoint,
+		source:   SourceForecast,
+		floatVal: dp.dewpoint.Get(),
+	}
+	return temperature
+}
+
+// PressureMSL returns the pressure at mean sea level data point as Pressure.
+//
+// If the data point is not available in the WeatherForecast it will return Pressure in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) PressureMSL() Pressure {
+	if dp.pressureMSL.IsNil() {
+		return Pressure{notAvailable: true}
+	}
+	pressure := Pressure{
+		dateTime: dp.dateTime,
+		name:     FieldPressureMSL,
+		source:   SourceForecast,
+		floatVal: dp.pressureMSL.Get(),
+	}
+	return pressure
+}
+
+// Temperature returns the temperature data point as Temperature.
+func (dp WeatherForecastDatapoint) Temperature() Temperature {
+	return Temperature{
+		dateTime: dp.DateTime(),
+		name:     FieldTemperature,
+		source:   SourceForecast,
+		floatVal: dp.temperature,
+	}
+}
+
+func findClosestForecast(items []APIWeatherForecastData, target time.Time) *APIWeatherForecastData {
+	if len(items) <= 0 {
+		return nil
+	}
+
+	closest := items[0]
+	minDiff := target.Sub(closest.DateTime).Abs()
+
+	for _, item := range items[1:] {
+		diff := target.Sub(item.DateTime).Abs()
+		if diff < minDiff {
+			minDiff = diff
+			closest = item
+		}
+	}
+
+	return &closest
 }
