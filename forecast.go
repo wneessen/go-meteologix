@@ -72,6 +72,7 @@ type APIWeatherForecastData struct {
 	Temperature float64 `json:"temp"`
 }
 
+// WeatherForecastDatapoint represents a single data point in a weather forecast.
 type WeatherForecastDatapoint struct {
 	dateTime    time.Time
 	isDay       bool
@@ -117,6 +118,9 @@ func (c *Client) ForecastByLocation(location string, timesteps ForecastTimeSteps
 	return c.ForecastByCoordinates(geoLocation.Latitude, geoLocation.Longitude, timesteps, details)
 }
 
+// At returns the WeatherForecastDatapoint for the specified timestamp. It will try to find the closest datapoint
+// in the forecast that matches the given timestamp. If no matching datapoint is found, an empty
+// WeatherForecastDatapoint is returned.
 func (wf WeatherForecast) At(timestamp time.Time) WeatherForecastDatapoint {
 	datapoint := findClosestForecast(wf.Data, timestamp)
 	if datapoint == nil {
@@ -125,6 +129,7 @@ func (wf WeatherForecast) At(timestamp time.Time) WeatherForecastDatapoint {
 	return newWeatherForecastDataPoint(*datapoint)
 }
 
+// All returns a slice of WeatherForecastDatapoint representing all forecasted data points.
 func (wf WeatherForecast) All() []WeatherForecastDatapoint {
 	datapoints := make([]WeatherForecastDatapoint, 0)
 	for _, data := range wf.Data {
@@ -134,20 +139,15 @@ func (wf WeatherForecast) All() []WeatherForecastDatapoint {
 	return datapoints
 }
 
-func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDatapoint {
-	return WeatherForecastDatapoint{
-		dateTime:    data.DateTime,
-		isDay:       data.IsDay,
-		dewpoint:    data.Dewpoint,
-		pressureMSL: data.PressureMSL,
-		temperature: data.Temperature,
-	}
-}
-
+// DateTime returns the date and time of the WeatherForecastDatapoint.
 func (dp WeatherForecastDatapoint) DateTime() time.Time {
 	return dp.dateTime
 }
 
+// Dewpoint returns the dewpoint data point as Temperature.
+//
+// If the data point is not available in the WeatherForecast it will return Temperature in which the
+// "not available" field will be true.
 func (dp WeatherForecastDatapoint) Dewpoint() Temperature {
 	if dp.dewpoint.IsNil() {
 		return Temperature{notAvailable: true}
@@ -188,6 +188,9 @@ func (dp WeatherForecastDatapoint) Temperature() Temperature {
 	}
 }
 
+// findClosestForecast finds the APIWeatherForecastData item in the given items slice
+// that has the closest DateTime value to the target time. It returns a pointer to
+// the closest item. If the items slice is empty, it returns nil.
 func findClosestForecast(items []APIWeatherForecastData, target time.Time) *APIWeatherForecastData {
 	if len(items) <= 0 {
 		return nil
@@ -205,4 +208,17 @@ func findClosestForecast(items []APIWeatherForecastData, target time.Time) *APIW
 	}
 
 	return &closest
+}
+
+// newWeatherForecastDataPoint creates a new WeatherForecastDatapoint from the provided APIWeatherForecastData.
+// It extracts the necessary data from the APIWeatherForecastData and sets them in the WeatherForecastDatapoint
+// structure. The new WeatherForecastDatapoint is then returned.
+func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDatapoint {
+	return WeatherForecastDatapoint{
+		dateTime:    data.DateTime,
+		isDay:       data.IsDay,
+		dewpoint:    data.Dewpoint,
+		pressureMSL: data.PressureMSL,
+		temperature: data.Temperature,
+	}
 }
