@@ -13,18 +13,6 @@ import (
 )
 
 const (
-	// ForecastSteps1h represents a weather forecast in an 1 hour time interval. It will return
-	// up to 24 hours of forecast data.
-	ForecastSteps1h ForecastTimeSteps = "1h"
-	// ForecastSteps3h represents a weather forecast in a 3 hour time interval. It will return
-	// up to 120 hours of forecast data.
-	ForecastSteps3h ForecastTimeSteps = "3h"
-	// ForecastSteps6h represents a weather forecast in a 6 hour time interval. It will return
-	// up to 240 hours of forecast data.
-	ForecastSteps6h ForecastTimeSteps = "6h"
-)
-
-const (
 	// ForecastDetailStandard represents a standard level of detail for weather forecasts retrieved from the API.
 	ForecastDetailStandard ForecastDetails = "standard"
 	// ForecastDetailAdvanced represents an advanced level of detail for weather forecasts retrieved from the API.
@@ -91,13 +79,21 @@ type WeatherForecastDatapoint struct {
 }
 
 // ForecastByCoordinates returns the WeatherForecast values for the given coordinates
-func (c *Client) ForecastByCoordinates(latitude, longitude float64, timesteps ForecastTimeSteps,
+func (c *Client) ForecastByCoordinates(latitude, longitude float64, timespan Timespan,
 	details ForecastDetails) (WeatherForecast, error) {
 	var forecast WeatherForecast
+	var steps string
+	switch timespan {
+	case Timespan1Hour, Timespan3Hours, Timespan6Hours:
+		steps = fmt.Sprintf("%s", timespan)
+	default:
+		return forecast, fmt.Errorf("unsupported timespan for weather forecasts: %s", timespan)
+	}
+
 	latitudeFormat := strconv.FormatFloat(latitude, 'f', -1, 64)
 	longitudeFormat := strconv.FormatFloat(longitude, 'f', -1, 64)
 	apiURL, err := url.Parse(fmt.Sprintf("%s/forecast/%s/%s/%s/%s", c.config.apiURL, latitudeFormat,
-		longitudeFormat, details, timesteps))
+		longitudeFormat, details, steps))
 	if err != nil {
 		return forecast, fmt.Errorf("failed to parse weather forecast URL: %w", err)
 	}
@@ -118,7 +114,7 @@ func (c *Client) ForecastByCoordinates(latitude, longitude float64, timesteps Fo
 }
 
 // ForecastByLocation returns the WeatherForecast values for the given location
-func (c *Client) ForecastByLocation(location string, timesteps ForecastTimeSteps,
+func (c *Client) ForecastByLocation(location string, timesteps Timespan,
 	details ForecastDetails) (WeatherForecast, error) {
 	geoLocation, err := c.GetGeoLocationByName(location)
 	if err != nil {

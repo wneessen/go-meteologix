@@ -78,8 +78,12 @@ const (
 	TimespanCurrent Timespan = iota
 	// Timespan10Min represents the last 10 minutes
 	Timespan10Min
-	// Timespan1Hour represents the last hour
+	// Timespan1Hour represents the 1 hour
 	Timespan1Hour
+	// Timespan3Hours represents the 3 hours
+	Timespan3Hours
+	// Timespan6Hours represents the 6 hours
+	Timespan6Hours
 	// Timespan24Hours represents the last 24 hours
 	Timespan24Hours
 )
@@ -131,6 +135,26 @@ type WeatherData struct {
 
 // Fieldname is a type wrapper for an int for field names of an Observation
 type Fieldname int
+
+// String returns a string representation of the Timespan value and satisfies the fmt.Stringer interface.
+func (t Timespan) String() string {
+	switch t {
+	case TimespanCurrent:
+		return "current"
+	case Timespan10Min:
+		return "10m"
+	case Timespan1Hour:
+		return "1h"
+	case Timespan3Hours:
+		return "3h"
+	case Timespan6Hours:
+		return "6h"
+	case Timespan24Hours:
+		return "24h"
+	default:
+		return "unknown"
+	}
+}
 
 // UnmarshalJSON interprets the API datestamp and converts it into a time.Time type
 func (a *APIDate) UnmarshalJSON(data []byte) error {
