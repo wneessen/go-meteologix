@@ -62,6 +62,8 @@ type APIWeatherForecastData struct {
 	Temperature float64 `json:"temp"`
 	// WindDirection represents the average direction from which the wind originates in degree
 	WindDirection NilFloat64 `json:"windDirection,omitempty"`
+	// WindGust represents the wind gust speed in m/s (for a timespan)
+	WindGust NilFloat64 `json:"windGust,omitempty"`
 	// WindSpeed represents the average wind speed (for a timespan) in m/s
 	WindSpeed NilFloat64 `json:"windspeed,omitempty"`
 }
@@ -74,8 +76,9 @@ type WeatherForecastDatapoint struct {
 	isDay         bool
 	pressureMSL   NilFloat64
 	temperature   float64
-	windspeed     NilFloat64
 	winddirection NilFloat64
+	windgust      NilFloat64
+	windspeed     NilFloat64
 }
 
 // ForecastByCoordinates returns the WeatherForecast values for the given coordinates
@@ -227,6 +230,23 @@ func (dp WeatherForecastDatapoint) WindDirection() Direction {
 	return direction
 }
 
+// WindGust returns the wind gust data point as Speed.
+//
+// If the data point is not available in the WeatherForecast it will return Speed in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) WindGust() Speed {
+	if dp.windgust.IsNil() {
+		return Speed{notAvailable: true}
+	}
+	speed := Speed{
+		dateTime: dp.dateTime,
+		name:     FieldWindGust,
+		source:   SourceForecast,
+		floatVal: dp.windgust.Get(),
+	}
+	return speed
+}
+
 // WindSpeed returns the average wind speed data point as Speed.
 //
 // If the data point is not available in the WeatherForecast it will return Speed in which the
@@ -278,6 +298,7 @@ func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDat
 		pressureMSL:   data.PressureMSL,
 		temperature:   data.Temperature,
 		winddirection: data.WindDirection,
+		windgust:      data.WindGust,
 		windspeed:     data.WindSpeed,
 	}
 }
