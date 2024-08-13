@@ -62,6 +62,8 @@ type ForecastDetails string
 type APIWeatherForecastData struct {
 	// DateTime represents the date and time for the forecast values
 	DateTime time.Time `json:"dateTime"`
+	// Humidity represents the relative humidity value of a weather forecast
+	Humidity NilFloat64 `json:"humidityRelative"`
 	// IsDay is true when it is date and time of forecast is at daytime
 	IsDay bool `json:"isDay"`
 	// Dewpoint represents the predicted dewpoint (at current timestamp)
@@ -70,15 +72,22 @@ type APIWeatherForecastData struct {
 	PressureMSL NilFloat64 `json:"pressureMsl,omitempty"`
 	// Temperature represents the predicted temperature at 2m height (at current timestamp)
 	Temperature float64 `json:"temp"`
+	// WindDirection represents the average direction from which the wind originates in degree
+	WindDirection NilFloat64 `json:"windDirection,omitempty"`
+	// WindSpeed represents the average wind speed (for a timespan) in m/s
+	WindSpeed NilFloat64 `json:"windspeed,omitempty"`
 }
 
 // WeatherForecastDatapoint represents a single data point in a weather forecast.
 type WeatherForecastDatapoint struct {
-	dateTime    time.Time
-	isDay       bool
-	dewpoint    NilFloat64
-	pressureMSL NilFloat64
-	temperature float64
+	dateTime      time.Time
+	dewpoint      NilFloat64
+	humidity      NilFloat64
+	isDay         bool
+	pressureMSL   NilFloat64
+	temperature   float64
+	windspeed     NilFloat64
+	winddirection NilFloat64
 }
 
 // ForecastByCoordinates returns the WeatherForecast values for the given coordinates
@@ -161,6 +170,23 @@ func (dp WeatherForecastDatapoint) Dewpoint() Temperature {
 	return temperature
 }
 
+// HumidityRelative returns the relative humidity data point as Humidity.
+//
+// If the data point is not available in the WeatherForecast it will return Humidity in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) HumidityRelative() Humidity {
+	if dp.humidity.IsNil() {
+		return Humidity{notAvailable: true}
+	}
+	humidity := Humidity{
+		dateTime: dp.dateTime,
+		name:     FieldHumidityRelative,
+		source:   SourceForecast,
+		floatVal: dp.humidity.Get(),
+	}
+	return humidity
+}
+
 // PressureMSL returns the pressure at mean sea level data point as Pressure.
 //
 // If the data point is not available in the WeatherForecast it will return Pressure in which the
@@ -186,6 +212,40 @@ func (dp WeatherForecastDatapoint) Temperature() Temperature {
 		source:   SourceForecast,
 		floatVal: dp.temperature,
 	}
+}
+
+// WindDirection returns the wind direction data point as Direction.
+//
+// If the data point is not available in the WeatherForecast it will return Direction in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) WindDirection() Direction {
+	if dp.winddirection.IsNil() {
+		return Direction{notAvailable: true}
+	}
+	direction := Direction{
+		dateTime: dp.dateTime,
+		name:     FieldWindDirection,
+		source:   SourceForecast,
+		floatVal: dp.winddirection.Get(),
+	}
+	return direction
+}
+
+// WindSpeed returns the average wind speed data point as Speed.
+//
+// If the data point is not available in the WeatherForecast it will return Speed in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) WindSpeed() Speed {
+	if dp.windspeed.IsNil() {
+		return Speed{notAvailable: true}
+	}
+	speed := Speed{
+		dateTime: dp.dateTime,
+		name:     FieldWindSpeed,
+		source:   SourceForecast,
+		floatVal: dp.windspeed.Get(),
+	}
+	return speed
 }
 
 // findClosestForecast finds the APIWeatherForecastData item in the given items slice
@@ -215,10 +275,13 @@ func findClosestForecast(items []APIWeatherForecastData, target time.Time) *APIW
 // structure. The new WeatherForecastDatapoint is then returned.
 func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDatapoint {
 	return WeatherForecastDatapoint{
-		dateTime:    data.DateTime,
-		isDay:       data.IsDay,
-		dewpoint:    data.Dewpoint,
-		pressureMSL: data.PressureMSL,
-		temperature: data.Temperature,
+		dateTime:      data.DateTime,
+		dewpoint:      data.Dewpoint,
+		humidity:      data.Humidity,
+		isDay:         data.IsDay,
+		pressureMSL:   data.PressureMSL,
+		temperature:   data.Temperature,
+		winddirection: data.WindDirection,
+		windspeed:     data.WindSpeed,
 	}
 }
