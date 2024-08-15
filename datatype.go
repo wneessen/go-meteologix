@@ -18,8 +18,10 @@ const DateFormat = "2006-01-02"
 
 // Enum for different Fieldname values
 const (
+	// FieldCloudCoverage represents the CloudCoverage data point
+	FieldCloudCoverage Fieldname = iota
 	// FieldDewpoint represents the Dewpoint data point
-	FieldDewpoint Fieldname = iota
+	FieldDewpoint
 	// FieldDewpointMean represents the TemperatureMean data point
 	FieldDewpointMean
 	// FieldGlobalRadiation10m represents the GlobalRadiation10m data point
