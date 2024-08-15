@@ -163,3 +163,9 @@ go-meteologix was authored and developed by [Winni Neessen](https://github.com/w
 Big thanks to the following people, for contributing to the go-meteologix project
 (either in form of code, reviewing code, writing documenation or contributing in any other form):
 * [Maria Letta](https://github.com/MariaLetta) (designed the go-meteologix logo)
+
+## Mirror
+
+Please note that the repository on Github is just a mirror of
+[https://github.com/wneessen/go-meteologix](https://github.com/wneessen/go-meteologix) 
+for ease of access and reachability.

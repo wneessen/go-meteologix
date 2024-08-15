@@ -13,8 +13,7 @@ import (
 	"strings"
 )
 
-// DefaultRadius is the default radius value that is used in the
-// station search
+// DefaultRadius is the default radius value that is used in the station search
 const DefaultRadius int = 10
 
 const (
@@ -38,8 +37,8 @@ const (
 	PrecisionUnknown
 )
 
-// Precision levels defined as strings to allow for clear, consistent
-// use throughout the application.
+// Precision levels defined as strings to allow for clear, consistent use throughout the
+// application.
 const (
 	// PrecisionStringSuperHigh represents the super high precision level string.
 	PrecisionStringSuperHigh = "SUPER_HIGH"
@@ -98,8 +97,8 @@ type Precision int
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearchByCoordinates(la, lo float64) ([]Station, error) {
-	return c.StationSearchByCoordinatesWithinRadius(la, lo, DefaultRadius)
+func (c *Client) StationSearchByCoordinates(latitude, longitude float64) ([]Station, error) {
+	return c.StationSearchByCoordinatesWithinRadius(latitude, longitude, DefaultRadius)
 }
 
 // StationSearchByLocation returns a list of available weather stations
@@ -113,8 +112,8 @@ func (c *Client) StationSearchByCoordinates(la, lo float64) ([]Station, error) {
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearchByLocation(lo string) ([]Station, error) {
-	return c.StationSearchByLocationWithinRadius(lo, DefaultRadius)
+func (c *Client) StationSearchByLocation(location string) ([]Station, error) {
+	return c.StationSearchByLocationWithinRadius(location, DefaultRadius)
 }
 
 // StationSearchByLocationWithinRadius returns a list of available weather
@@ -128,12 +127,12 @@ func (c *Client) StationSearchByLocation(lo string) ([]Station, error) {
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearchByLocationWithinRadius(lo string, ra int) ([]Station, error) {
-	l, err := c.GetGeoLocationByName(lo)
+func (c *Client) StationSearchByLocationWithinRadius(location string, radius int) ([]Station, error) {
+	geoLocation, err := c.GetGeoLocationByName(location)
 	if err != nil {
 		return nil, fmt.Errorf("failed too look up location details: %w", err)
 	}
-	return c.StationSearchByCoordinatesWithinRadius(l.Latitude, l.Longitude, ra)
+	return c.StationSearchByCoordinatesWithinRadius(geoLocation.Latitude, geoLocation.Longitude, radius)
 }
 
 // StationSearchByCoordinatesWithinRadius returns a list of available weather stations
@@ -147,42 +146,42 @@ func (c *Client) StationSearchByLocationWithinRadius(lo string, ra int) ([]Stati
 // that you are allowed to get all data from this station.
 //
 // See: https://api.kachelmannwetter.com/v02/_doc.html#/operations/get_station_search
-func (c *Client) StationSearchByCoordinatesWithinRadius(la, lo float64, ra int) ([]Station, error) {
-	if ra < 1 {
+func (c *Client) StationSearchByCoordinatesWithinRadius(latitude, longitude float64, radius int) ([]Station, error) {
+	if radius < 1 {
 		return nil, ErrRadiusTooSmall
 	}
 
-	u, err := url.Parse(fmt.Sprintf("%s/station/search/%f/%f",
-		c.config.apiURL, la, lo))
+	apiURL, err := url.Parse(fmt.Sprintf("%s/station/search/%f/%f",
+		c.config.apiURL, latitude, longitude))
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse station search URL: %w", err)
 	}
-	uq := u.Query()
-	uq.Add("radius", fmt.Sprintf("%d", ra))
-	u.RawQuery = uq.Encode()
+	query := apiURL.Query()
+	query.Add("radius", fmt.Sprintf("%d", radius))
+	apiURL.RawQuery = query.Encode()
 
-	r, err := c.httpClient.Get(u.String())
+	response, err := c.httpClient.Get(apiURL.String())
 	if err != nil {
 		return nil, fmt.Errorf("API request failed: %w", err)
 	}
-	var sl []Station
-	if err := json.Unmarshal(r, &sl); err != nil {
+	var stations []Station
+	if err = json.Unmarshal(response, &stations); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
 	}
-	if len(sl) < 1 {
+	if len(stations) < 1 {
 		return nil, ErrNoStationFound
 	}
-	sort.SliceStable(sl, func(i, j int) bool { return sl[i].Distance < sl[j].Distance })
+	sort.SliceStable(stations, func(i, j int) bool { return stations[i].Distance < stations[j].Distance })
 
-	return sl, nil
+	return stations, nil
 }
 
 // UnmarshalJSON method for converting API precision responses into
 // StationPrecision types
-func (p *Precision) UnmarshalJSON(s []byte) error {
-	v := string(s)
-	v = strings.ReplaceAll(v, `"`, ``)
-	switch strings.ToUpper(v) {
+func (p *Precision) UnmarshalJSON(data []byte) error {
+	value := string(data)
+	value = strings.ReplaceAll(value, `"`, ``)
+	switch strings.ToUpper(value) {
 	case PrecisionStringSuperHigh:
 		*p = PrecisionSuperHigh
 	case PrecisionStringHigh:

@@ -9,8 +9,7 @@ import (
 	"fmt"
 )
 
-// ErrUnsupportedDirection is returned when a direction degree is given,
-// that is not resolvable
+// ErrUnsupportedDirection is returned when a direction degree is given, that is not resolvable
 var ErrUnsupportedDirection = "Unsupported direction"
 
 // Observation represents the observation API response for a Station
@@ -83,315 +82,309 @@ type APIObservationData struct {
 	WindSpeed *APIFloat `json:"windSpeed,omitempty"`
 }
 
-// ObservationLatestByStationID returns the latest Observation values from the
-// given Station
-func (c *Client) ObservationLatestByStationID(si string) (Observation, error) {
-	var o Observation
-	u := fmt.Sprintf("%s/station/%s/observations/latest", c.config.apiURL, si)
-	r, err := c.httpClient.Get(u)
+// ObservationLatestByStationID returns the latest Observation values from the given Station
+func (c *Client) ObservationLatestByStationID(stationID string) (Observation, error) {
+	var observation Observation
+	apiURL := fmt.Sprintf("%s/station/%s/observations/latest", c.config.apiURL, stationID)
+	response, err := c.httpClient.Get(apiURL)
 	if err != nil {
-		return o, fmt.Errorf("API request failed: %w", err)
+		return observation, fmt.Errorf("API request failed: %w", err)
 	}
 
-	if err := json.Unmarshal(r, &o); err != nil {
-		return o, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
+	if err = json.Unmarshal(response, &observation); err != nil {
+		return observation, fmt.Errorf("failed to unmarshal API response JSON: %w", err)
 	}
 
-	return o, nil
+	return observation, nil
 }
 
 // ObservationLatestByLocation performs a GeoLocation lookup of the location string, checks for any
 // nearby weather stations (25 km radius) and returns the latest Observation values from the
 // Stations with the shortest distance. It will also return the Station that was used for the query.
 // It will throw an error if no station could be found in that queried location.
-func (c *Client) ObservationLatestByLocation(l string) (Observation, Station, error) {
-	sl, err := c.StationSearchByLocationWithinRadius(l, 25)
+func (c *Client) ObservationLatestByLocation(location string) (Observation, Station, error) {
+	stations, err := c.StationSearchByLocationWithinRadius(location, 25)
 	if err != nil {
 		return Observation{}, Station{}, fmt.Errorf("failed search locations at given location: %w", err)
 	}
-	s := sl[0]
-	o, err := c.ObservationLatestByStationID(s.ID)
-	return o, s, err
+	station := stations[0]
+	observation, err := c.ObservationLatestByStationID(station.ID)
+	return observation, station, err
 }
 
 // Dewpoint returns the dewpoint data point as Temperature
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) Dewpoint() Temperature {
 	if o.Data.Dewpoint == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Dewpoint.DateTime,
-		n:  FieldDewpoint,
-		s:  SourceObservation,
-		fv: o.Data.Dewpoint.Value,
+		dateTime: o.Data.Dewpoint.DateTime,
+		name:     FieldDewpoint,
+		source:   SourceObservation,
+		floatVal: o.Data.Dewpoint.Value,
 	}
 }
 
 // DewpointMean returns the mean dewpoint data point as Temperature.
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) DewpointMean() Temperature {
 	if o.Data.DewpointMean == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.DewpointMean.DateTime,
-		n:  FieldDewpointMean,
-		s:  SourceObservation,
-		fv: o.Data.DewpointMean.Value,
+		dateTime: o.Data.DewpointMean.DateTime,
+		name:     FieldDewpointMean,
+		source:   SourceObservation,
+		floatVal: o.Data.DewpointMean.Value,
 	}
 }
 
 // Temperature returns the temperature data point as Temperature.
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) Temperature() Temperature {
 	if o.Data.Temperature == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Temperature.DateTime,
-		n:  FieldTemperature,
-		s:  SourceObservation,
-		fv: o.Data.Temperature.Value,
+		dateTime: o.Data.Temperature.DateTime,
+		name:     FieldTemperature,
+		source:   SourceObservation,
+		floatVal: o.Data.Temperature.Value,
 	}
 }
 
-// TemperatureAtGround returns the temperature at ground level (5cm)
-// data point as Temperature.
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+// TemperatureAtGround returns the temperature at ground level (5cm) data point as Temperature.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) TemperatureAtGround() Temperature {
 	if o.Data.Temperature5cm == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Temperature5cm.DateTime,
-		n:  FieldTemperatureAtGround,
-		s:  SourceObservation,
-		fv: o.Data.Temperature5cm.Value,
+		dateTime: o.Data.Temperature5cm.DateTime,
+		name:     FieldTemperatureAtGround,
+		source:   SourceObservation,
+		floatVal: o.Data.Temperature5cm.Value,
 	}
 }
 
-// TemperatureMax returns the maximum temperature so far data point as
-// Temperature.
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+// TemperatureMax returns the maximum temperature so far data point as Temperature.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) TemperatureMax() Temperature {
 	if o.Data.TemperatureMax == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.TemperatureMax.DateTime,
-		n:  FieldTemperatureMax,
-		s:  SourceObservation,
-		fv: o.Data.TemperatureMax.Value,
+		dateTime: o.Data.TemperatureMax.DateTime,
+		name:     FieldTemperatureMax,
+		source:   SourceObservation,
+		floatVal: o.Data.TemperatureMax.Value,
 	}
 }
 
-// TemperatureMin returns the minimum temperature so far data point as
-// Temperature.
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+// TemperatureMin returns the minimum temperature so far data point as Temperature.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) TemperatureMin() Temperature {
 	if o.Data.TemperatureMin == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.TemperatureMin.DateTime,
-		n:  FieldTemperatureMin,
-		s:  SourceObservation,
-		fv: o.Data.TemperatureMin.Value,
+		dateTime: o.Data.TemperatureMin.DateTime,
+		name:     FieldTemperatureMin,
+		source:   SourceObservation,
+		floatVal: o.Data.TemperatureMin.Value,
 	}
 }
 
-// TemperatureAtGroundMin returns the minimum temperature so far
-// at ground level (5cm) data point as Temperature
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+// TemperatureAtGroundMin returns the minimum temperature so far at ground level (5cm) data point
+// as Temperature
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) TemperatureAtGroundMin() Temperature {
 	if o.Data.Temperature5cmMin == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.Temperature5cmMin.DateTime,
-		n:  FieldTemperatureAtGroundMin,
-		s:  SourceObservation,
-		fv: o.Data.Temperature5cmMin.Value,
+		dateTime: o.Data.Temperature5cmMin.DateTime,
+		name:     FieldTemperatureAtGroundMin,
+		source:   SourceObservation,
+		floatVal: o.Data.Temperature5cmMin.Value,
 	}
 }
 
 // TemperatureMean returns the mean temperature data point as Temperature.
-// If the data point is not available in the Observation it will return
-// Temperature in which the "not available" field will be
-// true.
+//
+// If the data point is not available in the Observation it will return Temperature in which the
+// "not available" field will be true.
 func (o Observation) TemperatureMean() Temperature {
 	if o.Data.TemperatureMean == nil {
-		return Temperature{na: true}
+		return Temperature{notAvailable: true}
 	}
 	return Temperature{
-		dt: o.Data.TemperatureMean.DateTime,
-		n:  FieldTemperatureMean,
-		s:  SourceObservation,
-		fv: o.Data.TemperatureMean.Value,
+		dateTime: o.Data.TemperatureMean.DateTime,
+		name:     FieldTemperatureMean,
+		source:   SourceObservation,
+		floatVal: o.Data.TemperatureMean.Value,
 	}
 }
 
-// HumidityRelative returns the relative humidity data point as float64.
-// If the data point is not available in the Observation it will return
-// Humidity in which the "not available" field will be
-// true.
+// HumidityRelative returns the relative humidity data point as Humidity.
+//
+// If the data point is not available in the Observation it will return Humidity in which the
+// "not available" field will be true.
 func (o Observation) HumidityRelative() Humidity {
 	if o.Data.HumidityRelative == nil {
-		return Humidity{na: true}
+		return Humidity{notAvailable: true}
 	}
 	return Humidity{
-		dt: o.Data.HumidityRelative.DateTime,
-		n:  FieldHumidityRelative,
-		s:  SourceObservation,
-		fv: o.Data.HumidityRelative.Value,
+		dateTime: o.Data.HumidityRelative.DateTime,
+		name:     FieldHumidityRelative,
+		source:   SourceObservation,
+		floatVal: o.Data.HumidityRelative.Value,
 	}
 }
 
-// PressureMSL returns the relative pressure at mean seal level data point
-// as Pressure.
-// If the data point is not available in the Observation it will return
-// Pressure in which the "not available" field will be
-// true.
+// PressureMSL returns the relative pressure at mean seal level data point as Pressure.
+//
+// If the data point is not available in the Observation it will return Pressure in which the
+// "not available" field will be true.
 func (o Observation) PressureMSL() Pressure {
 	if o.Data.PressureMSL == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
 	return Pressure{
-		dt: o.Data.PressureMSL.DateTime,
-		n:  FieldPressureMSL,
-		s:  SourceObservation,
-		fv: o.Data.PressureMSL.Value,
+		dateTime: o.Data.PressureMSL.DateTime,
+		name:     FieldPressureMSL,
+		source:   SourceObservation,
+		floatVal: o.Data.PressureMSL.Value,
 	}
 }
 
-// PressureQFE returns the relative pressure at mean seal level data point
-// as Pressure.
-// If the data point is not available in the Observation it will return
-// Pressure in which the "not available" field will be
-// true.
+// PressureQFE returns the relative pressure at mean seal level data point as Pressure.
+//
+// If the data point is not available in the Observation it will return Pressure in which the
+// "not available" field will be true.
 func (o Observation) PressureQFE() Pressure {
 	if o.Data.PressureQFE == nil {
-		return Pressure{na: true}
+		return Pressure{notAvailable: true}
 	}
 	return Pressure{
-		dt: o.Data.PressureQFE.DateTime,
-		n:  FieldPressureQFE,
-		s:  SourceObservation,
-		fv: o.Data.PressureQFE.Value,
+		dateTime: o.Data.PressureQFE.DateTime,
+		name:     FieldPressureQFE,
+		source:   SourceObservation,
+		floatVal: o.Data.PressureQFE.Value,
 	}
 }
 
-// Precipitation returns the current amount of precipitation (mm) as
-// Precipitation
-// If the data point is not available in the Observation it will return
-// Precipitation in which the "not available" field will be
-// true.
-func (o Observation) Precipitation(ts Timespan) Precipitation {
-	var df *APIFloat
-	var fn Fieldname
-	switch ts {
+// Precipitation returns the current amount of precipitation (mm) as Precipitation
+//
+// If the data point is not available in the Observation it will return Precipitation in which the
+// "not available" field will be true.
+func (o Observation) Precipitation(timespan Timespan) Precipitation {
+	var apiFloat *APIFloat
+	var fieldname Fieldname
+	switch timespan {
 	case TimespanCurrent:
-		df = o.Data.Precipitation
-		fn = FieldPrecipitation
+		apiFloat = o.Data.Precipitation
+		fieldname = FieldPrecipitation
 	case Timespan10Min:
-		df = o.Data.Precipitation10m
-		fn = FieldPrecipitation10m
+		apiFloat = o.Data.Precipitation10m
+		fieldname = FieldPrecipitation10m
 	case Timespan1Hour:
-		df = o.Data.Precipitation1h
-		fn = FieldPrecipitation1h
+		apiFloat = o.Data.Precipitation1h
+		fieldname = FieldPrecipitation1h
 	case Timespan24Hours:
-		df = o.Data.Precipitation24h
-		fn = FieldPrecipitation24h
+		apiFloat = o.Data.Precipitation24h
+		fieldname = FieldPrecipitation24h
 	default:
-		return Precipitation{na: true}
+		return Precipitation{notAvailable: true}
 	}
 
-	if df == nil {
-		return Precipitation{na: true}
+	if apiFloat == nil {
+		return Precipitation{notAvailable: true}
 	}
 	return Precipitation{
-		dt: df.DateTime,
-		n:  fn,
-		s:  SourceObservation,
-		fv: df.Value,
+		dateTime: apiFloat.DateTime,
+		name:     fieldname,
+		source:   SourceObservation,
+		floatVal: apiFloat.Value,
 	}
 }
 
-// GlobalRadiation returns the current amount of global radiation as
-// Radiation
-// If the data point is not available in the Observation it will return
-// Radiation in which the "not available" field will be
-// true.
-func (o Observation) GlobalRadiation(ts Timespan) Radiation {
-	var df *APIFloat
-	var fn Fieldname
-	switch ts {
+// GlobalRadiation returns the current amount of global radiation as Radiation
+//
+// If the data point is not available in the Observation it will return Radiation in which the
+// "not available" field will be true.
+func (o Observation) GlobalRadiation(timespan Timespan) Radiation {
+	var apiFloat *APIFloat
+	var fieldname Fieldname
+	switch timespan {
 	case Timespan10Min:
-		df = o.Data.GlobalRadiation10m
-		fn = FieldGlobalRadiation10m
+		apiFloat = o.Data.GlobalRadiation10m
+		fieldname = FieldGlobalRadiation10m
 	case Timespan1Hour:
-		df = o.Data.GlobalRadiation1h
-		fn = FieldGlobalRadiation1h
+		apiFloat = o.Data.GlobalRadiation1h
+		fieldname = FieldGlobalRadiation1h
 	case Timespan24Hours:
-		df = o.Data.GlobalRadiation24h
-		fn = FieldGlobalRadiation24h
+		apiFloat = o.Data.GlobalRadiation24h
+		fieldname = FieldGlobalRadiation24h
 	default:
-		return Radiation{na: true}
+		return Radiation{notAvailable: true}
 	}
 
-	if df == nil {
-		return Radiation{na: true}
+	if apiFloat == nil {
+		return Radiation{notAvailable: true}
 	}
 	return Radiation{
-		dt: df.DateTime,
-		n:  fn,
-		s:  SourceObservation,
-		fv: df.Value,
+		dateTime: apiFloat.DateTime,
+		name:     fieldname,
+		source:   SourceObservation,
+		floatVal: apiFloat.Value,
 	}
 }
 
-// WindDirection returns the current direction from which the wind
-// originates in degree (0=N, 90=E, 180=S, 270=W) as Direction.
-// If the data point is not available in the Observation it will return
-// Direction in which the "not available" field will be true.
+// WindDirection returns the current direction from which the wind originates in degree
+// (0=N, 90=E, 180=S, 270=W) as Direction.
+//
+// If the data point is not available in the Observation it will return Direction in which the
+// "not available" field will be true.
 func (o Observation) WindDirection() Direction {
 	if o.Data.WindDirection == nil {
-		return Direction{na: true}
+		return Direction{notAvailable: true}
 	}
 	return Direction{
-		dt: o.Data.WindDirection.DateTime,
-		n:  FieldWindDirection,
-		s:  SourceObservation,
-		fv: o.Data.WindDirection.Value,
+		dateTime: o.Data.WindDirection.DateTime,
+		name:     FieldWindDirection,
+		source:   SourceObservation,
+		floatVal: o.Data.WindDirection.Value,
 	}
 }
 
 // WindSpeed returns the current windspeed data point as Speed.
-// If the data point is not available in the Observation it will return
-// Speed in which the "not available" field will be true.
+//
+// If the data point is not available in the Observation it will return Speed in which the
+// "not available" field will be true.
 func (o Observation) WindSpeed() Speed {
 	if o.Data.WindSpeed == nil {
-		return Speed{na: true}
+		return Speed{notAvailable: true}
 	}
 	return Speed{
-		dt: o.Data.WindSpeed.DateTime,
-		n:  FieldWindSpeed,
-		s:  SourceObservation,
-		fv: o.Data.WindSpeed.Value * 0.5144444444,
+		dateTime: o.Data.WindSpeed.DateTime,
+		name:     FieldWindSpeed,
+		source:   SourceObservation,
+		floatVal: o.Data.WindSpeed.Value * 0.5144444444,
 	}
 }
