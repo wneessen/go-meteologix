@@ -107,6 +107,63 @@ func TestClient_CurrentWeatherByLocation_Fail(t *testing.T) {
 	}
 }
 
+func TestClient_CurrentWeatherByLocation_CloudCoverage(t *testing.T) {
+	tt := []struct {
+		// Location name
+		loc string
+		// CurWeather coverage
+		co *Coverage
+	}{
+		{"Ehrenfeld, Germany", &Coverage{
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			source:   SourceAnalysis,
+			floatVal: 95,
+		}},
+		{"Berlin, Germany", &Coverage{
+			dateTime: time.Date(2023, 5, 23, 7, 0, 0, 0, time.Local),
+			source:   SourceAnalysis,
+			floatVal: 60,
+		}},
+		{"Neermoor, Germany", nil},
+	}
+	c := New(withMockAPI())
+	if c == nil {
+		t.Errorf("failed to create new Client, got nil")
+		return
+	}
+	for _, tc := range tt {
+		t.Run(tc.loc, func(t *testing.T) {
+			cw, err := c.CurrentWeatherByLocation(tc.loc)
+			if err != nil {
+				t.Errorf("CurrentWeatherByLocation failed: %s", err)
+				return
+			}
+			if tc.co != nil && tc.co.String() != cw.CloudCoverage().String() {
+				t.Errorf("CurrentWeatherByLocation failed, expected cloud coverage "+
+					"string: %s, got: %s", tc.co.String(), cw.CloudCoverage())
+			}
+			if tc.co != nil && tc.co.Value() != cw.CloudCoverage().Value() {
+				t.Errorf("CurrentWeatherByLocation failed, expected cloud coverage "+
+					"float: %f, got: %f", tc.co.Value(), cw.CloudCoverage().Value())
+			}
+			if tc.co != nil && cw.CloudCoverage().Source() != tc.co.source {
+				t.Errorf("CurrentWeatherByLocation failed, expected source: %s, but got: %s",
+					tc.co.source, cw.CloudCoverage().Source())
+			}
+			if tc.co == nil {
+				if cw.CloudCoverage().IsAvailable() {
+					t.Errorf("CurrentWeatherByLocation failed, expected cloud coverage "+
+						"to have no data, but got: %s", cw.CloudCoverage())
+				}
+				if !math.IsNaN(cw.CloudCoverage().Value()) {
+					t.Errorf("CurrentWeatherByLocation failed, expected cloud coverage "+
+						"to return NaN, but got: %s", cw.CloudCoverage().String())
+				}
+			}
+		})
+	}
+}
+
 func TestClient_CurrentWeatherByLocation_Dewpoint(t *testing.T) {
 	tt := []struct {
 		// Location name

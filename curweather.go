@@ -30,8 +30,8 @@ type CurrentWeather struct {
 // are represented as pointer type returning nil if the data point in question is not returned for
 // the requested Station.
 type APICurrentWeatherData struct {
-	// CloudCoverage represents the current effective cloud coverage
-	// in % (e.g. low clouds have more priority than high clouds)
+	// CloudCoverage represents the current effective cloud coverage in % (e.g. low clouds have more priority
+	// than high clouds)
 	CloudCoverage *APIFloat `json:"cloudCoverage,omitempty"`
 	// Dewpoint represents the dewpoint in °C
 	Dewpoint *APIFloat `json:"dewpoint,omitempty"`
@@ -101,6 +101,26 @@ func (c *Client) CurrentWeatherByLocation(location string) (CurrentWeather, erro
 		return CurrentWeather{}, fmt.Errorf("failed too look up geolocation: %w", err)
 	}
 	return c.CurrentWeatherByCoordinates(geoLocation.Latitude, geoLocation.Longitude)
+}
+
+// CloudCoverage returns the cloud coverage data point as Coverage.
+//
+// If the data point is not available in the CurrentWeather it will return Coverage in which
+// the "not available" field will be true.
+func (cw CurrentWeather) CloudCoverage() Coverage {
+	if cw.Data.CloudCoverage == nil {
+		return Coverage{notAvailable: true}
+	}
+	coverage := Coverage{
+		dateTime: cw.Data.CloudCoverage.DateTime,
+		name:     FieldCloudCoverage,
+		source:   SourceUnknown,
+		floatVal: cw.Data.CloudCoverage.Value,
+	}
+	if cw.Data.CloudCoverage.Source != nil {
+		coverage.source = StringToSource(*cw.Data.CloudCoverage.Source)
+	}
+	return coverage
 }
 
 // Dewpoint returns the dewpoint data point as Temperature.
