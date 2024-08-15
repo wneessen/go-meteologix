@@ -68,6 +68,8 @@ const (
 	FieldWindDirection
 	// FieldWindGust represents the WindGust data point
 	FieldWindGust
+	// FieldWindGust3h represents the WindGust (over the last 3h) data point
+	FieldWindGust3h
 	// FieldWindSpeed represents the WindSpeed data point
 	FieldWindSpeed
 )

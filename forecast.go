@@ -64,6 +64,8 @@ type APIWeatherForecastData struct {
 	WindDirection NilFloat64 `json:"windDirection,omitempty"`
 	// WindGust represents the wind gust speed in m/s (for a timespan)
 	WindGust NilFloat64 `json:"windGust,omitempty"`
+	// WindGust3h represents the wind gust speed in m/s over the last 3 hours
+	WindGust3h NilFloat64 `json:"windGust3h,omitempty"`
 	// WindSpeed represents the average wind speed (for a timespan) in m/s
 	WindSpeed NilFloat64 `json:"windspeed,omitempty"`
 }
@@ -78,6 +80,7 @@ type WeatherForecastDatapoint struct {
 	temperature   float64
 	winddirection NilFloat64
 	windgust      NilFloat64
+	windgust3h    NilFloat64
 	windspeed     NilFloat64
 }
 
@@ -243,6 +246,23 @@ func (dp WeatherForecastDatapoint) WindGust() Speed {
 		name:     FieldWindGust,
 		source:   SourceForecast,
 		floatVal: dp.windgust.Get(),
+	}
+	return speed
+}
+
+// WindGust3h returns the wind gust over the last 3 hours data point as Speed.
+//
+// If the data point is not available in the WeatherForecast it will return Speed in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) WindGust3h() Speed {
+	if dp.windgust3h.IsNil() {
+		return Speed{notAvailable: true}
+	}
+	speed := Speed{
+		dateTime: dp.dateTime,
+		name:     FieldWindGust3h,
+		source:   SourceForecast,
+		floatVal: dp.windgust3h.Get(),
 	}
 	return speed
 }
