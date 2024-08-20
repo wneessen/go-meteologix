@@ -48,6 +48,8 @@ const (
 	FieldSnowAmount
 	// FieldSnowHeight represents the SnowHeight data point
 	FieldSnowHeight
+	// FieldSunhours represents the sun hours data point
+	FieldSunhours
 	// FieldSunrise represents the Sunrise data point
 	FieldSunrise
 	// FieldSunset represents the Sunset data point

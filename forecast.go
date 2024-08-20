@@ -58,6 +58,8 @@ type APIWeatherForecastData struct {
 	Dewpoint NilFloat64 `json:"dewpoint,omitempty"`
 	// PressureMSL represents barometric air pressure at mean sea level (at current timestamp)
 	PressureMSL NilFloat64 `json:"pressureMsl,omitempty"`
+	// SunHours represents the most probable amount of hours the sun will be visible
+	SunHours NilFloat64 `json:"sunHours,omitempty"`
 	// Temperature represents the predicted temperature at 2m height (at current timestamp)
 	Temperature float64 `json:"temp"`
 	// WindDirection represents the average direction from which the wind originates in degree
@@ -77,6 +79,7 @@ type WeatherForecastDatapoint struct {
 	humidity      NilFloat64
 	isDay         bool
 	pressureMSL   NilFloat64
+	sunhours      NilFloat64
 	temperature   float64
 	winddirection NilFloat64
 	windgust      NilFloat64
@@ -206,6 +209,23 @@ func (dp WeatherForecastDatapoint) PressureMSL() Pressure {
 	return pressure
 }
 
+// SunHours returns the sun hours data point as Duration.
+//
+// If the data point is not available in the WeatherForecast it will return Duration in which the
+// "not available" field will be true.
+func (dp WeatherForecastDatapoint) SunHours() Duration {
+	if dp.winddirection.IsNil() {
+		return Duration{notAvailable: true}
+	}
+	duration := Duration{
+		dateTime: dp.dateTime,
+		name:     FieldSunhours,
+		source:   SourceForecast,
+		floatVal: dp.sunhours.Get(),
+	}
+	return duration
+}
+
 // Temperature returns the temperature data point as Temperature.
 func (dp WeatherForecastDatapoint) Temperature() Temperature {
 	return Temperature{
@@ -316,9 +336,11 @@ func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDat
 		humidity:      data.Humidity,
 		isDay:         data.IsDay,
 		pressureMSL:   data.PressureMSL,
+		sunhours:      data.SunHours,
 		temperature:   data.Temperature,
 		winddirection: data.WindDirection,
 		windgust:      data.WindGust,
+		windgust3h:    data.WindGust3h,
 		windspeed:     data.WindSpeed,
 	}
 }
