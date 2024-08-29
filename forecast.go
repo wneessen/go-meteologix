@@ -48,6 +48,10 @@ type ForecastDetails string
 // APIWeatherForecastData holds the different data points of the WeatherForecast as returned by the
 // weather forecast API endpoints.
 type APIWeatherForecastData struct {
+
+	// CloudCoverage represents the effective cloud coverage within the preceding timespan
+	// in % (e.g. low clouds have more priority than high clouds)
+	CloudCoverage NilFloat64 `json:"cloudCoverage,omitempty"`
 	// DateTime represents the date and time for the forecast values
 	DateTime time.Time `json:"dateTime"`
 	// Humidity represents the relative humidity value of a weather forecast
@@ -74,6 +78,7 @@ type APIWeatherForecastData struct {
 
 // WeatherForecastDatapoint represents a single data point in a weather forecast.
 type WeatherForecastDatapoint struct {
+	cloudCoverage NilFloat64
 	dateTime      time.Time
 	dewpoint      NilFloat64
 	humidity      NilFloat64
@@ -151,6 +156,23 @@ func (wf WeatherForecast) All() []WeatherForecastDatapoint {
 		datapoints = append(datapoints, datapoint)
 	}
 	return datapoints
+}
+
+// CloudCoverage returns the cloud coverage data point as Coverage.
+//
+// If the data point is not available in the WeatherForecast it will return Coverage in which
+// the "not available" field will be true.
+func (dp WeatherForecastDatapoint) CloudCoverage() Coverage {
+	if dp.cloudCoverage.IsNil() {
+		return Coverage{notAvailable: true}
+	}
+	coverage := Coverage{
+		dateTime: dp.dateTime,
+		name:     FieldCloudCoverage,
+		source:   SourceForecast,
+		floatVal: dp.cloudCoverage.value,
+	}
+	return coverage
 }
 
 // DateTime returns the date and time of the WeatherForecastDatapoint.
@@ -331,6 +353,7 @@ func findClosestForecast(items []APIWeatherForecastData, target time.Time) *APIW
 // structure. The new WeatherForecastDatapoint is then returned.
 func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDatapoint {
 	return WeatherForecastDatapoint{
+		cloudCoverage: data.CloudCoverage,
 		dateTime:      data.DateTime,
 		dewpoint:      data.Dewpoint,
 		humidity:      data.Humidity,
