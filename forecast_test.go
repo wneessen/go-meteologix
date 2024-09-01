@@ -58,18 +58,26 @@ func TestWeatherForecast_At(t *testing.T) {
 		timestamp    time.Time
 		expectedTime time.Time
 	}{
-		{"1h Standard", 50.9586327, 6.9685969, Timespan1Hour, ForecastDetailStandard,
+		{
+			"1h Standard", 50.9586327, 6.9685969, Timespan1Hour, ForecastDetailStandard,
 			time.Date(2024, 8, 13, 12, 22, 29, 0, time.UTC),
-			time.Date(2024, 8, 13, 12, 0, 0, 0, time.UTC)},
-		{"3h Standard", 50.9586327, 6.9685969, Timespan3Hours, ForecastDetailStandard,
+			time.Date(2024, 8, 13, 12, 0, 0, 0, time.UTC),
+		},
+		{
+			"3h Standard", 50.9586327, 6.9685969, Timespan3Hours, ForecastDetailStandard,
 			time.Date(2024, 8, 16, 8, 49, 12, 0, time.UTC),
-			time.Date(2024, 8, 16, 9, 33, 03, 0, time.UTC)},
-		{"6h Standard", 50.9586327, 6.9685969, Timespan6Hours, ForecastDetailStandard,
+			time.Date(2024, 8, 16, 9, 33, 0o3, 0, time.UTC),
+		},
+		{
+			"6h Standard", 50.9586327, 6.9685969, Timespan6Hours, ForecastDetailStandard,
 			time.Date(2024, 9, 2, 23, 3, 47, 0, time.UTC),
-			time.Date(2024, 9, 2, 21, 54, 03, 0, time.UTC)},
-		{"1h Advanced", 50.9586327, 6.9685969, Timespan1Hour, ForecastDetailAdvanced,
+			time.Date(2024, 9, 2, 21, 54, 0o3, 0, time.UTC),
+		},
+		{
+			"1h Advanced", 50.9586327, 6.9685969, Timespan1Hour, ForecastDetailAdvanced,
 			time.Date(2024, 8, 30, 2, 9, 0, 0, time.UTC),
-			time.Date(2024, 8, 30, 2, 0, 0, 0, time.UTC)},
+			time.Date(2024, 8, 30, 2, 0, 0, 0, time.UTC),
+		},
 	}
 	client := New(withMockAPI())
 	if client == nil {

@@ -48,7 +48,6 @@ type ForecastDetails string
 // APIWeatherForecastData holds the different data points of the WeatherForecast as returned by the
 // weather forecast API endpoints.
 type APIWeatherForecastData struct {
-
 	// CloudCoverage represents the effective cloud coverage within the preceding timespan
 	// in % (e.g. low clouds have more priority than high clouds)
 	CloudCoverage NilFloat64 `json:"cloudCoverage,omitempty"`
@@ -97,7 +96,8 @@ type WeatherForecastDatapoint struct {
 
 // ForecastByCoordinates returns the WeatherForecast values for the given coordinates
 func (c *Client) ForecastByCoordinates(latitude, longitude float64, timespan Timespan,
-	details ForecastDetails) (WeatherForecast, error) {
+	details ForecastDetails,
+) (WeatherForecast, error) {
 	var forecast WeatherForecast
 	var steps string
 	switch timespan {
@@ -132,7 +132,8 @@ func (c *Client) ForecastByCoordinates(latitude, longitude float64, timespan Tim
 
 // ForecastByLocation returns the WeatherForecast values for the given location
 func (c *Client) ForecastByLocation(location string, timesteps Timespan,
-	details ForecastDetails) (WeatherForecast, error) {
+	details ForecastDetails,
+) (WeatherForecast, error) {
 	geoLocation, err := c.GetGeoLocationByName(location)
 	if err != nil {
 		return WeatherForecast{}, fmt.Errorf("failed too look up geolocation: %w", err)
