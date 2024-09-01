@@ -102,7 +102,7 @@ func (c *Client) ForecastByCoordinates(latitude, longitude float64, timespan Tim
 	var steps string
 	switch timespan {
 	case Timespan1Hour, Timespan3Hours, Timespan6Hours:
-		steps = fmt.Sprintf("%s", timespan)
+		steps = timespan.String()
 	default:
 		return forecast, fmt.Errorf("unsupported timespan for weather forecasts: %s", timespan)
 	}
