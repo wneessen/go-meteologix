@@ -13,25 +13,25 @@ type Variable[T any] struct {
 }
 
 // Get the value of the Variable
-func (f *Variable[T]) Get() T {
-	return f.value
+func (v *Variable[T]) Get() T {
+	return v.value
 }
 
 // NotNil returns true when a Variable is not nil
-func (f *Variable[T]) NotNil() bool {
-	return f.notNil
+func (v *Variable[T]) NotNil() bool {
+	return v.notNil
 }
 
 // IsNil returns true when a Variable is nil
-func (f *Variable[T]) IsNil() bool {
-	return !f.notNil
+func (v *Variable[T]) IsNil() bool {
+	return !v.notNil
 }
 
 // Reset resets the value to the Variable to a zero value and sets it to be nil
-func (f *Variable[T]) Reset() {
+func (v *Variable[T]) Reset() {
 	var newVal T
-	f.value = newVal
-	f.notNil = false
+	v.value = newVal
+	v.notNil = false
 }
 
 // NilBoolean is an boolean type that can be nil
@@ -50,11 +50,11 @@ type NilFloat64 = Variable[float64]
 type NilString = Variable[string]
 
 // UnmarshalJSON interprets the generic Nil types and sets the value and notnil of the type
-func (f *Variable[T]) UnmarshalJSON(data []byte) error {
+func (v *Variable[T]) UnmarshalJSON(data []byte) error {
 	if string(data) != "null" {
-		f.value = *new(T)
-		f.notNil = true
-		return json.Unmarshal(data, &f.value)
+		v.value = *new(T)
+		v.notNil = true
+		return json.Unmarshal(data, &v.value)
 	}
 	return nil
 }
