@@ -34,8 +34,14 @@ func (f *Variable[T]) Reset() {
 	f.notNil = false
 }
 
+// NilBoolean is an boolean type that can be nil
+type NilBoolean = Variable[bool]
+
 // NilInt is an int type that can be nil
 type NilInt = Variable[int]
+
+// NilInt64 is an int64 type that can be nil
+type NilInt64 = Variable[int64]
 
 // NilFloat64 is an float64 type that can be nil
 type NilFloat64 = Variable[float64]
