@@ -66,6 +66,8 @@ type APIWeatherForecastData struct {
 	SunHours NilFloat64 `json:"sunHours,omitempty"`
 	// Temperature represents the predicted temperature at 2m height (at current timestamp)
 	Temperature float64 `json:"temp"`
+	// WeatherSymbol is a text representation of the current weather conditions
+	WeatherSymbol NilString `json:"weatherSymbol,omitempty"`
 	// WindDirection represents the average direction from which the wind originates in degree
 	WindDirection NilFloat64 `json:"windDirection,omitempty"`
 	// WindGust represents the wind gust speed in m/s (for a timespan)
@@ -86,6 +88,7 @@ type WeatherForecastDatapoint struct {
 	pressureMSL   NilFloat64
 	sunhours      NilFloat64
 	temperature   float64
+	weatherSymbol NilString
 	winddirection NilFloat64
 	windgust      NilFloat64
 	windgust3h    NilFloat64
@@ -258,6 +261,23 @@ func (dp WeatherForecastDatapoint) Temperature() Temperature {
 	}
 }
 
+// WeatherSymbol returns a text representation of the weather forecast as Condition.
+//
+// If the data point is not available in the WeatherForecast, it will return Condition in which
+// the "not available" field will be true.
+func (dp WeatherForecastDatapoint) WeatherSymbol() Condition {
+	if dp.weatherSymbol.IsNil() {
+		return Condition{notAvailable: true}
+	}
+	condition := Condition{
+		dateTime:  dp.dateTime,
+		name:      FieldWeatherSymbol,
+		source:    SourceForecast,
+		stringVal: dp.weatherSymbol.value,
+	}
+	return condition
+}
+
 // WindDirection returns the wind direction data point as Direction.
 //
 // If the data point is not available in the WeatherForecast it will return Direction in which the
@@ -361,6 +381,7 @@ func newWeatherForecastDataPoint(data APIWeatherForecastData) WeatherForecastDat
 		pressureMSL:   data.PressureMSL,
 		sunhours:      data.SunHours,
 		temperature:   data.Temperature,
+		weatherSymbol: data.WeatherSymbol,
 		winddirection: data.WindDirection,
 		windgust:      data.WindGust,
 		windgust3h:    data.WindGust3h,
