@@ -69,6 +69,7 @@ This program makes use of the GeoLocation support in the package. It looks up th
 of the location in question and queries the Kachelmann API for the station nearest to that
 location. The returned list of stations is sorted by distance to the provided GeoLocation. In
 our example we will return the first station in that list.
+
 ```go
 package main
 
@@ -80,14 +81,14 @@ import (
 )
 
 func main() {
-	c := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
-	sl, err := c.StationSearchByLocation("Berlin, Germany")
+	client := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
+	stations, err := client.StationSearchByLocation("Berlin, Germany")
 	if err != nil {
 		fmt.Printf("station lookup failed: %s", err)
 		os.Exit(1)
 	}
-	if len(sl) > 0 {
-		fmt.Printf("Station no. 1: %+v", sl[0])
+	if len(stations) > 0 {
+		fmt.Printf("Station no. 1: %+v", stations[0])
 	}
 }
 ```
@@ -110,18 +111,18 @@ import (
 )
 
 func main() {
-	c := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
-	o, err := c.ObservationLatestByStationID("H744")
+	client := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
+	observation, err := client.ObservationLatestByStationID("H744")
 	if err != nil {
 		fmt.Printf("station lookup failed: %s", err)
 		os.Exit(1)
 	}
-	fmt.Printf("Temperature at station: %s\n", o.Temperature())
-	if !math.IsNaN(o.Temperature().Value()) {
-		fmt.Printf("Temperature at station in F: %s\n", o.Temperature().FahrenheitString())
-    }
-	if o.Dewpoint().IsAvailable() {
-		fmt.Printf("Dewpoint in Fahrenheit: %s\n", o.Dewpoint().FahrenheitString())
+	if observation.Temperature().IsAvailable() {
+		fmt.Printf("Temperature at station: %s\n", observation.Temperature())
+		fmt.Printf("Temperature at station in Fahrenheit: %s\n", observation.Temperature().FahrenheitString())
+	}
+	if observation.Dewpoint().IsAvailable() {
+		fmt.Printf("Dewpoint in Fahrenheit: %s\n", observation.Dewpoint().FahrenheitString())
 	}
 }
 ```
@@ -143,16 +144,16 @@ import (
 )
 
 func main() {
-	c := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
-	o, s, err := c.ObservationLatestByLocation("Ehrenfeld, Germany")
+	client := meteologix.New(meteologix.WithAPIKey(os.Getenv("API_KEY")))
+	observation, s, err := client.ObservationLatestByLocation("Ehrenfeld, Germany")
 	if err != nil {
 		fmt.Printf("Failed: %s\n", err)
 		os.Exit(1)
 	}
-	if o.Temperature().IsAvailable() {
+	if observation.Temperature().IsAvailable() {
 		fmt.Printf("Temperature at %s: %s/%s (time of measurement: %s)\n",
-			s.Name, o.Temperature(), o.Temperature().FahrenheitString(),
-			o.Temperature().DateTime().Local().Format("15:04h"))
+			s.Name, observation.Temperature(), observation.Temperature().FahrenheitString(),
+			observation.Temperature().DateTime().Local().Format("15:04h"))
 	}
 }
 ```
@@ -163,9 +164,3 @@ go-meteologix was authored and developed by [Winni Neessen](https://github.com/w
 Big thanks to the following people, for contributing to the go-meteologix project
 (either in form of code, reviewing code, writing documenation or contributing in any other form):
 * [Maria Letta](https://github.com/MariaLetta) (designed the go-meteologix logo)
-
-## Mirror
-
-Please note that the repository on Github is just a mirror of
-[https://github.com/wneessen/go-meteologix](https://github.com/wneessen/go-meteologix) 
-for ease of access and reachability.
